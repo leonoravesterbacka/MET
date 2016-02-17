@@ -1,0 +1,28 @@
+#-----------------------------------------------------------
+#-----------------------------------------------------------
+#----- all samples that are currently available ------------
+#-----------------------------------------------------------
+#
+#-----------------------------------------------------------
+#----------------- data samples ----------------------------
+#-----------------------------------------------------------
+# BLOCK                 COLOR      NAME                  LABEL                     LOCATION OF TREES                                               XSEC     ISDATA
+#------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+DYJetsToLL_M50          r.kBlue     DYJetsToLL_M50        DYJetsToLL_M50            /afs/cern.ch/work/m/mvesterb/public/MC_samples/met/               6024000.0    0
+DYJetsToLL_M50_mm       r.kRed      DYJetsToLL_mm        DYJetsToLL_mm            /afs/cern.ch/work/m/mvesterb/public/MC_samples/met/               6024000.0    0
+DYJetsToLL_M50_ee       r.kGreen    DYJetsToLL_ee        DYJetsToLL_ee            /afs/cern.ch/work/m/mvesterb/public/MC_samples/met/               6024000.0    0
+DYJetsToLL_M50_mm_old       r.kGreen    DYJetsToLL_mm_old        DYJetsToLL_mm_old            /afs/cern.ch/work/m/mvesterb/public/MC_samples/met/backup/               6024000.0    1
+DYJetsToLL_M50_ee_old       r.kGreen    DYJetsToLL_ee_old        DYJetsToLL_ee_old            /afs/cern.ch/work/m/mvesterb/public/MC_samples/met/backup/               6024000.0    1
+TTJets_ee               r.kGreen    TTJets_ee               TTJets_ee            /afs/cern.ch/work/m/mvesterb/public/MC_samples/met/               87314.8    0
+TTJets_mm               r.kGreen    TTJets_mm               TTJets_mm            /afs/cern.ch/work/m/mvesterb/public/MC_samples/met/               87314.8    0
+#
+#-----------------------------------------------------------
+#----------------- data -----------------------------
+#-----------------------------------------------------------
+# BLOCK                COLOR      NAME                  LABEL                     LOCATION OF TREES                                               XSEC     ISDATA
+#------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#
+Data_ee         r.kBlack             Data_ee         Data_ee     /afs/cern.ch/work/m/mvesterb/public/MC_samples/met/     1   1
+Data_mm         r.kBlack             Data_mm         Data_mm     /afs/cern.ch/work/m/mvesterb/public/MC_samples/met/     1   1
+#
+#synchfile r.kPink      TTLep_pow_synch           TTLep_pow_synch       /afs/cern.ch/work/m/mdunser/public/synchFiles/                                   87314.8  0
