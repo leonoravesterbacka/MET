@@ -27,7 +27,7 @@ def constructModel(Hist, bkg_hist,  m, um,uM, BKGSubtraction, eemm, cut, var, pl
     voigt = RooVoigtian ("voigt", "Voigtian", x, v_m, gamma_Z0, g_w)
     xFrame = x.frame()
     Hist.plotOn(xFrame)
-    if BKGSubtraction:
+    if BKGSubtraction: #this is where the fit thing happens
         bkg_pdf =  RooHistPdf("bkg_pdf","bkg_pdf",RooArgSet(x),bkg_hist)
         lAbkgFrac = RooRealVar("AbkgFrac","AbkgFrac",0.5,0.,1.)
         sigbkgFrac = RooFormulaVar("bkgfrac","@0",RooArgList(lAbkgFrac))
@@ -37,13 +37,13 @@ def constructModel(Hist, bkg_hist,  m, um,uM, BKGSubtraction, eemm, cut, var, pl
         model.plotOn(xFrame, RooFit.Components("bkg_pdf"), RooFit.LineColor(r.kRed)  ,RooFit.LineStyle(r.kDashed),RooFit.FillColor(r.kRed)  ,RooFit.DrawOption("F"))
         model.plotOn(xFrame, RooFit.Components("voigt")  , RooFit.LineColor(r.kGreen)  ,RooFit.LineStyle(r.kDashed),RooFit.FillColor(r.kGreen)  ,RooFit.DrawOption("L")) 
         xFrame.Draw()
-        #plot.save(0, 1, 0, lumi)
-    else:    
+        #plot.save(0, 0, 0, lumi) #don't always plot all the fits
+    else:    # if only MC, no fit to data
         result = voigt.fitTo(Hist, RooFit.Minimizer("Minuit","Migrad"), RooFit.Strategy(2), RooFit.SumW2Error(False), RooFit.Save(True), RooFit.PrintLevel(-1)) 
         voigt.plotOn(xFrame,RooFit.FillColor(r.kGray),RooFit.VisualizeError(result,1),RooFit.Components("voigt"))
         voigt.plotOn(xFrame,RooFit.LineColor(r.kGray))  
         xFrame.Draw()
-        #plot.save(0, 1, 0, lumi)
+        #plot.save(0, 0, 0, lumi) #don't always plot all the fits
     sigma = g_w.getVal()
     gamma = gamma_Z0.getVal()
     esigma = g_w.getError()
@@ -74,19 +74,18 @@ def FWHMError_fixed(sigma, gamma, esigma, egamma, Vss, Vsg, Vgs, Vgg):
 def FWHM(sigma, gamma):
     f_g = 2 * sigma * math.sqrt(2 * math.log(2))
     f_l = 2 * gamma
-    return ((0.5346 * 2 * gamma + math.sqrt(0.2166 * f_l * f_l + f_g * f_g))/2.3548) 
+    return ((0.5346 * 2 * gamma + math.sqrt(0.2166 * f_l * f_l + f_g * f_g))/2.3548) # this division by 2.3548 is not coming form the definition of the FWHM, it's just something atlas does, so we do it to to more easily compare to their results
 
 if __name__ == "__main__":
 
 
-    doBKGSubtraction = [False]
-    #doBKGSubtraction = False
+    doBKGSubtraction = False 
+    #doBKGSubtraction = True #do fit or not
     parser = optparse.OptionParser(usage="usage: %prog [opts] FilenameWithSamples", version="%prog 1.0")
     parser.add_option("-t", "--test", action="store_true", dest="test", default=False, help="just do a testrun. takes one variable in one eta for one region")
     parser.add_option('-s', '--samples', action='store', type=str, dest='sampleFile', default='samples.dat', help='the samples file. default \'samples.dat\'')
     (opts, args) = parser.parse_args()
 
-    ## make the options globa.. also the lumi
     (opts, args) = parser.parse_args()
 
     print 'Going to load DATA and MC trees...'
@@ -105,7 +104,6 @@ if __name__ == "__main__":
     treeData_mm = Sample.Tree(helper.selectSamples(opts.sampleFile, data_mm, 'da_mm'), 'da_mm', 1)
     
     if doBKGSubtraction: 
-        #trees = [ treeTT_mm, treeTT_ee]
         trees = [ treeData_mm, treeData_ee, treeTT_mm, treeTT_ee]
         plot_name = 'data'
     else:    
@@ -123,6 +121,7 @@ if __name__ == "__main__":
 
     regions = []
     vector = []
+    # regions are defined with the specific MET we want to check, and also the variable of the resolution, either uPerp or uPara, and also their 'dependence', meaning what the x axis should be, i.e.what the resolution is a function of , for example q_T, nVert, sumET, 
     region = Region.region('Type 1 ME_{T}', 
             [cuts.GoodLepton()],
             'met_uPerp_zll',
@@ -137,103 +136,14 @@ if __name__ == "__main__":
             [range(-100,300,50)],
             False)
     regions.append(region)                  
- #   region = Region.region('Raw 1 ME_{T}', 
- #           [cuts.GoodLepton()],
- #           'met_raw_uPerp_zll',
- #           'zll_pt',
- #           [range(-100,300,50)],
- #           False)
- #   regions.append(region)                 
- #   region = Region.region('Raw 1 ME_{T}',
- #           [cuts.GoodLepton()],
- #           'met_raw_uPara_zll+zll_pt',
- #           'zll_pt',
- #           [range(-100,300,50)],
- #           False)
- #   regions.append(region)  
-    ############sumEt
-#    region = Region.region('Type 1 ME_{T}',
-#            [cuts.GoodLepton()],
-#            'met_uPerp_zll',
-#            'met_sumEt',
-#            [range(-100,300,50)],
-#            False)
-#    regions.append(region)                 
-#    region = Region.region('Type 1 ME_{T}',
-#            [cuts.GoodLepton()],
-#            'met_uPara_zll+zll_pt',
-#            'met_sumEt',
-#            [range(-100,300,50)],
-#            False)
-#    regions.append(region)                 
-#    region = Region.region('Raw 1 ME_{T}', 
-#            [cuts.GoodLepton()],
-#            'met_uPerp_zll',
-#            'met_sumEt',
-#            [range(-100,300,50)],
-#            False)
-#    regions.append(region)                 
-#    region = Region.region('Raw 1 ME_{T}',
-#            [cuts.GoodLepton()],
-#            'met_uPara_zll+zll_pt',
-#            'met_sumEt',
-#            [range(-100,300,50)],
-#            False)
-#    regions.append(region)      
-################## nvtx
-#    region = Region.region('Type 1 ME_{T}',
-#            [cuts.GoodLepton()],
-#            'met_uPerp_zll',
-#            '',
-#            [range(-100,300,50)],
-#            False)
-#    regions.append(region)                 
-#    region = Region.region('Type 1 ME_{T}',
-#            [cuts.GoodLepton()],
-#            'met_uPara_zll+zll_pt',
-#            'met_sumEt',
-#            [range(-100,300,50)],
-#            False)
-#    regions.append(region)                 
-#    region = Region.region('Raw 1 ME_{T}', 
-#            [cuts.GoodLepton()],
-#            'met_uPerp_zll',
-#            'met_sumEt',
-#            [range(-100,300,50)],
-#            False)
-#    regions.append(region)                 
-#    region = Region.region('Raw 1 ME_{T}',
-#            [cuts.GoodLepton()],
-#            'met_uPara_zll+zll_pt',
-#            'met_sumEt',
-#            [range(-100,300,50)],
-#            False)
-#    regions.append(region)                 
 
     vtxbins = [[0, 4],[4, 8], [8,12],[12, 16],[16, 20],[20, 24], [24,28],[28, 32],[32, 36],[36, 40]]
     #qtbins = [ [25, 50], [50, 75]]
     qtbins = [ [0, 10], [10, 20], [20, 30], [30, 40], [40, 60], [60, 80], [80, 100], [100, 130], [130, 160], [160, 200],[200, 300], [300,450]]
     metbins = [[0, 5], [5, 10], [10, 15], [15, 20], [20, 25], [25, 30], [30, 35], [35, 40], [40, 45], [45, 50]]
     sumetbins = [[100, 200], [200, 300], [300, 400], [400, 500], [500, 600], [600, 700], [700, 800], [800, 900], [900, 1000],[1000, 1100], [1100, 1200], [1200, 1300], [1300, 1400], [1400, 1500], [1500, 1600], [1600, 1700], [1700, 1800], [1800, 1900], [1900, 2000],[2000, 2100], [2100, 2200]]
-
-
-    graph_ee = TGraphErrors()
-    graph_mm = TGraphErrors()
-    leg = TLegend(0.68,0.7,0.88,0.9)
-    leg.SetFillColor(r.kWhite)
-    leg.SetTextFont(42)
-    leg.SetTextSize(0.04)
-    leg.SetLineWidth(0)
-    leg.SetBorderSize(0)      
-    cutsList = []
-    mean_ee = []
-    error_ee = []
-    mean_mm = []
-    error_mm = []
-    binposition = []
-    binerror = []
     
-
+    #define the variables for the fit
     x = RooRealVar("x", "x", -200, 200)
     g_w = RooRealVar("g_w", "width Gaus", 10.,0. , 100., "GeV") # sigma
     gamma_Z0 = RooRealVar("gamma_Z0_U", "Z0 width", 2.3, 0., 100., "GeV") # gamma
@@ -281,10 +191,6 @@ if __name__ == "__main__":
         mc_fwhms_mm = []
         data_error_mm = []
         mc_error_mm = []
-        plot_resolution = Canvas.Canvas("met/resolution_plots/"+var+"_vs_"+str(reg.dependence) , "png",0.6, 0.7, 0.8, 0.9)
-
-        trees = [ treeDY_ee, treeDY_mm]
-        #trees = [ treeDY_ee, treeDY_mm, treeData_ee, treeData_mm, treeTT_ee, treeTT_mm]
 
         for i in qtbins:
             mini = float(min(qtbins[qtbins.index(i)]))
@@ -296,7 +202,7 @@ if __name__ == "__main__":
         for i in cutsList:
             print i
             for tree in trees:
-                print 'trees', tree.name
+                print 'trees', tree.name #
                 if tree.name == 'dy_ee':                                                                                                                                     
                     dy_hist_ee = tree.getTH1F(lumi, reg.name+i, reg.rvars,40, -150., 150.,  i, '', reg.name)
                     dy_Hist_ee = RooDataHist("dy_ee","dy_ee"+i, RooArgList(x), dy_hist_ee)
@@ -311,6 +217,7 @@ if __name__ == "__main__":
                     m_dy_mm = dy_hist_mm.GetMean()                       
                     um_dy_mm = dy_hist_mm.GetMean()-dy_hist_mm.GetRMS()
                     uM_dy_mm = dy_hist_mm.GetMean()+dy_hist_mm.GetRMS()
+           ####comment this out if you're not doing the fit to data
            #     elif tree.name == 'tt_ee':  
            #         tt_hist_ee = tree.getTH1F(lumi, reg.name+i, reg.rvars,50, -150., 150.,  i, '', reg.name)
            #         tt_Hist_ee = RooDataHist("tt_ee","tt_ee"+i,RooArgList(x),tt_hist_ee)               
