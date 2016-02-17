@@ -299,7 +299,7 @@ class Canvas:
 
       self.banner2(isData, lumi)
       for plotName in self.plotNames:
-          path = 'plots/'+plotName
+          path = '../plots/'+plotName
           self.ensurePath(path)
           self.myCanvas.SaveAs(path)
 
