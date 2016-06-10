@@ -509,10 +509,10 @@ if (histogramaname=="met_uPara_over_qt") ylabel="-<u_{||}/q_{T}> [GeV]";
     c1->cd();
     if (channel == "G") c1->Print("~/www/met/comparisons/May11/GJets/"+histogramaname+".png");
     if (channel == "G") c1->Print("~/www/met/comparisons/May11/GJets/"+histogramaname+".root");
-    if (channel == "E") c1->Print("~/www/met/comparisons/June02/EE/"+histogramaname+".png");
-    if (channel == "E") c1->Print("~/www/met/comparisons/June02/EE/"+histogramaname+".root");
-    if (channel == "M") c1->Print("~/www/met/comparisons/June02/MM/"+histogramaname+".png");
-    if (channel == "M") c1->Print("~/www/met/comparisons/June02/MM/"+histogramaname+".root");
+    if (channel == "E") c1->Print("~/www/met/comparisons/June08/EE/"+histogramaname+".png");
+    if (channel == "E") c1->Print("~/www/met/comparisons/June08/EE/"+histogramaname+".root");
+    if (channel == "M") c1->Print("~/www/met/comparisons/June08/MM/"+histogramaname+".png");
+    if (channel == "M") c1->Print("~/www/met/comparisons/June08/MM/"+histogramaname+".root");
 
 
 }
@@ -525,10 +525,10 @@ void testRatio(TString histograma,TString histograma2, TString EjeX, TString cha
 cout << " channel" <<  channel << endl;
 TCanvas *c1 = new TCanvas("c1","example",600,700);
 if (channel == "MM"){
-TFile file1 ("Not_BKG_SubtractionDYtgraphsMZll80X.root"); // MC DY
-TFile file2 ("Not_BKG_SubtractionDatatgraphsMZll80X.root");// data DY
-TFile file1up ("Not_BKG_SubtractionDY_up_tgraphs_jes_DYMZll80X.root"); // MC DY up
-TFile file1down ("Not_BKG_SubtractionDY_down_tgraphs_jes_DYMZll80X.root"); // MC DY down
+TFile file1 ("Not_BKG_SubtractionDYtgraphsMZllGolden.root"); // MC DY
+TFile file2 ("Not_BKG_SubtractionDatatgraphsMZllGolden.root");// data DY
+TFile file1up ("Not_BKG_SubtractionDY_up_tgraphs_jes_DYMZllGolden.root"); // MC DY up
+TFile file1down ("Not_BKG_SubtractionDY_down_tgraphs_jes_DYMZllGolden.root"); // MC DY down
  h1 = (TGraphErrors*) file1.Get("M_"+ histograma2); //mc mumu 
  h2 = (TGraphErrors*) file2.Get("M_"+ histograma); //mc ee 
  h1up = (TGraphErrors*)  file1up.Get("M_"+ histograma2); //mc mumu 
@@ -651,7 +651,8 @@ TGraphAsymmErrors JESerror(TH1F *Background, TH1F *Backgrounddown, TH1F *Backgro
 
 
 	    den1->SetBinContent (km,
-	  		   Background->GetBinContent (km) + conte1);
+	a 		   Background->GetBinContent (km) + conte1);
+    dependences = ['zll_pt',   'nVert', 'met_sumEt-zll_pt']
 	    den2->SetBinContent (km,
 	  		   Background->GetBinContent (km) - conte2);
 	          ymax = Background->GetBinContent(km) + conte1;
@@ -702,7 +703,7 @@ TGraphAsymmErrors staterror(TH1F *Background, TH1F * hdata){
 
    
 
-    TH1F *den1 = (TH1F *) Background->Clone ("bkgden1");
+    TH1F *den1 = (TH1F *) Background->Clone ("bkgden1");                                            
 
 	TH1F *den2 = (TH1F *) Background->Clone ("bkgden2");
 	const Int_t nvar=25;// (const Int_t)Background->GetNbinsX ();
@@ -782,7 +783,7 @@ TGraphAsymmErrors staterror(TH1F *Background, TH1F * hdata){
 	    }
 
 
-
+                                                                                                                 
 TGraphAsymmErrors *err = new TGraphAsymmErrors (nvar, x, y, exl, exh, eyl, eyh);
 
 

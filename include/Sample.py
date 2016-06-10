@@ -6,26 +6,35 @@ from ROOT import TTree, TFile, TCut, TH1F, TH2F, THStack, TCanvas
 class Sample:
    'Common base class for all Samples'
 
-   def __init__(self, name, location, xsection, isdata):
+   def __init__(self, name, location, xsection, isdata, doqtweight, dokfactorweight, iszjets):
       self.name = name
       self.location = location
       self.xSection = xsection
       self.isData = isdata
-      self.tfile = TFile(self.location+self.name+'/METtree.root')
+      self.doqtWeight = doqtweight
+      self.dokfactorWeight = dokfactorweight
+      self.isZjets = iszjets
+      self.tfile = TFile(self.location+self.name+'/jes_jes_METtree.root')
       self.ttree = self.tfile.Get('METtree')
+      
+      self.puWeight  = "1.0"
+      self.qtWeight  = "1.0"
+      #if not self.isData:
+      #  gw = 0.
+      #  for i in self.ttree:
+            #gw = abs(i.genWeight)
+            #self.qtWeight = str(i.qtWeight)
+            #gw = 1.0
+            #if gw: break
+      self.count = self.tfile.Get('Count').GetEntries()
+      #else:
       if not self.isData:
-        gw = 0. 
-        for i in self.ttree : # put back when you've made proper met ntuples for ttjets and data
-            gw = abs(i.genWeight)
-            if gw: break
-        self.count = self.tfile.Get('SumGenWeights').GetBinContent(1)/abs(gw)  
-        #self.count = self.tfile.Get('Count').GetBinContent(1)/abs(gw)  
-      else:
-        self.count = self.tfile.Get('Count').GetEntries()
-      self.lumWeight = 1.0
-      if(self.isData == 0):
-        self.lumWeight = self.xSection / self.count
-      self.puWeight = "1.0"
+        self.lumWeight = xsection / self.count
+        print 'name ',self.name
+        print 'xsec ',self.xSection
+        print 'count ',self.count
+        print 'lumweight ' ,self.lumWeight
+
    def printSample(self):
       print "#################################"
       print "Sample Name: ", self.name
@@ -49,12 +58,30 @@ class Sample:
       h.GetXaxis().SetTitle(xlabel)
       h.GetYaxis().SetTitle(ylabel)
 
-      addCut = ""
-           
-      if(self.isData == 0):
-        cut = cut + "* ( " + str(self.lumWeight*lumi) + " * genWeight/abs(genWeight) * " + self.puWeight + " )" 
+      addCut = "1."
+      addCut2 = ""
       
-      self.ttree.Project(name, var, cut, options) 
+      if self.isData:
+          if self.isZjets:
+              addCut = "1."
+          else:   
+              #addCut = "1." 
+              addCut = "prescaleWeight" 
+          cut = cut + "* (" + addCut +") "
+
+      if(self.isData == 0):
+          #addCut = "1. "
+          addCut = "puWeight"
+          addCut2 = "1."
+          if self.dokfactorWeight:
+            #addCut2 = "1."  
+            addCut2 = "kfactorWeight"  
+          if self.doqtWeight:    
+            #addCut2 = "1."
+            addCut2 = "qtWeight"
+          cut =  cut  + "* ( " + addCut + " )" +  "* ( " + addCut2 + " )" + "* ( " + str(self.lumWeight*lumi)  +  " )" #kommentera ut det har
+      print "cuts ", cut
+      self.ttree.Project(name, var, cut, options)
       return h
 
    def getTH2F(self, lumi, name, var, nbinx, xmin, xmax, nbiny, ymin, ymax, cut, options, xlabel, ylabel):
@@ -166,6 +193,9 @@ class Tree:
         location    = splitedLine[4]
         xsection    = float(splitedLine[5])
         isdata =  int(splitedLine[6])
+        doboson =  int(splitedLine[7])
+        dokfactor =  int(splitedLine[8])
+        iszjets =  int(splitedLine[9])
 
         color = 0
         plusposition = theColor.find("+")
@@ -175,7 +205,7 @@ class Tree:
           color = eval(theColor[0:plusposition])
           color = color + int(theColor[plusposition+1:len(theColor)])
 
-        sample = Sample(name, location,  xsection, isdata)
+        sample = Sample(name, location,  xsection, isdata, doboson, dokfactor, iszjets)
         coincidentBlock = [l for l in self.blocks if l.name == block]
 
         if(coincidentBlock == []):
@@ -252,8 +282,10 @@ class Tree:
        _nbins = len(nbin)-1
        _arr = array('d', nbin)
        h = TH1F(name, "", _nbins, _arr)
-       _newarr = _arr + array('d', [ 2*_arr[-1]-_arr[-2] ])
+       #_newarr = array('d', [-205.0, -200.0, -195.0, -190.0, -185.0, -180.0, -175.0, -170.0, -165.0, -160.0, -155.0, -150.0, -145.0, -140.0, -135.0, -130.0, -125.0, -120.0, -115.0, -110.0, -105.0, -100.0, -95.0, -90.0, -85.0, -80.0, -75.0, -70.0, -65.0, -60.0, -55.0, -50.0, -45.0, -40.0, -35.0, -30.0, -25.0, -20.0, -15.0, -10.0, -5.0, 0.0, 5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0, 50.0, 55.0, 60.0, 65.0, 70.0, 75.0, 80.0, 85.0, 90.0, 95.0, 100.0, 105.0, 110.0, 115.0, 120.0, 125.0, 130.0, 135.0, 140.0, 145.0, 150.0, 155.0, 160.0, 165.0, 170.0, 175.0, 180.0, 185.0, 190.0, 195.0, 200.0])
+       _newarr = _arr + array('d', [ 2*_arr[-1]-_arr[-2] ]) 
        h_of = TH1F(name+'_of', "", _nbins+1, _newarr)
+       #h_of = TH1F(name+'_of', "", _nbins+2, _newarr)
        ylabel = "# events"
      else:
        h = TH1F(name, "", nbin, xmin, xmax)
@@ -273,10 +305,17 @@ class Tree:
 
      for _bin in range(1, h_of.GetNbinsX()+1):
          h_of.SetBinContent(_bin, h.GetBinContent(_bin))
-         h_of.SetBinError  (_bin, h.GetBinError  (_bin))
-
+         h_of.SetBinContent(_bin, h.GetBinContent(_bin))
+         
+    #for _bin in range(0, h_of.GetNbinsX()+1):
+    #     h_of.SetBinContent(_bin, h.GetBinContent(_bin))
+    #     h_of.SetBinError  (_bin, h.GetBinError  (_bin)) # with underflow bin, uncomment this, change binning to newarr including the underflow bin and nbins+2
+                                                                
+                                                               
      return h_of
+     return h_uf
      del h_of
+     del h_uf
      del h
 
    def getTH2F(self, lumi, name, var, nbinx, xmin, xmax, nbiny, ymin, ymax, cut, options, xlabel, ylabel):

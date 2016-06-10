@@ -56,7 +56,7 @@ def constructModel(Hist, bkg_hist,  m, um,uM, BKGSubtraction,  channel, updo,  c
 
 if __name__ == "__main__":
 
-    doBKGSubtraction = False
+    doBKGSubtraction = True
     parser = optparse.OptionParser(usage="usage: %prog [opts] FilenameWithSamples", version="%prog 1.0")
     parser.add_option("-t", "--test", action="store_true", dest="test", default=False, help="just do a testrun. takes one variable in one eta for one region")
     parser.add_option('-s', '--samples', action='store', type=str, dest='sampleFile', default='samples2.dat', help='the samples file. default \'samples.dat\'')
@@ -67,11 +67,10 @@ if __name__ == "__main__":
 
     print 'Going to load DATA and MC trees...'
 
-    bkgDatasets = ['TTGJets',  'WGJets', 'ZGJets',   'WJetsToLNu_HT100to200_ext', 'WJetsToLNu_HT200to400', 'WJetsToLNu_HT400to600', 'WJetsToLNu_HT600to800', 'WJetsToLNu_HT800to1200', 'WJetsToLNu_HT1200to2500', 'WJetsToLNu_HT2500toInf']
-    gjetsDatasets = [ 'QCD_HT200to300_ext', 'QCD_HT300to500', 'QCD_HT500to700','QCD_HT700to1000', 'QCD_HT1000to1500', 'QCD_HT1500to2000', 'QCD_HT2000toInf','GJets_HT40to100', 'GJets_HT100to200', 'GJets_HT200to400', 'GJets_HT400to600', 'GJets_HT600toInf']
+    bkgDatasets = [ 'QCD_HT200to300_ext', 'QCD_HT300to500', 'QCD_HT500to700','QCD_HT700to1000', 'QCD_HT1000to1500', 'QCD_HT1500to2000', 'QCD_HT2000toInf', 'TTGJets', 'ZGJets','ZGJets40-130', 'WGToLNuG', 'WJetsToLNu_HT200to400', 'WJetsToLNu_HT400to600', 'WJetsToLNu_HT600to800', 'WJetsToLNu_HT800to1200', 'WJetsToLNu_HT1200to2500', 'WJetsToLNu_HT2500toInf']
+    gjetsDatasets = [  'ZGTo2LG', 'GJets_HT40to100', 'GJets_HT100to200', 'GJets_HT200to400', 'GJets_HT400to600', 'GJets_HT600toInf']
     daDatasets = ['SinglePhoton_Run2016B_PromptReco_v2NEW']
     channel = 'gamma'
-    destination = 'Not_BKG_Subtraction'
     
     if doBKGSubtraction:
         treeBKG = Sample.Tree(helper.selectSamples(opts.sampleFile, bkgDatasets, 'bkg'), 'bkg'  , 0)
@@ -107,7 +106,7 @@ if __name__ == "__main__":
     dependence = 'gamma_pt'
 
     print 'Trees successfully loaded...'
-    lumi = 0.6237
+    lumi = 0.803015796
 
    
     gROOT.ProcessLine('.L include/tdrstyle.C')
@@ -125,14 +124,12 @@ if __name__ == "__main__":
             [range(-100,300,50)],
             False)
     regions.append(region)
-    
-    qtbins = [ [0,25],[25, 50], [50, 75], [75,100], [100, 120], [120, 150], [150, 175], [175, 200], [200, 225], [225, 250], [250, 275],[275, 300], [300, 325], [325, 350], [350, 375], [375, 400],[400, 425],  [425, 450], [450, 500]]
+
+    qtbins = [ [20,28],[28, 36],[36, 44],[44, 52],[52,60],[60, 68], [68, 76], [76, 84],[84,92],[92,100], [100, 120], [120, 150], [150, 175], [175, 200], [200, 225], [225, 250], [250, 275],[275, 305]    , [305, 335], [335, 365], [365, 395], [395, 430],  [430, 500]]
 
     cutsList = []
     binposition = []
     binerror = []
-
-   
     x = RooRealVar("x", "x", -2., 0.)
     g_w = RooRealVar("g_w", "width Gaus", 10.,0. , 100., "GeV") # sigma
     gamma_Z0 = RooRealVar("gamma_Z0_U", "Z0 width", 2.3, 0., 100., "GeV") # gamma
@@ -150,7 +147,7 @@ if __name__ == "__main__":
             binerror.append(0.0)
             cutsList.append(cuts.AddList(reg.cuts +[  reg.dependence +  "<"+ str(maxi) + "&&" + reg.dependence + " >" + str(mini)] ))
         for dire in direction:
-            f2 = TFile(destination+dire + "gammagjets80X.root", "UPDATE");   
+            f2 = TFile(dire + "gjetsScale.root", "UPDATE");   
             upd = updown[direction.index(dire)]
             for vari in variable:
                 var = vari[direction.index(dire)]

@@ -85,7 +85,7 @@ if __name__ == "__main__":
 
 
     doBKGSubtraction = True
-    doee = False
+    doee = True
     parser = optparse.OptionParser(usage="usage: %prog [opts] FilenameWithSamples", version="%prog 1.0")
     parser.add_option("-t", "--test", action="store_true", dest="test", default=False, help="just do a testrun. takes one variable in one eta for one region")
     parser.add_option('-s', '--samples', action='store', type=str, dest='sampleFile', default='samples2.dat', help='the samples file. default \'samples2.dat\'')
@@ -97,14 +97,14 @@ if __name__ == "__main__":
 
     if doBKGSubtraction: 
         if doee:
-            dy = ['DYJetsToLL_M50_ee']
-            tt = ['TTJets_DiLepton_ee', 'WWTo2L2Nu_ee', 'WZTo2L2Q_ee', 'WZTo3LNu_ee', 'ZZTo4L_ee', 'WJetsToLNu_ee']
-            da = ['DoubleEG_Run2016B_PromptReco_v2']
+            dy = ['DYJetsToLL_M50_ee', 'ZZTo4L_ee', 'ZZTo2L2Q_ee', 'WZTo3LNu_ee', 'WZTo2L2Q_ee']
+            tt = ['TTJets_DiLepton_ee', 'WWTo2L2Nu_ee', 'WJetsToLNu_ee']
+            da = ['DoubleEG_Run2016B_PromptReco_v2NEW']
             channel = 'E'
         else:
-            dy = ['DYJetsToLL_M50_mm']
-            tt = ['TTJets_DiLepton_mm', 'WWTo2L2Nu_mm', 'WZTo2L2Q_mm', 'WZTo3LNu_mm', 'ZZTo4L_mm', 'WJetsToLNu_mm']
-            da = ['DoubleMuon_Run2016B_PromptReco_v2']
+            dy = ['DYJetsToLL_M50_mm', 'ZZTo4L_mm', 'ZZTo2L2Q_mm', 'WZTo3LNu_mm', 'WZTo2L2Q_mm']
+            tt = ['TTJets_DiLepton_mm', 'WWTo2L2Nu_mm', 'WJetsToLNu_mm']
+            da = ['DoubleMuon_Run2016B_PromptReco_v2NEW']
             channel = 'M'           
         plot_name = 'Data'
         destination = 'Not_BKG_Subtraction'
@@ -113,13 +113,12 @@ if __name__ == "__main__":
         treeDA = Sample.Tree(helper.selectSamples(opts.sampleFile, da, 'da'), 'da', 1)
     else:
         if doee:
-            dy = ['DYJetsToLL_M50_ee']
+            dy = ['DYJetsToLL_M50_ee', 'ZZTo4L_ee', 'ZZTo2L2Q_ee', 'WZTo3LNu_ee', 'WZTo2L2Q_ee']
             channel = 'E'
         else:
-            dy = ['DYJetsToLL_M50_mm']
+            dy = ['DYJetsToLL_M50_mm', 'ZZTo4L_mm', 'ZZTo2L2Q_mm', 'WZTo3LNu_mm', 'WZTo2L2Q_mm']
             channel = 'M'
         plot_name =  'DY'
-        destination = 'Not_BKG_Subtraction'
         treeDY = Sample.Tree(helper.selectSamples(opts.sampleFile, dy, 'dy'), 'dy', 0)
 
     if doBKGSubtraction:
@@ -132,10 +131,10 @@ if __name__ == "__main__":
         uParaPuppi = ['((-metPuppi_pt*sin(metPuppi_phi)- zll_pt*sin(zll_phi))*zll_pt*sin(zll_phi)+(-metPuppi_pt*cos(metPuppi_phi) - zll_pt*cos(zll_phi))*zll_pt*cos(zll_phi))/zll_pt + zll_pt'] 
     else:
         trees = [treeDY]
-        direction = [plot_name+'tgraphs']  
-        #direction = [plot_name+'tgraphs',plot_name+'_up_tgraphs_jes_DY', plot_name+'_down_tgraphs_jes_DY']  
-        updown = [""]  
-        #updown = ["","_up", "_down"]  
+        #direction = [plot_name+'tgraphs']  
+        direction = [plot_name+'tgraphs',plot_name+'_up_tgraphs_jes_DY', plot_name+'_down_tgraphs_jes_DY']  
+        #updown = [""]  
+        updown = ["","_up", "_down"]  
         uPerp = ['((-met_pt*sin(met_phi)- zll_pt*sin(zll_phi))*zll_pt*cos(zll_phi) - (-met_pt*cos(met_phi) - zll_pt*cos(zll_phi))*zll_pt*sin(zll_phi))/zll_pt', 
                 '((-met_jecUp_pt*sin(met_jecUp_phi)- zll_pt*sin(zll_phi))*zll_pt*cos(zll_phi) - (-met_jecUp_pt*cos(met_jecUp_phi) - zll_pt*cos(zll_phi))*zll_pt*sin(zll_phi))/zll_pt',
                 '((-met_jecDown_pt*sin(met_jecDown_phi)- zll_pt*sin(zll_phi))*zll_pt*cos(zll_phi) - (-met_jecDown_pt*cos(met_jecDown_phi) - zll_pt*cos(zll_phi))*zll_pt*sin(zll_phi))/zll_pt']
@@ -149,8 +148,8 @@ if __name__ == "__main__":
                       '((-metPuppi_jecUp_pt*sin(metPuppi_jecUp_phi)- zll_pt*sin(zll_phi))*zll_pt*sin(zll_phi)+(-metPuppi_jecUp_pt*cos(metPuppi_jecUp_phi) - zll_pt*cos(zll_phi))*zll_pt*cos(zll_phi))/zll_pt + zll_pt',
                       '((-metPuppi_jecDown_pt*sin(metPuppi_jecDown_phi)- zll_pt*sin(zll_phi))*zll_pt*sin(zll_phi)+(-metPuppi_jecDown_pt*cos(metPuppi_jecDown_phi)-zll_pt*cos(zll_phi))*zll_pt*cos(zll_phi))/zll_pt+ zll_pt']
         
-        updown = [""]  
-        #updown = ["","_up", "_down"]  
+        #updown = [""]  
+        updown = ["","_up", "_down"]  
       #  uPerpRaw = ['((-met_rawPt*sin(met_rawPhi)- zll_pt*sin(zll_phi))*zll_pt*cos(zll_phi) - (-met_rawPt*cos(met_rawPhi) - zll_pt*cos(zll_phi))*zll_pt*sin(zll_phi))/zll_pt', 
       #          '((-met_jecUp_rawPt*sin(met_jecUp_rawPhi)- zll_pt*sin(zll_phi))*zll_pt*cos(zll_phi) - (-met_jecUp_rawPt*cos(met_jecUp_rawPhi) - zll_pt*cos(zll_phi))*zll_pt*sin(zll_phi))/zll_pt',
       #          '((-met_jecDown_rawPt*sin(met_jecDown_rawPhi)- zll_pt*sin(zll_phi))*zll_pt*cos(zll_phi) - (-met_jecDown_rawPt*cos(met_jecDown_rawPhi) - zll_pt*cos(zll_phi))*zll_pt*sin(zll_phi))/zll_pt']
@@ -164,18 +163,19 @@ if __name__ == "__main__":
       #                '((-metPuppi_jecUp_rawPt*sin(metPuppi_jecUp_rawPhi)- zll_pt*sin(zll_phi))*zll_pt*sin(zll_phi)+(-metPuppi_jecUp_rawPt*cos(metPuppi_jecUp_rawPhi) - zll_pt*cos(zll_phi))*zll_pt*cos(zll_phi))/zll_pt + zll_pt',
       #                '((-metPuppi_jecDown_rawPt*sin(metPuppi_jecDown_rawPhi)- zll_pt*sin(zll_phi))*zll_pt*sin(zll_phi)+(-metPuppi_jecDown_rawPt*cos(metPuppi_jecDown_rawPhi)-zll_pt*cos(zll_phi))*zll_pt*cos(zll_phi))/zll_pt+ zll_pt']
     
-    variable = [uPara]
-    #variable = [uPerp, uPara]
+    #variable = [uPara]
+    variable = [uPerp, uPara]
     #variable = [uPerp, uPara, uPerpPuppi, uParaPuppi]
-    variablename = ['_uPara']
-    #variablename = ['_uPerp', '_uPara']
+    #variablename = ['_uPara']
+    variablename = ['_uPerp', '_uPara']
     #variablename = ['_uPerp', '_uPara', '_uPerpPuppi', '_uParaPuppi']
     #dependences = ['met_sumEt-zll_pt']
-    dependences = ['nVert']
+    #dependences = ['nVert']
+    dependences = ['zll_pt']
     #dependences = ['zll_pt',   'nVert', 'met_sumEt-zll_pt']
     dependence = "zll_pt"
     print 'Trees successfully loaded...'
-    lumi = 0.6691
+    lumi = 0.803015796
 
    
     gROOT.ProcessLine('.L include/tdrstyle.C')
@@ -194,9 +194,9 @@ if __name__ == "__main__":
             False)
     regions.append(region)                                 
     
-    vtxbins = [[0, 5],[5, 7],[7, 9], [9, 11],[11 ,13],[13, 15],[15, 18], [18, 25], [25, 40]]
-    qtbins = [[0, 20], [20, 40],[40, 60],  [60, 80],[80, 100], [100, 120], [120, 140], [140, 175], [175, 225], [225, 320],[320,600]]
-    sumetbins = [[300, 400], [400, 500],[500, 600], [600, 700], [700, 800],[800, 900],  [900, 1000],[1000, 1100], [1100, 1200], [1200, 1350], [1350, 1600], [1600, 2500]]
+    vtxbins = [[0, 6],[6, 8],[8, 10], [10, 12],[12 ,14],[14, 16],[16, 20], [20,  40]]
+    qtbins = [[0, 15], [15, 30],[30, 51],  [51, 65],[65, 80],[80,110], [110, 140], [140, 170], [170, 200],[200, 250] ,[250, 330]]
+    sumetbins = [ [400, 500],[500, 600], [600, 700], [700, 800],[800, 900],  [900, 1000],[1000, 1100], [1100, 1300],  [1300, 1600], [1600, 2500]]
 
     cutsList = []
     binposition = []
@@ -217,7 +217,7 @@ if __name__ == "__main__":
         if dependence == 'met_sumEt-zll_pt':
             bins = sumetbins           
         for dire in direction:
-            f2 = TFile(destination+dire+channel + "Zll80X.root", "UPDATE");   
+            f2 = TFile(dire+channel + "ZllResolution.root", "UPDATE");   
             upd = updown[direction.index(dire)]
             for vari in variable:
                 var = vari[direction.index(dire)]
@@ -252,20 +252,20 @@ if __name__ == "__main__":
                         for tree in trees:
                             if doBKGSubtraction:
                                 if tree.name == 'tt':
-                                    tt_hist = tree.getTH1F(lumi, variablename[variable.index(vari)]+i+'tt', var,75, -100., 100.,  i, '', variablename[variable.index(vari)]+i)    
+                                    tt_hist = tree.getTH1F(lumi, variablename[variable.index(vari)]+i+'tt', var,65, -100., 100.,  i, '', variablename[variable.index(vari)]+i)    
                                     tt_Hist = RooDataHist("tt","tt"+i,RooArgList(x),tt_hist)                 
                                     m_tt = tt_hist.GetMean()
                                     um_tt = tt_hist.GetMean()-tt_hist.GetRMS()
                                     uM_tt = tt_hist.GetMean()+tt_hist.GetRMS()
                                 if tree.name == 'da':
-                                    data_hist = tree.getTH1F(lumi, variablename[variable.index(vari)]+i+'da', var,75, -100., 100.,  i, '', variablename[variable.index(vari)]+i)
+                                    data_hist = tree.getTH1F(lumi, variablename[variable.index(vari)]+i+'da', var,65, -100., 100.,  i, '', variablename[variable.index(vari)]+i)
                                     data_Hist = RooDataHist("da","da"+i, RooArgList(x), data_hist)                  
                                     m_da = data_hist.GetMean()  
                                     um_da = data_hist.GetMean()-data_hist.GetRMS()
                                     uM_da = data_hist.GetMean()+data_hist.GetRMS()                                                   
                             if tree.name == 'dy':
                                 if doBKGSubtraction:
-                                    dy_hist = tree.getTH1F(lumi, variablename[variable.index(vari)]+i+'dy', var,75, -100., 100.,  i, '', variablename[variable.index(vari)]+i)
+                                    dy_hist = tree.getTH1F(lumi, variablename[variable.index(vari)]+i+'dy', var,65, -100., 100.,  i, '', variablename[variable.index(vari)]+i)
                                 else:
                                     if dependence == 'met_sumEt-zll_pt':
                                         if ((cutsList.index(i) == 2) or (cutsList.index(i) == 3)):

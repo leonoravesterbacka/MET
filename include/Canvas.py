@@ -1,7 +1,7 @@
 from ROOT import TCanvas, TLegend, TPad, TLine, TLatex, TH1F, THStack, TGraphErrors, TLine, TPaveStats, TGraph, TArrow
 import ROOT as r
 import os, copy
-from array import array
+
 class Canvas:
    'Common base class for all Samples'
 
@@ -30,7 +30,7 @@ class Canvas:
 
    def banner(self, isData, lumi):
     
-      latex = TLatex()
+      latex = TLatex()                                
       latex.SetNDC();
       latex.SetTextAngle(0);
       latex.SetTextColor(r.kBlack);
@@ -47,12 +47,12 @@ class Canvas:
       latexb.SetTextAlign(31);
       latexb.SetTextSize(0.03);
  
-      if(isData == False):
+      if(isData):
         latexb.DrawLatex(0.33, 0.93, "Preliminary")
-        text_lumi = "MC-76X"
       else:
         latexb.DrawLatex(0.33, 0.93, "Simulation")
-        text_lumi = str(lumi) + " fb^{-1} (13 TeV)"
+
+      text_lumi = "0.8 fb^{-1} (13 TeV, 2016)"
       latexc = TLatex()
       latexc.SetNDC();
       latexc.SetTextAngle(0);
@@ -60,9 +60,20 @@ class Canvas:
       latexc.SetTextFont(42);
       latexc.SetTextAlign(31);
       latexc.SetTextSize(0.05);
-      latexc.DrawLatex(0.90, 0.93, text_lumi)
+      latexc.DrawLatex(0.90, 0.93, text_lumi)          
 
-   def banner2(self, isData, lumi):
+      latexd = TLatex()
+      latexd.SetNDC();
+      latexd.SetTextAngle(90);
+      latexd.SetTextColor(r.kBlack);
+      latexd.SetTextFont(42);
+      latexd.SetTextAlign(31);
+      latexd.SetTextSize(0.04);
+      latexd.DrawLatex(0.035, 0.93, "Events / 5 GeV")          
+
+
+
+   def banner2(self, isData, chisquare):
     
       latex = TLatex()
       latex.SetNDC();
@@ -81,12 +92,12 @@ class Canvas:
       latexb.SetTextAlign(31);
       latexb.SetTextSize(0.03);
  
-      if(isData == False):
+      if(isData):
         latexb.DrawLatex(0.37, 0.93, "Preliminary")
-        text_lumi = "MC-76X"
       else:
         latexb.DrawLatex(0.37, 0.93, "Simulation")
-        text_lumi = str(lumi) + " fb^{-1} (13 TeV)"
+
+      text_lumi = "0.8 fb^{-1} (13 TeV)"
       latexc = TLatex()
       latexc.SetNDC();
       latexc.SetTextAngle(0);
@@ -95,6 +106,7 @@ class Canvas:
       latexc.SetTextAlign(31);
       latexc.SetTextSize(0.05);
       latexc.DrawLatex(0.90, 0.93, text_lumi)
+      latexc.DrawLatex(0.85, 0.8,  "#chi^{2} = %.2f " %(chisquare))
 
    def addBand(self, x1, y1, x2, y2, color, opacity):
 
@@ -183,44 +195,21 @@ class Canvas:
       if not os.path.exists(d):
          os.makedirs(d)
 
-   def saveRatio(self, legend, isData, log, lumi, ratiograph, binposition, r_ymin=0, r_ymax=2):
+   def saveRatio(self, legend, isData, log, lumi, hdata, hMC, r_ymin=0, r_ymax=2):
 
       self.myCanvas.cd()
 
+      pad1 = TPad("pad1", "pad1", 0, 0.2, 1, 1.0) 
+      pad1.SetBottomMargin(0.12)
+      pad1.Draw()
+      pad2 = TPad("pad2", "pad2", 0, 0.05, 1, 0.2)
+      pad2.SetTopMargin(0.1);
+      pad2.SetBottomMargin(0.3);
+      pad2.Draw();
 
-      padDown = TPad("padDown", "padDown",0,0,1,0.2)
-      padDown.SetTopMargin(0.1)
-      padDown.SetBottomMargin(0.3)
-      self.myCanvas.cd()                                
-      padDown.Draw()                                    
-      ratio = TGraph(len(binposition), array("f", binposition), array("f", ratiograph))
-      ratio.SetTitle("")
-      ratio.GetYaxis().SetRangeUser(r_ymin, r_ymax);
-      ratio.GetYaxis().SetTitle("Ratio");
-      ratio.GetYaxis().CenterTitle();
-      ratio.GetYaxis().SetLabelSize(0.12);
-      ratio.GetXaxis().SetLabelSize(0.12);
-      ratio.GetYaxis().SetTitleOffset(0.3);
-      ratio.GetYaxis().SetNdivisions(4);
-      ratio.GetYaxis().SetTitleSize(0.14);
-      ratio.GetXaxis().SetTitleSize(0.14);
-      ratio.GetXaxis().SetTitle('');
-      ratio.SetMarkerStyle(20);
-      ratio.SetMarkerSize(0.6*ratio.GetMarkerSize());
-      ratio.SetMarkerColor(r.kGray+3);
-      ratio.SetLineColor(r.kGray+3);
-
-      padDown.cd()                              
-      ratio.Draw()                                                                              
-
-      padTop = TPad("padTop", "padTop", 0,0.3,1,1)
-      padTop.SetBottomMargin(0.1)
-      self.myCanvas.cd()
-      padTop.Draw()
-      padTop.cd()  
-      
+      pad1.cd()
       if(log):
-          padTop.SetLogy(1)
+          pad1.SetLogy(1)
 
       for i in range(0, len(self.histos)):
           if(self.ToDraw[i] != 0):
@@ -245,22 +234,56 @@ class Canvas:
           lat.SetTextSize(latex[-1])
           lat.SetTextFont(latex[-2])
           lat.DrawLatex(latex[0], latex[1], latex[2])
-          
+  
       
-      self.banner(isData, lumi)   
+      ratio = copy.deepcopy(hdata.Clone("ratio"))
+      ratio.Divide(hMC)
+      #ratio = copy.deepcopy(hRatio.Clone("ratio"))  
 
-      self.myCanvas.cd()                                
+      ratio.SetTitle("")
+      ratio.GetYaxis().SetRangeUser(r_ymin, r_ymax);
+      ratio.GetYaxis().SetTitle("Data / MC")
+      ratio.GetYaxis().CenterTitle();
+      ratio.GetYaxis().SetLabelSize(0.22);
+      ratio.GetXaxis().SetLabelSize(0.22);
+      ratio.GetYaxis().SetTitleOffset(0.3);
+      ratio.GetYaxis().SetNdivisions(4);
+      ratio.GetYaxis().SetTitleSize(0.22);
+      ratio.GetXaxis().SetTitleSize(0.22);
+      ratio.SetMarkerSize(0.6*ratio.GetMarkerSize());
+      ratio.GetXaxis().SetTitle('');
+      ratio2 = copy.deepcopy(hdata.Clone("ratio2"))
+      for i in range(1, ratio2.GetNbinsX()):
+          ratio2.SetBinContent(i, 1.0)      
+          ratio2.SetBinError(i, ratio.GetBinError(i))      
+    
+      ratio2.SetMarkerSize(0.);
+      #ratio2.SetMarkerColor(r.kGray+3);
+      #ratio2.SetLineColor(r.kGray+1);
+
+
+      pad2.cd();  
+      line = TLine(ratio.GetBinLowEdge(1), 1, ratio.GetBinLowEdge(ratio.GetNbinsX()+1), 1)
+      line.SetLineColor(r.kRed)
+      ratio.Draw()
+      line.Draw()
+      ratio.Draw("E,SAME")
+ #     ratio2.Draw("E4,SAME")
+
+      pad1.cd()
+      self.banner(isData, lumi)
       for plotName in self.plotNames:
           path = 'plots/'+plotName
           self.ensurePath(path)
-          self.myCanvas.SaveAs(path)   
-      
+          self.myCanvas.SaveAs(path)
+
+      del ratio2  
+      #del self.myCanvas
 
 
-   def save(self, legend, isData, log, lumi):
+   def save(self, legend, isData, log,chisquare):
 
       self.myCanvas.cd()
-      
       if(log):
           self.myCanvas.GetPad(0).SetLogy(1)
      
@@ -297,9 +320,9 @@ class Canvas:
           self.makeLegend()
           self.myLegend.Draw()
 
-      self.banner2(isData, lumi)
+      self.banner2(isData, chisquare )
       for plotName in self.plotNames:
-          path = '../plots/'+plotName
+          path = 'plots/'+plotName
           self.ensurePath(path)
           self.myCanvas.SaveAs(path)
 

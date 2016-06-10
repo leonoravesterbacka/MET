@@ -94,19 +94,17 @@ if __name__ == "__main__":
     print 'Going to load DATA and MC trees...'
     channel = 'gamma'
     if doBKGSubtraction: 
-        bkgDatasets = ['TTGJets',  'WGJets', 'ZGJets','WJetsToLNu_HT100to200_ext', 'WJetsToLNu_HT200to400', 'WJetsToLNu_HT400to600', 'WJetsToLNu_HT600to800', 'WJetsToLNu_HT800to1200', 'WJetsToLNu_HT1200to2500', 'WJetsToLNu_HT2500toInf']
-        gjetsDatasets = ['QCD_HT200to300_ext', 'QCD_HT300to500', 'QCD_HT500to700','QCD_HT700to1000', 'QCD_HT1000to1500', 'QCD_HT1500to2000', 'QCD_HT2000toInf','GJets_HT40to100', 'GJets_HT100to200', 'GJets_HT200to400', 'GJets_HT400to600', 'GJets_HT600toInf']
+        bkgDatasets = ['QCD_HT200to300_ext', 'QCD_HT300to500', 'QCD_HT500to700','QCD_HT700to1000', 'QCD_HT1000to1500', 'QCD_HT1500to2000', 'QCD_HT2000toInf', 'TTGJets', 'ZGJets','ZGJets40-130', 'WGToLNuG', 'WJetsToLNu_HT100to200_ext','WJetsToLNu_HT200to400', 'WJetsToLNu_HT400to600', 'WJetsToLNu_HT600to800', 'WJetsToLNu_HT800to1200', 'WJetsToLNu_HT1200to2500', 'WJetsToLNu_HT2500toInf']
+        gjetsDatasets = ['ZGTo2LG' ,'GJets_HT40to100', 'GJets_HT100to200', 'GJets_HT200to400', 'GJets_HT400to600', 'GJets_HT600toInf']
         daDatasets = ['SinglePhoton_Run2016B_PromptReco_v2NEW'] 
         plot_name = 'Data'
-        destination = 'Not_BKG_Subtraction'
         treeBKG = Sample.Tree(helper.selectSamples(opts.sampleFile, bkgDatasets, 'bkg'), 'bkg'  , 0)
         treeGJETS = Sample.Tree(helper.selectSamples(opts.sampleFile, gjetsDatasets, 'gjets'), 'gjets'  , 0)
         treeDA = Sample.Tree(helper.selectSamples(opts.sampleFile, daDatasets, 'da'), 'da', 1)
     else:
-        gjetsDatasets = [ 'QCD_HT200to300_ext', 'QCD_HT300to500', 'QCD_HT500to700','QCD_HT700to1000', 'QCD_HT1000to1500', 'QCD_HT1500to2000', 'QCD_HT2000toInf','GJets_HT40to100', 'GJets_HT100to200', 'GJets_HT200to400', 'GJets_HT400to600', 'GJets_HT600toInf']
+        gjetsDatasets = [ 'ZGTo2LG', 'GJets_HT40to100', 'GJets_HT100to200', 'GJets_HT200to400', 'GJets_HT400to600', 'GJets_HT600toInf']
         treeGJETS = Sample.Tree(helper.selectSamples(opts.sampleFile, gjetsDatasets, 'gjets'), 'gjets'  , 0)
         plot_name =  'GJets'
-        destination = 'Not_BKG_Subtraction'
 
     if doBKGSubtraction:
         trees = [treeBKG, treeGJETS, treeDA] 
@@ -118,8 +116,10 @@ if __name__ == "__main__":
         uParaPuppi = ['((-metPuppi_pt*sin(metPuppi_phi)- gamma_pt*sin(gamma_phi))*gamma_pt*sin(gamma_phi)+(-metPuppi_pt*cos(metPuppi_phi) - gamma_pt*cos(gamma_phi))*gamma_pt*cos(gamma_phi))/gamma_pt + gamma_pt']
     else:      
         trees = [treeGJETS]
-        direction = [plot_name+'tgraphs',plot_name+'_up_tgraphs_jes_GJets', plot_name+'_down_tgraphs_jes_GJets']  
-        updown = ["","_up", "_down"]  
+        direction = [plot_name+'tgraphs']  
+        #direction = [plot_name+'tgraphs',plot_name+'_up_tgraphs_jes_GJets', plot_name+'_down_tgraphs_jes_GJets']  
+        updown = [""]  
+        #updown = ["","_up", "_down"]  
         uPerp = ['((-met_pt*sin(met_phi)- gamma_pt*sin(gamma_phi))*gamma_pt*cos(gamma_phi) - (-met_pt*cos(met_phi) - gamma_pt*cos(gamma_phi))*gamma_pt*sin(gamma_phi))/gamma_pt', 
             '((-met_JetEnUp_Pt*sin(met_JetEnUp_Phi)- gamma_pt*sin(gamma_phi))*gamma_pt*cos(gamma_phi) - (-met_JetEnUp_Pt*cos(met_JetEnUp_Phi) - gamma_pt*cos(gamma_phi))*gamma_pt*sin(gamma_phi))/gamma_pt',
             '((-met_JetEnDown_Pt*sin(met_JetEnDown_Phi)- gamma_pt*sin(gamma_phi))*gamma_pt*cos(gamma_phi) - (-met_JetEnDown_Pt*cos(met_JetEnDown_Phi) - gamma_pt*cos(gamma_phi))*gamma_pt*sin(gamma_phi))/gamma_pt']
@@ -134,14 +134,15 @@ if __name__ == "__main__":
             '((-metPuppi_JetEnDown_Pt*sin(metPuppi_JetEnDown_Phi)- gamma_pt*sin(gamma_phi))*gamma_pt*sin(gamma_phi)+(-metPuppi_JetEnDown_Pt*cos(metPuppi_JetEnDown_Phi)-gamma_pt*cos(gamma_phi))*gamma_pt*cos(gamma_phi))/gamma_pt+ gamma_pt']
 
         
-    variable = [uPerp, uPara]
+    variable = [uPerp]
     #variable = [uPerp, uPara, uPerpPuppi, uParaPuppi]
-    variablename = ['_uPerp', '_uPara']
+    variablename = ['_uPerp']
     #variablename = ['_uPerp', '_uPara', '_uPerpPuppi', '_uParaPuppi']
-    dependences = ['gamma_pt', 'met_sumEt-gamma_pt', 'nVert']
+    #dependences = [ 'met_sumEt-gamma_pt']
+    dependences = ['gamma_pt']
     dependence = "gamma_pt"
     print 'Trees successfully loaded...'
-    lumi = 0.6237
+    lumi = 0.803015796
 
    
     gROOT.ProcessLine('.L include/tdrstyle.C')
@@ -161,13 +162,14 @@ if __name__ == "__main__":
     regions.append(GammaJets)                                 
     
     vtxbins = [[0, 5],[5, 7],[7, 9], [9, 11],[11 ,13],[13, 15],[15, 18], [18, 25], [25, 40]]
-    qtbins = [[0, 20], [20, 40],[40, 60],  [60, 80],[80, 100], [100, 120], [120, 140], [140, 175], [175, 225], [225, 320],[320,600]]
+    #qtbins = [[0, 20], [20, 40],[40, 60],  [60, 80],[80, 100], [100, 120], [120, 140], [140, 190], [190, 240], [240, 300],[300,600]]
+    qtbins = [[0, 15], [15, 30],[30, 51],  [51, 65],[65, 80],[80,110], [110, 140], [140, 170], [170, 200],[200, 250] ,[250, 330]]
     sumetbins = [[300, 400], [400, 500],[500, 600], [600, 700], [700, 800],[800, 900],  [900, 1000],[1000, 1100], [1100, 1200], [1200, 1350], [1350, 1600], [1600, 2500]]
 
     cutsList = []
     binposition = []
     binerror = []
-    x = RooRealVar("x", "x", -90, 90)
+    x = RooRealVar("x", "x", -80, 80)
 
     g_w = RooRealVar("g_w", "width Gaus", 10.,0. , 100., "GeV") # sigma
     gamma_Z0 = RooRealVar("gamma_Z0_U", "Z0 width", 2.3, 0., 100., "GeV") # gamma
@@ -181,7 +183,7 @@ if __name__ == "__main__":
             bins = sumetbins           
         
         for dire in direction:
-            f2 = TFile(destination+dire+channel + "gjets80XForResolution.root", "UPDATE");   
+            f2 = TFile(dire+ "gjetsResolution.root", "UPDATE");   
             upd = updown[direction.index(dire)]
             for vari in variable:
                 var = vari[direction.index(dire)]
@@ -214,19 +216,19 @@ if __name__ == "__main__":
                         for tree in trees:
                             if doBKGSubtraction:
                                 if tree.name == 'bkg':
-                                    bkg_hist = tree.getTH1F(lumi, variablename[variable.index(vari)]+i+'bkg', var,150, -90., 90.,  i, '', variablename[variable.index(vari)]+i)    
+                                    bkg_hist = tree.getTH1F(lumi, variablename[variable.index(vari)]+i+'bkg', var,90, -80., 80.,  i, '', variablename[variable.index(vari)]+i)    
                                     bkg_Hist = RooDataHist("bkg","bkg"+i,RooArgList(x),bkg_hist)                 
                                     m_bkg = bkg_hist.GetMean()
                                     um_bkg = bkg_hist.GetMean()-bkg_hist.GetRMS()
                                     uM_bkg = bkg_hist.GetMean()+bkg_hist.GetRMS()
                                 if tree.name == 'da':
-                                    data_hist = tree.getTH1F(lumi, variablename[variable.index(vari)]+i+'da', var,150, -90., 90.,  i, '', variablename[variable.index(vari)]+i)
+                                    data_hist = tree.getTH1F(lumi, variablename[variable.index(vari)]+i+'da', var,90, -80., 80.,  i, '', variablename[variable.index(vari)]+i)
                                     data_Hist = RooDataHist("da","da"+i, RooArgList(x), data_hist)                  
                                     m_da = data_hist.GetMean()  
                                     um_da = data_hist.GetMean()-data_hist.GetRMS()
                                     uM_da = data_hist.GetMean()+data_hist.GetRMS()                                                   
                             if tree.name == 'gjets':
-                                gjets_hist = tree.getTH1F(lumi, variablename[variable.index(vari)]+i+'gjets', var,150, -90., 90.,  i, '', variablename[variable.index(vari)]+i)
+                                gjets_hist = tree.getTH1F(lumi, variablename[variable.index(vari)]+i+'gjets', var,90, -80., 80.,  i, '', variablename[variable.index(vari)]+i)
                                 gjets_Hist = RooDataHist("gjets","gjets"+i, RooArgList(x), gjets_hist)
                                 gjets_BkgHist = RooDataHist()                                                          
                                 m_gjets = gjets_hist.GetMean() 

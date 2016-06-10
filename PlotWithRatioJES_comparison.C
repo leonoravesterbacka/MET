@@ -60,27 +60,27 @@ TGraphAsymmErrors JESerror(TH1F *, TH1F *, TH1F *, TH1F * );
 void PlotWithRatioEEMuMuGJetsComparison(TCanvas *c1, TGraphErrors *mcdyee,  TGraphErrors *datadyee,  TGraphErrors *mcdymm,  TGraphErrors *datadymm,TGraphErrors *mcdygg,  TGraphErrors *datadygg,  TGraphErrors *mcdyeeup, TGraphErrors *mcdyeedown,  TGraphErrors *mcdymmup, TGraphErrors *mcdymmdown,TGraphErrors *mcdyggup, TGraphErrors *mcdyggdown,   TString EjeX, TString histogramaname) {
 
 TH1::SetDefaultSumw2();
-  c1->cd(); 
-   //Since all the histograms should have the same binning, take the info from one of them
-   double xmin=mcdyee->GetX()[0];
-   double xmax=mcdyee->GetX()[mcdyee->GetN()-1];
-   double nbins=mcdyee->GetN();
-  
-   TH1F * hdatadyee= new TH1F("","", nbins,xmin,xmax);
-   TH1F * hmcdyee= new TH1F("hmcdyee","hmcdyee", nbins,xmin,xmax);
-   TH1F * hmcdyeeup= new TH1F("hmcdyeeup","hmcdyeeup", nbins,xmin,xmax);
-   TH1F * hmcdyeedown= new TH1F("hmcdyeedown","hmcdyeedown", nbins,xmin,xmax);
-   TH1F * hdatadymm= new TH1F("hdatadymm","hdatadymm", nbins,xmin,xmax);
-   TH1F * hmcdymm= new TH1F("hmcdymm","hdatadymm", nbins,xmin,xmax);
-   TH1F * hmcdymmup= new TH1F("hmcdymmup","hmcdymmup", nbins,xmin,xmax);
-   TH1F * hmcdymmdown= new TH1F("hmcdymmdown","hmcdymmdown", nbins,xmin,xmax) ; 
-   TH1F * hdatadygg= new TH1F("hdatadygg","hdatadygg", nbins,xmin,xmax);
-   TH1F * hmcdygg= new TH1F("hmcdygg","hdatadygg", nbins,xmin,xmax);
-   TH1F * hmcdyggup= new TH1F("hmcdyggup","hmcdyggup", nbins,xmin,xmax);
-   TH1F * hmcdyggdown= new TH1F("hmcdyggdown","hmcdyggdown", nbins,xmin,xmax) ; 
+  c1->cd();
+   Float_t xbin[] = { 20,28,36, 44,52,60, 68,76, 84,92,100, 120, 150, 175, 200, 225,250, 275, 305, 335, 365, 395, 430, 500}; 
+   double nbins=23.;
+ // Float_t xbin[] = { 0, 15, 30, 51, 65, 80, 110, 140,170, 200,250, 330};
+  //  double nbins=11.;
+
+
+   TH1F * hdatadyee= new TH1F("","", nbins,xbin);
+   TH1F * hmcdyee= new TH1F("hmcdyee","hmcdyee", nbins,xbin);
+   TH1F * hmcdyeeup= new TH1F("hmcdyeeup","hmcdyeeup", nbins, xbin);
+   TH1F * hmcdyeedown= new TH1F("hmcdyeedown","hmcdyeedown", nbins,xbin);
+   TH1F * hdatadymm= new TH1F("hdatadymm","hdatadymm", nbins,xbin);
+   TH1F * hmcdymm= new TH1F("hmcdymm","hdatadymm", nbins,xbin);
+   TH1F * hmcdymmup= new TH1F("hmcdymmup","hmcdymmup", nbins,xbin);
+   TH1F * hmcdymmdown= new TH1F("hmcdymmdown","hmcdymmdown", nbins, xbin) ; 
+   TH1F * hdatadygg= new TH1F("hdatadygg","hdatadygg", nbins,xbin);
+   TH1F * hmcdygg= new TH1F("hmcdygg","hdatadygg", nbins,xbin);
+   TH1F * hmcdyggup= new TH1F("hmcdyggup","hmcdyggup", nbins,xbin);
+   TH1F * hmcdyggdown= new TH1F("hmcdyggdown","hmcdyggdown", nbins,xbin) ; 
    
-   for (int i = 0, n = datadyee->GetN(); i < n; ++i) {
-       
+   for (int i = 0, n = nbins; i < n; ++i) {
        hdatadyee->SetBinContent(i+1,datadyee->GetY()[i]);
        hmcdyee->SetBinContent(i+1,mcdyee->GetY()[i]);
        hmcdyeedown->SetBinContent(i+1,mcdyeedown->GetY()[i]);
@@ -135,12 +135,9 @@ TH1::SetDefaultSumw2();
     hdatadyee->GetXaxis()->SetLabelSize(1); //in pixels
     hdatadyee->GetYaxis()->SetLabelFont(43);
     hdatadyee->GetYaxis()->SetLabelSize(16);
-    hdatadyee->GetXaxis()->SetTitleFont(43); //font in pixels
-    hdatadyee->GetXaxis()->SetTitleSize(20); //in pixels  
     hdatadyee->GetYaxis()->SetTitleFont(43); //font in pixels
     hdatadyee->GetYaxis()->SetTitleSize(20); //in pixels
-    hdatadyee->GetXaxis()->SetTitleOffset(2.7);
-    //hdatadyee->GetYaxis()->SetTitleOffset(1.9);
+    hdatadyee->GetXaxis()->SetTitleOffset(3.3);
     hdatadyee->SetFillColor(54);
     hdatadyee->SetFillStyle(3345);                                                                                                                                    
 
@@ -152,20 +149,16 @@ TH1::SetDefaultSumw2();
         line->SetLineColor (kBlack); line -> SetLineStyle(2); line->Draw();
     }                                                                                                                                                                                                                        
 
-if (histogramaname=="met_uPara_over_qt") ylabel="-<u_{||}/q_{T}> ";
+if (histogramaname=="met_uPara_over_qt") ylabel="   -<u_{||}/q_{T}> ";
 if (histogramaname=="met_uPara_vs_zll_pt") ylabel="#sigma ( u_{||} ) [GeV]";
 if (histogramaname=="met_uPerp_vs_zll_pt") ylabel="#sigma ( u_{#perp}  ) [GeV]";
-if (histogramaname=="met_uPara_vs_met_sumEt") ylabel="#sigma ( u_{||}  ) [GeV]";
-if (histogramaname=="met_uPerp_vs_met_sumEt")ylabel="#sigma ( u_{#perp}  ) [GeV]";
+if (histogramaname=="met_uPara_vs_met_sumEt-zll_pt") ylabel="#sigma ( u_{||}  ) [GeV]";
+if (histogramaname=="met_uPerp_vs_met_sumEt-zll_pt")ylabel="#sigma ( u_{#perp}  ) [GeV]";
 if (histogramaname=="met_uPara_vs_nVert")ylabel="#sigma ( u_{||}  ) [GeV]";
 if (histogramaname=="met_uPerp_vs_nVert")ylabel="#sigma ( u_{#perp}  ) [GeV]";
 if (histogramaname.Contains("uPara_vs")) hdatadyee->GetYaxis()->SetRangeUser(0.,40);
-if (histogramaname.Contains("uPerp")) hdatadyee->GetYaxis()->SetRangeUser(9.7,30);
-if (histogramaname.Contains("over")) hdatadyee->GetYaxis()->SetRangeUser(0.6,1.2);  
-    hdatadyee->GetYaxis()->SetLabelFont(43);
-    hdatadyee->GetYaxis()->SetLabelSize(16);
-    hdatadyee->GetYaxis()->SetTitleFont(43); //fon
-    hdatadyee->GetYaxis()->SetTitleSize(20); //in 
+if (histogramaname.Contains("uPerp")) hdatadyee->GetYaxis()->SetRangeUser(0.,40);
+if (histogramaname.Contains("over")) hdatadyee->GetYaxis()->SetRangeUser(0.59,1.2);  
    
     hdatadymm->Draw("e1, X0 same");
     hdatadyee->Draw("AXIS");
@@ -179,17 +172,19 @@ if (histogramaname.Contains("over")) hdatadyee->GetYaxis()->SetRangeUser(0.6,1.2
     
     TLegend* leg(0);
     leg = new TLegend(0.15,0.65,0.35,0.85);
+    if (histogramaname.Contains("over")){
+        leg = new TLegend(0.55,0.15,0.85,0.35);
+    }
     leg->SetBorderSize(0);
     leg->SetTextFont(42);
     leg->SetTextSize(0.04);
     leg->SetFillColor(0);
-    leg->AddEntry(hdatadymm, "Z#rightarrow #mu#mu", "lp");
-    leg->AddEntry(hdatadyee, "Z#rightarrow ee", "lp");
-    leg->AddEntry(hdatadygg, "#gamma + jets", "lp");
+    leg->AddEntry(hdatadymm, "Data  Z#rightarrow #mu#mu", "lp");
+    leg->AddEntry(hdatadyee, "Data  Z#rightarrow ee", "lp");
+    leg->AddEntry(hdatadygg, "Data  #gamma + jets", "lp");
 
     leg->Draw();
     c1->Modified();
-                                                                   
     c1->cd();
  
     TPad *pad2 = new TPad("pad2","pad2",0,0,1,0.3);
@@ -197,9 +192,8 @@ if (histogramaname.Contains("over")) hdatadyee->GetYaxis()->SetRangeUser(0.6,1.2
     pad2->SetBottomMargin(0.2);
     pad2->Draw();
     pad2->cd();
-
     
-    ratiodyee->GetYaxis()->SetTitle("Data/MC");
+    ratiodyee->GetYaxis()->SetTitle("Data / MC");
     ratiodyee->GetXaxis()->SetTitle(EjeX);
     ratiodyee->GetYaxis()->SetRangeUser(0.5, 1.5);
     if (histogramaname.Contains("over")) ratiodyee->GetYaxis()->SetRangeUser(0.9,1.1);
@@ -217,11 +211,10 @@ if (histogramaname.Contains("over")) hdatadyee->GetYaxis()->SetRangeUser(0.6,1.2
     ratiodyee->GetYaxis()->SetLabelFont(43);
     ratiodyee->GetYaxis()->SetLabelSize(16);
     ratiodyee->GetXaxis()->SetTitleFont(43); //font in pixels
-
     ratiodyee->GetXaxis()->SetTitleSize(20); //in pixels  
     ratiodyee->GetYaxis()->SetTitleFont(43); //font in pixels
     ratiodyee->GetYaxis()->SetTitleSize(20); //in pixels
-    ratiodyee->GetXaxis()->SetTitleOffset(2.7);
+    ratiodyee->GetXaxis()->SetTitleOffset(3);
     ratiodyee->GetYaxis()->SetTitleOffset(1.5);
     ratiodyee->SetFillColor(54);
     ratiodyee->SetFillStyle(3345);                                                                
@@ -257,8 +250,8 @@ if (histogramaname.Contains("over")) hdatadyee->GetYaxis()->SetRangeUser(0.6,1.2
     legratio = new TLegend(0.12,0.73,0.32,0.93);
     legratio->SetFillColor(0);
     legratio->SetBorderSize(0);
-    legratio->AddEntry(&staterree, "Stat","f");
-    legratio->AddEntry(&erree, "JES+Stat","f");
+    legratio->AddEntry(&staterree, "Stat ee","f");
+    legratio->AddEntry(&erree, "JES+Stat ee","f");
     legratio->Draw();
 
     pad1->cd();
@@ -296,7 +289,7 @@ if (histogramaname.Contains("over")) hdatadyee->GetYaxis()->SetRangeUser(0.6,1.2
     latexc.SetTextFont(42);
     latexc.SetTextAlign(31);
     latexc.SetTextSize(0.05);
-    latexc.DrawLatex(0.90, 0.91, " 0.6 fb^{-1} (13 TeV)");              
+    latexc.DrawLatex(0.90, 0.91, "0.8 fb^{-1} (13 TeV, 2016)");              
     TLatex latexd;
     latexd.SetNDC();
     latexd.SetTextAngle(0);
@@ -305,19 +298,9 @@ if (histogramaname.Contains("over")) hdatadyee->GetYaxis()->SetRangeUser(0.6,1.2
     latexd.SetTextSize(0.05);
     latexd.SetTextAngle(90); 
     
-    
-    TLatex latexe;                                          
-    latexe.SetNDC();
-    latexe.SetTextAngle(0);
-    latexe.SetTextFont(42);
-    latexe.SetTextAlign(31);
-    latexe.SetTextSize(0.05);
-    latexe.DrawLatex(0.72, 0.78, "No JEC Residuals");       
 
 
-
-
-    latexd.DrawLatex(0.05, 0.87, ylabel);      
+    latexd.DrawLatex(0.04, 0.87, ylabel);      
     pad1->Modified();
     pad2->Modified();
     pad1->Update();
@@ -325,8 +308,8 @@ if (histogramaname.Contains("over")) hdatadyee->GetYaxis()->SetRangeUser(0.6,1.2
     pad1->cd();
     c1->Update();
     c1->cd();
-    c1->Print("~/www/met/comparisons/June02/"+histogramaname+".png");
-    c1->Print("~/www/met/comparisons/June02/"+histogramaname+".root");
+    c1->Print("~/www/met/distributions/LHCp/plots/"+histogramaname+".png");
+    c1->Print("~/www/met/distributions/LHCp/plots/"+histogramaname+".root");
 
 }
 
@@ -336,18 +319,32 @@ void testRatioEEMuMuGJetsComparison(TString histograma, TString histogramagjets,
 
 TCanvas *c1 = new TCanvas("c1","example",600,700);
 
-TFile file1EE ("Not_BKG_SubtractionDYtgraphsEZll80X.root");
-TFile file2EE ("Not_BKG_SubtractionDatatgraphsEZll80X.root");
-TFile file1MM ("Not_BKG_SubtractionDYtgraphsMZll80X.root"); 
-TFile file2MM ("Not_BKG_SubtractionDatatgraphsMZll80X.root");
-TFile file1GG ("Not_BKG_SubtractionGJetstgraphsgammagjets80X.root"); 
-TFile file2GG ("Not_BKG_SubtractionDatatgraphsgammagjets80X.root");
-TFile file1EEup ("Not_BKG_SubtractionDY_up_tgraphs_jes_DYEZll80X.root"); 
-TFile file1EEdown ("Not_BKG_SubtractionDY_down_tgraphs_jes_DYEZll80X.root"); 
-TFile file1MMup ("Not_BKG_SubtractionDY_up_tgraphs_jes_DYMZll80X.root"); 
-TFile file1MMdown ("Not_BKG_SubtractionDY_down_tgraphs_jes_DYMZll80X.root"); 
-TFile file1GGup ("Not_BKG_SubtractionGJets_up_tgraphs_jes_GJetsgammagjets80X.root"); 
-TFile file1GGdown ("Not_BKG_SubtractionGJets_down_tgraphs_jes_GJetsgammagjets80X.root"); 
+//TFile file1EE ("Not_BKG_SubtractionDYtgraphsEZllResolution.root");
+//TFile file2EE ("Not_BKG_SubtractionDatatgraphsEZllResolution.root");
+//TFile file1MM ("Not_BKG_SubtractionDYtgraphsMZllResolution.root"); 
+//TFile file2MM ("Not_BKG_SubtractionDatatgraphsMZllResolution.root");
+//TFile file1GG ("Not_BKG_SubtractionGJetstgraphsgammagjetsResolution.root"); 
+//TFile file2GG ("Not_BKG_SubtractionDatatgraphsgammagjetsResolution.root");
+//TFile file1EEup ("Not_BKG_SubtractionDY_up_tgraphs_jes_DYEZllResolution.root"); 
+//TFile file1EEdown ("Not_BKG_SubtractionDY_down_tgraphs_jes_DYEZllResolution.root"); 
+//TFile file1MMup ("Not_BKG_SubtractionDY_up_tgraphs_jes_DYMZllResolution.root"); 
+//TFile file1MMdown ("Not_BKG_SubtractionDY_down_tgraphs_jes_DYMZllResolution.root"); 
+//TFile file1GGup ("Not_BKG_SubtractionGJetstgraphsgammagjetsResolution.root"); 
+//TFile file1GGdown ("Not_BKG_SubtractionGJetstgraphsgammagjetsResolution.root");            
+
+TFile file1EE ("Not_BKG_SubtractionDYtgraphsEZllScale.root");
+TFile file2EE ("Not_BKG_SubtractionDatatgraphsEZllScale.root");
+TFile file1MM ("Not_BKG_SubtractionDYtgraphsMZllScale.root"); 
+TFile file2MM ("Not_BKG_SubtractionDatatgraphsMZllScale.root");
+TFile file1GG ("Not_BKG_SubtractionGJetstgraphsgammagjetsScale.root"); 
+TFile file2GG ("Not_BKG_SubtractionDatatgraphsgammagjetsScale.root");
+TFile file1EEup ("Not_BKG_SubtractionDY_up_tgraphs_jes_DYEZllScale.root"); 
+TFile file1EEdown ("Not_BKG_SubtractionDY_down_tgraphs_jes_DYEZllScale.root"); 
+TFile file1MMup ("Not_BKG_SubtractionDY_up_tgraphs_jes_DYMZllScale.root"); 
+TFile file1MMdown ("Not_BKG_SubtractionDY_down_tgraphs_jes_DYMZllScale.root"); 
+TFile file1GGup ("Not_BKG_SubtractionGJetstgraphsgammagjetsScale.root"); 
+TFile file1GGdown ("Not_BKG_SubtractionGJetstgraphsgammagjetsScale.root");           
+
 
  h1EE = (TGraphErrors*) file1EE.Get("E_"+ histograma); 
  h2EE = (TGraphErrors*) file2EE.Get("E_"+ histograma); 

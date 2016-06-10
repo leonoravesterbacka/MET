@@ -41,7 +41,7 @@ def constructModel(Hist, bkg_hist,  m, um,uM, BKGSubtraction, eemm,  updo, cut, 
         print 'chi2', xFrame.chiSquare()
         plot.save(0, 1, 0, xFrame.chiSquare())
     else:    
-        plotmc = Canvas.Canvas("met/zjets/scale/mcfit/"+var+"_vs_zll_pt_"+ updo+cut , "png",0.6, 0.7, 0.8, 0.9)
+        plotmc = Canvas.Canvas("met/zjets/scale/mcfit/"+eemm+"uPara_vs_zll_pt_"+ updo+cut , "png",0.6, 0.7, 0.8, 0.9)
         result = voigt.fitTo(Hist, RooFit.Minimizer("Minuit","Migrad"), RooFit.Strategy(2), RooFit.SumW2Error(False), RooFit.Save(True), RooFit.PrintLevel(-1)) 
         voigt.plotOn(xFrame,RooFit.FillColor(r.kGray),RooFit.VisualizeError(result,1),RooFit.Components("voigt"))
         voigt.plotOn(xFrame,RooFit.LineColor(r.kGray))  
@@ -57,9 +57,8 @@ def constructModel(Hist, bkg_hist,  m, um,uM, BKGSubtraction, eemm,  updo, cut, 
 if __name__ == "__main__":
 
     doBKGSubtraction = False
-    doee = False
+    doee = True
     parser = optparse.OptionParser(usage="usage: %prog [opts] FilenameWithSamples", version="%prog 1.0")
-    parser.add_option("-t", "--test", action="store_true", dest="test", default=False, help="just do a testrun. takes one variable in one eta for one region")
     parser.add_option('-s', '--samples', action='store', type=str, dest='sampleFile', default='samples2.dat', help='the samples file. default \'samples.dat\'')
     (opts, args) = parser.parse_args()
 
@@ -70,29 +69,27 @@ if __name__ == "__main__":
 
     if doBKGSubtraction:
         if doee:
-            dy = ['DYJetsToLL_M50_ee']
-            tt = ['TTJets_DiLepton_ee', 'WWTo2L2Nu_ee', 'WZTo2L2Q_ee', 'WZTo3LNu_ee', 'ZZTo4L_ee', 'WJetsToLNu_ee']
-            da = ['DoubleEG_Run2016B_PromptReco_v2']
+            dy = ['DYJetsToLL_M50_ee', 'ZZTo4L_ee', 'ZZTo2L2Q_ee', 'WZTo3LNu_ee', 'WZTo2L2Q_ee']
+            tt = ['TTJets_DiLepton_ee', 'WWTo2L2Nu_ee', 'WJetsToLNu_ee']
+            da = ['DoubleEG_Run2016B_PromptReco_v2NEW']
             channel = 'E'
         else:
-            dy = ['DYJetsToLL_M50_mm']
-            tt = ['TTJets_DiLepton_mm', 'WWTo2L2Nu_mm', 'WZTo2L2Q_mm', 'WZTo3LNu_mm', 'ZZTo4L_mm', 'WJetsToLNu_mm']
-            da = ['DoubleMuon_Run2016B_PromptReco_v2']
+            dy = ['DYJetsToLL_M50_mm', 'ZZTo4L_mm', 'ZZTo2L2Q_mm', 'WZTo3LNu_mm', 'WZTo2L2Q_mm']
+            tt = ['TTJets_DiLepton_mm', 'WWTo2L2Nu_mm', 'WJetsToLNu_mm']
+            da = ['DoubleMuon_Run2016B_PromptReco_v2NEW']
             channel = 'M'            
         plot_name = 'Data'
-        destination = 'Not_BKG_Subtraction'
         treeDY = Sample.Tree(helper.selectSamples(opts.sampleFile, dy, 'dy'), 'dy', 0)
         treeTT = Sample.Tree(helper.selectSamples(opts.sampleFile, tt, 'tt'), 'tt', 0)
         treeDA = Sample.Tree(helper.selectSamples(opts.sampleFile, da, 'da'), 'da', 1)
     else:
         if doee:
-            dy = ['DYJetsToLL_M50_ee']                                                        
+            dy = ['DYJetsToLL_M50_ee', 'ZZTo4L_ee', 'ZZTo2L2Q_ee', 'WZTo3LNu_ee', 'WZTo2L2Q_ee']
             channel = 'E'                                                                 
         else:                                                                             
-            dy = ['DYJetsToLL_M50_mm']                                                        
+            dy = ['DYJetsToLL_M50_mm', 'ZZTo4L_mm', 'ZZTo2L2Q_mm', 'WZTo3LNu_mm', 'WZTo2L2Q_mm']
             channel = 'M'                                                                 
         plot_name =  'DY'                                                                 
-        destination = 'Not_BKG_Subtraction'                                               
         treeDY = Sample.Tree(helper.selectSamples(opts.sampleFile, dy, 'dy'), 'dy', 0)          
         
     if doBKGSubtraction:
@@ -119,7 +116,7 @@ if __name__ == "__main__":
     dependence = 'zll_pt'
 
     print 'Trees successfully loaded...'
-    lumi = 0.6691
+    lumi = 0.803015796
 
    
     gROOT.ProcessLine('.L include/tdrstyle.C')
@@ -138,14 +135,14 @@ if __name__ == "__main__":
             False)
     regions.append(region)
     
-    qtbins = [ [0,25],[25, 50], [50, 75], [75,100], [100, 120], [120, 150], [150, 175], [175, 200], [200, 225], [225, 250], [250, 275],[275, 300], [300, 325], [325, 350], [350, 375], [375, 400],[400, 425],  [425, 450], [450, 500]]
+    qtbins = [ [20,28],[28, 36],[36, 44],[44, 52],[52,60],[60, 68], [68, 76], [76, 84],[84,92],[92,100], [100, 120], [120, 150], [150, 175], [175, 200], [200, 225], [225, 250], [250, 275],[275, 305], [305, 335], [335, 365], [365, 395], [395, 430],  [430, 500]]
 
     cutsList = []
     binposition = []
     binerror = []
 
    
-    x = RooRealVar("x", "x", -2., 0.)
+    x = RooRealVar("x", "x", -1.8, -0.2)
     g_w = RooRealVar("g_w", "width Gaus", 10.,0. , 100., "GeV") # sigma
     gamma_Z0 = RooRealVar("gamma_Z0_U", "Z0 width", 2.3, 0., 100., "GeV") # gamma
     v_m = RooRealVar("v_m", "v_m",0,-10.,10.)
@@ -162,7 +159,7 @@ if __name__ == "__main__":
             binerror.append(0.0)
             cutsList.append(cuts.AddList(reg.cuts +[  reg.dependence +  "<"+ str(maxi) + "&&" + reg.dependence + " >" + str(mini)] ))
         for dire in direction:
-            f2 = TFile(destination+dire + channel +"Zll80X.root", "UPDATE");   
+            f2 = TFile(dire + channel +"ZllScale.root", "UPDATE");   
             upd = updown[direction.index(dire)]
             for vari in variable:
                 var = vari[direction.index(dire)]
@@ -177,27 +174,19 @@ if __name__ == "__main__":
                      for tree in trees:
                          if doBKGSubtraction:
                              if tree.name == 'tt' :
-                                 if ((cutsList.index(i) == 0) or (cutsList.index(i) == 1) or (cutsList.index(i) == 2)):
-                                     tt_hist = tree.getTH1F(lumi, variablename[variable.index(vari)]+i+'tt', var,100, -2., 0.,  i, '', variablename[variable.index(vari)]+i)    
-                                 else:
-                                     tt_hist = tree.getTH1F(lumi, variablename[variable.index(vari)]+i+'tt', var,100, -2., 0.,  i, '', variablename[variable.index(vari)]+i)    
-
+                                 tt_hist = tree.getTH1F(lumi, variablename[variable.index(vari)]+i+'tt', var,100, -1.8, -0.2,  i, '', variablename[variable.index(vari)]+i)    
                                  tt_Hist = RooDataHist("tt","tt"+i,RooArgList(x),tt_hist)                 
                                  m_tt = tt_hist.GetMean()
                                  um_tt = tt_hist.GetMean()-tt_hist.GetRMS()
                                  uM_tt = tt_hist.GetMean()+tt_hist.GetRMS()                                                                                                      
                              if tree.name == 'da':
-                                 if ((cutsList.index(i) == 0) or (cutsList.index(i) == 1) or (cutsList.index(i) == 2)):
-                                    data_hist = tree.getTH1F(lumi, variablename[variable.index(vari)]+i+'da', var,100, -2., 0.,  i, '', variablename[variable.index(vari)]+i)
-                                 else:
-                                    data_hist = tree.getTH1F(lumi, variablename[variable.index(vari)]+i+'da', var,100, -2., 0.,  i, '', variablename[variable.index(vari)]+i)
-
+                                 data_hist = tree.getTH1F(lumi, variablename[variable.index(vari)]+i+'da', var,100, -1.8, -0.2,  i, '', variablename[variable.index(vari)]+i)
                                  data_Hist = RooDataHist("da","da"+i, RooArgList(x), data_hist)                  
                                  m_da = data_hist.GetMean()
                                  um_da = data_hist.GetMean()-data_hist.GetRMS()
                                  uM_da = data_hist.GetMean()+data_hist.GetRMS()                                                   
                          if tree.name == 'dy':
-                             dy_hist = tree.getTH1F(lumi, variablename[variable.index(vari)]+i+'dy', var,100, -2., 0.,  i, '', variablename[variable.index(vari)]+i)
+                             dy_hist = tree.getTH1F(lumi, variablename[variable.index(vari)]+i+'dy', var,100, -1.8, -0.2,  i, '', variablename[variable.index(vari)]+i)
                              dy_Hist = RooDataHist("dy","dy"+i, RooArgList(x), dy_hist)
                              dy_BkgHist = RooDataHist()
                              m_dy = dy_hist.GetMean()
