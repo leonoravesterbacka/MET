@@ -83,16 +83,13 @@ def FWHM(sigma, gamma):
 
 if __name__ == "__main__":
 
-
     doBKGSubtraction = True
     doee = True
     parser = optparse.OptionParser(usage="usage: %prog [opts] FilenameWithSamples", version="%prog 1.0")
     parser.add_option("-t", "--test", action="store_true", dest="test", default=False, help="just do a testrun. takes one variable in one eta for one region")
-    parser.add_option('-s', '--samples', action='store', type=str, dest='sampleFile', default='samples2.dat', help='the samples file. default \'samples2.dat\'')
+    parser.add_option('-s', '--samples', action='store', type=str, dest='sampleFile', default='samples.dat', help='the samples file. default \'samples.dat\'')
     (opts, args) = parser.parse_args()
-
-    (opts, args) = parser.parse_args()
-
+    
     print 'Going to load DATA and MC trees...'
 
     if doBKGSubtraction: 
@@ -123,7 +120,7 @@ if __name__ == "__main__":
 
     if doBKGSubtraction:
         trees = [treeDY, treeTT, treeDA] 
-        direction = [plot_name+'tgraphs']  
+        direction = [plot_name]  
         updown = [""]  
         uPerp = ['((-met_pt*sin(met_phi)- zll_pt*sin(zll_phi))*zll_pt*cos(zll_phi) - (-met_pt*cos(met_phi) - zll_pt*cos(zll_phi))*zll_pt*sin(zll_phi))/zll_pt'] 
         uPara = ['((-met_pt*sin(met_phi)- zll_pt*sin(zll_phi))*zll_pt*sin(zll_phi)+(-met_pt*cos(met_phi) - zll_pt*cos(zll_phi))*zll_pt*cos(zll_phi))/zll_pt + zll_pt']
@@ -132,7 +129,7 @@ if __name__ == "__main__":
     else:
         trees = [treeDY]
         #direction = [plot_name+'tgraphs']  
-        direction = [plot_name+'tgraphs',plot_name+'_up_tgraphs_jes_DY', plot_name+'_down_tgraphs_jes_DY']  
+        direction = [plot_name,plot_name+'_up_jes_DY', plot_name+'_down_jes_DY']  
         #updown = [""]  
         updown = ["","_up", "_down"]  
         uPerp = ['((-met_pt*sin(met_phi)- zll_pt*sin(zll_phi))*zll_pt*cos(zll_phi) - (-met_pt*cos(met_phi) - zll_pt*cos(zll_phi))*zll_pt*sin(zll_phi))/zll_pt', 

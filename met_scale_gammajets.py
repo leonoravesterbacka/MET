@@ -59,12 +59,9 @@ if __name__ == "__main__":
     doBKGSubtraction = True
     parser = optparse.OptionParser(usage="usage: %prog [opts] FilenameWithSamples", version="%prog 1.0")
     parser.add_option("-t", "--test", action="store_true", dest="test", default=False, help="just do a testrun. takes one variable in one eta for one region")
-    parser.add_option('-s', '--samples', action='store', type=str, dest='sampleFile', default='samples2.dat', help='the samples file. default \'samples.dat\'')
+    parser.add_option('-s', '--samples', action='store', type=str, dest='sampleFile', default='samples.dat', help='the samples file. default \'samples.dat\'')
     (opts, args) = parser.parse_args()
-
-    ## make the options globa.. also the lumi
-    (opts, args) = parser.parse_args()
-
+    
     print 'Going to load DATA and MC trees...'
 
     bkgDatasets = [ 'QCD_HT200to300_ext', 'QCD_HT300to500', 'QCD_HT500to700','QCD_HT700to1000', 'QCD_HT1000to1500', 'QCD_HT1500to2000', 'QCD_HT2000toInf', 'TTGJets', 'ZGJets','ZGJets40-130', 'WGToLNuG', 'WJetsToLNu_HT200to400', 'WJetsToLNu_HT400to600', 'WJetsToLNu_HT600to800', 'WJetsToLNu_HT800to1200', 'WJetsToLNu_HT1200to2500', 'WJetsToLNu_HT2500toInf']

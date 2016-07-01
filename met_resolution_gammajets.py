@@ -86,8 +86,7 @@ if __name__ == "__main__":
     doBKGSubtraction = True
     parser = optparse.OptionParser(usage="usage: %prog [opts] FilenameWithSamples", version="%prog 1.0")
     parser.add_option("-t", "--test", action="store_true", dest="test", default=False, help="just do a testrun. takes one variable in one eta for one region")
-    parser.add_option('-s', '--samples', action='store', type=str, dest='sampleFile', default='samples2.dat', help='the samples file. default \'samples2.dat\'')
-    (opts, args) = parser.parse_args()
+    parser.add_option('-s', '--samples', action='store', type=str, dest='sampleFile', default='samples.dat', help='the samples file. default \'samples.dat\'')
 
     (opts, args) = parser.parse_args()
 
@@ -108,7 +107,7 @@ if __name__ == "__main__":
 
     if doBKGSubtraction:
         trees = [treeBKG, treeGJETS, treeDA] 
-        direction = [plot_name+'tgraphs']  
+        direction = [plot_name]  
         updown = [""]  
         uPerp = ['((-met_pt*sin(met_phi)- gamma_pt*sin(gamma_phi))*gamma_pt*cos(gamma_phi) - (-met_pt*cos(met_phi) - gamma_pt*cos(gamma_phi))*gamma_pt*sin(gamma_phi))/gamma_pt'] 
         uPara = ['((-met_pt*sin(met_phi)- gamma_pt*sin(gamma_phi))*gamma_pt*sin(gamma_phi)+(-met_pt*cos(met_phi) - gamma_pt*cos(gamma_phi))*gamma_pt*cos(gamma_phi))/gamma_pt + gamma_pt']
@@ -116,8 +115,8 @@ if __name__ == "__main__":
         uParaPuppi = ['((-metPuppi_pt*sin(metPuppi_phi)- gamma_pt*sin(gamma_phi))*gamma_pt*sin(gamma_phi)+(-metPuppi_pt*cos(metPuppi_phi) - gamma_pt*cos(gamma_phi))*gamma_pt*cos(gamma_phi))/gamma_pt + gamma_pt']
     else:      
         trees = [treeGJETS]
-        direction = [plot_name+'tgraphs']  
-        #direction = [plot_name+'tgraphs',plot_name+'_up_tgraphs_jes_GJets', plot_name+'_down_tgraphs_jes_GJets']  
+        direction = [plot_name]  
+        #direction = [plot_name,plot_name+'_up_jes_GJets', plot_name+'_down_jes_GJets']  
         updown = [""]  
         #updown = ["","_up", "_down"]  
         uPerp = ['((-met_pt*sin(met_phi)- gamma_pt*sin(gamma_phi))*gamma_pt*cos(gamma_phi) - (-met_pt*cos(met_phi) - gamma_pt*cos(gamma_phi))*gamma_pt*sin(gamma_phi))/gamma_pt', 

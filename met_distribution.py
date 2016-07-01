@@ -29,11 +29,10 @@ if __name__ == "__main__":
 
 
     parser = optparse.OptionParser(usage="usage: %prog [opts] FilenameWithSamples", version="%prog 1.0")
-    parser.add_option("-t", "--test", action="store_true", dest="test", default=False, help="just do a testrun. takes one variable in one eta for one region")
-    parser.add_option('-s', '--samples', action='store', type=str, dest='sampleFile', default='samples2.dat', help='the samples file. default \'samples2.dat\'')
+    parser.add_option('-s', '--samples', action='store', type=str, dest='sampleFile', default='samples.dat', help='the samples file. default \'samples.dat\'')
     (opts, args) = parser.parse_args()
-    doDY = False
-    doee = False
+    doDY = True
+    doee = True
     print 'Going to load DATA and MC trees...'
     if doDY:
         if doee:
@@ -90,136 +89,171 @@ if __name__ == "__main__":
 
     regions = []
     setLog = []
-    etabins = [-1.5,-1.4,-1.3, -1.2,-1.1,-1.0,-0.9,-0.8,-0.7,-0.6,-0.5,-0.4,-0.3,-0.2,-0.1,0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0,1.1,1.2,1.3,1.4,1.5]
-    phibins = [-3.5,-3.4,-3.3,-3.2,-3.1,-3.0,-2.9,-2.8,-2.7,-2.6,-2.5,-2.4,-2.3,-2.2,-2.1,-2.0,-1.9,-1.8,-1.7,-1.6,-1.5,-1.4,-1.3, -1.2,-1.1,-1.0,-0.9,-0.8,-0.7,-0.6,-0.5,-0.4,-0.3,-0.2,-0.1,0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1.0,1.1,1.2,1.3,1.4,1.5,1.6,1.7,1.8,1.9,2.0,2.1,2.2,2.3,2.4,2.5,2.6,2.7,2.8,2.9,3.0,3.1,3.2,3.3,3.4,3.5]
     if doDY:
-        #doVariables = ['met_zll']
-        #doVariables = ['nVert']
-        doVariables = [ 'met_uPerp_zll', 'met_uPara_zll']
-        #doVariables = ['met_zll','met_uPerp_zll', 'met_uPara_zll', 'nVert']
-        #binnings    = [ range(0,200, 5)]
-        #binnings    = [ range(0,50, 1)]
-        binnings    = [ range(-200,200, 5), range(-200, 200, 5)]
+        doVariables = ['met_uPerp_zll']
+        #doVariables = [ 'met_pt','met_uPerp_zll', 'met_uPara_zll']
+        binnings    = [range(-200, 200, 5)]
+        #binnings    = [range(0,200, 5), range(-200,200, 5), range(-200,200, 5)]
         dependence = 'zll_pt'
-        variablename = 'met'
         ZtoLL = Region.region('Zto',
-                           cuts.leps(), doVariables, dependence, variablename, binnings, True)
+                           cuts.leps(), doVariables, dependence, 'met', binnings, True)
         regions.append(ZtoLL)                                                                                   
     else:
-        #doVariables = [ 'nVert']
-        #doVariables = [ 'met_uPerp_gamma']
-        doVariables = ['met', 'nVert']
-        binnings    = [range(0,200, 5), range(0,50, 1)]
-        #binnings    = [ range(-200,200, 5)]
-        #binnings    = [ range(0,50, 1)]
+        doVariables = ['met_uPerp_gamma', 'met_uPara_gamma']
+        binnings    = [ range(-200,200, 5), range(-200,200, 5)]
         dependence = 'gamma_pt'
-        variablename = 'met'
-        GammaJets = Region.region('GammaJets',
-                           cuts.gammas(), doVariables, dependence, variablename, binnings, True)
-        regions.append(GammaJets)                                                                                   
-
+        Gamma = Region.region('Gamma',
+                           cuts.gammas(), doVariables, dependence, 'met', binnings, True)
+        regions.append(Gamma)                                                                                   
 
     etas = ['central' ]
-        
 
     for reg in regions:
         print color.bold+color.red+'=========================================='
         print 'i am at region', reg.name
         print '=========================================='+color.end
-        #for eta in ['central', 'forward']:
         for eta in etas:
                     
+            for var in reg.rvars:   
 
-            for var in reg.rvars:
-
-                if   var == 'met_uPerp_zll':
-                    varTitle    = 'u_{#perp}'+"  "+ ' [GeV]'
-                    varVariable = '((-met_pt*cos(met_phi) - zll_pt*cos(zll_phi))*zll_pt*sin(zll_phi) - (-met_pt*sin(met_phi) - zll_pt*sin(zll_phi))*zll_pt*cos(zll_phi))/zll_pt'                                                                                               
+                if var == 'met_uPerp_zll':
+                    jecs = ['met_uPerp_zll','met_uPerp_zll_Up', 'met_uPerp_zll_Down'] 
                 elif var == 'met_uPara_zll':
-                    varTitle    = 'u_{||} + Z p_{T} [GeV]'
-                    varVariable = '((-met_pt*cos(met_phi) - zll_pt*cos(zll_phi))*zll_pt*cos(zll_phi) + (-met_pt*sin(met_phi) - zll_pt*sin(zll_phi))*zll_pt*sin(zll_phi))/zll_pt+zll_pt'
-                elif var == 'met_zll':
-                    varTitle    = 'E_{T}^{miss} [GeV]'
-                    varVariable = 'met_pt'     
+                    jecs = ['met_uPara_zll','met_uPara_zll_Up', 'met_uPara_zll_Down'] 
+                elif var == 'met_pt':
+                    jecs = ['met_pt','met_Up', 'met_Down']    
                 elif var == 'met_uPerp_gamma':
-                    varTitle    = 'u_{ #perp } '+"  "+ ' [GeV]'
-                    varVariable = '((-met_pt*cos(met_phi) - gamma_pt*cos(gamma_phi))*gamma_pt*sin(gamma_phi) - (-met_pt*sin(met_phi) - gamma_pt*sin(gamma_phi))*gamma_pt*cos(gamma_phi))/gamma_pt'
+                    jecs = ['met_uPerp_gamma', 'met_uPerp_gamma_Up', 'met_uPerp_gamma_Down']
                 elif var == 'met_uPara_gamma':
-                    varTitle    = 'u_{||} + #gamma p_{T} [GeV]'
-                    varVariable = '((-met_pt*cos(met_phi) - gamma_pt*cos(gamma_phi))*gamma_pt*cos(gamma_phi) + (-met_pt*sin(met_phi) - gamma_pt*sin(gamma_phi))*gamma_pt*sin(gamma_phi))/gamma_pt+gamma_pt' 
+                    jecs = ['met_uPara_gamma', 'met_uPara_gamma_Up', 'met_uPara_gamma_Down']
+                #the following variables will have stat errors only, that is why I loop over the same variables 3 times, to make only stat errors in Canvas.py
                 elif var == 'nVert':
-                    varTitle    = 'nVert'
-                    varVariable = 'nVert'         
-                elif var == 'met':
-                    varTitle    = 'E_{T}^{miss} [GeV]'
-                    varVariable = 'met_pt'         
+                    jecs  = ['nVert', 'nVertUp', 'nVertDown']
                 elif var == 'zll_pt':
-                    varTitle    = 'Z p_{T} [GeV]'
-                    varVariable = 'zll_pt'         
+                    jecs = ['zll_pt', 'zll_pt_Up', 'zll_pt_Down']         
                 elif var == 'zll_mass':
-                    varTitle    = 'm_{ll} [GeV]'
-                    varVariable = 'zll_mass'         
-                
+                    jecs  = ['zll_mass', 'zll_mass', 'zll_mass']         
                 elif var == 'gamma_pt':
-                    varTitle    = '#gamma p_{T} [GeV]'
-                    varVariable = 'gamma_pt'         
-                elif var == 'met_phi':
-                    varTitle    = 'E_{T} #phi'
-                    varVariable = 'met_phi'         
-                elif var == 'met_eta':
-                    varTitle    = 'ME_{T} #eta'
-                    varVariable = 'met_eta'         
-
-                print 'loading variable %s in %s'%(var, eta)
+                    jecs = ['gamma_pt', 'gamma_pt', 'gamma_pt']         
+                
                 mc_histo = 0
+                mc_up = 0
+                mc_down = 0
                 mc_stack = r.THStack()
-                print 'do data', reg.doData
-                for tree in ( ([treeDA] +mcTrees) if reg.doData else mcTrees):
-                    ind = 0
-                    cuts = CutManager.CutManager()
-                    treename = tree.name.lower()
-                    print '... doing tree %s' %treename
-                    dataMC = ('DATA' if tree == treeDA else 'MC'); isData = dataMC == 'DATA';
-                    block = tree.blocks[0]
-                    attr = var+('' if tree.name in ['DATA', 'MC'] else '_'+treename)
-                    tmp_full= tree.getTH1F(lumi, var+"_"+eta+reg.name+treename, varVariable, reg.bins[reg.rvars.index(var)], 1, 1, reg.cuts , "", varTitle)
-                    tmp_full.SetFillColorAlpha(block.color, 0.5)
-                    tmp_full.SetTitle(block.name)
-                    if treename == 'gjets':
-                        tmp_full.SetTitle("#gamma + jets")
-                    if treename == 'dy':
-                        if doee:
-                            tmp_full.SetTitle("Z #rightarrow ee")
-                        else:                                    
-                            tmp_full.SetTitle("Z #rightarrow #mu#mu")
-                    if treename == 'tt':
-                        tmp_full.SetTitle("top")
-                    getattr(reg, attr).setHisto(tmp_full, dataMC, eta)
-
-                    ## don't do any adding for data
-                    if isData: 
-                        print "data", tmp_full.Integral()
-                        continue
-
-                    tmp_histo = copy.deepcopy(tmp_full.Clone(var+eta+reg.name))
-                    tmp_histo.GetXaxis().SetTitle(varTitle)
-                    mc_stack.Add(tmp_histo)
-                    if not ind: mc_stack.Draw()
-                    ind+=1
-                    mc_stack.GetXaxis().SetTitle(tmp_histo.GetXaxis().GetTitle())
-                    print treename,  'histo has integral %.2f'%tmp_histo.Integral()
-                    if not mc_histo:
-                        mc_histo = copy.deepcopy(tmp_histo)
-                    else:
-                        mc_histo.Add(tmp_histo, 1.)
-                mc_histo.SetMinimum(0);
-                setattr(reg, '%s_mc_histo_%s'%(var, eta), mc_histo)
-                setattr(reg, '%s_mc_stack_%s'%(var, eta), mc_stack)
-
+                for jec in jecs:
+                    print 'loading variable %s in %s'%(jec, eta)
+                    if jec == 'met_pt':
+                        varTitle    = 'E_{T}^{miss} [GeV]'
+                        vari = 'met_pt'
+                    elif jec == 'met_Up':
+                        vari = 'met_jecUp_pt'
+                    elif jec == 'met_Down':
+                        vari = 'met_jecDown_pt'       
+                    elif jec == 'met_uPerp_zll':
+                        varTitle    = 'u_{#perp}'+"  "+ ' [GeV]'
+                        vari = '((-met_pt*cos(met_phi)-zll_pt*cos(zll_phi))*zll_pt*sin(zll_phi)-(-met_pt*sin(met_phi)-zll_pt*sin(zll_phi))*zll_pt*cos(zll_phi))/zll_pt' 
+                    elif jec == 'met_uPerp_zll_Up':
+                        vari = '((-met_jecUp_pt*cos(met_jecUp_phi)-zll_pt*cos(zll_phi))*zll_pt*sin(zll_phi)-(-met_jecUp_pt*sin(met_jecUp_phi)-zll_pt*sin(zll_phi))*zll_pt*cos(zll_phi))/zll_pt' 
+                    elif jec == 'met_uPerp_zll_Down':
+                        vari = '((-met_jecDown_pt*cos(met_jecDown_phi)-zll_pt*cos(zll_phi))*zll_pt*sin(zll_phi)-(-met_jecDown_pt*sin(met_jecDown_phi)-zll_pt*sin(zll_phi))*zll_pt*cos(zll_phi))/zll_pt' 
+                    elif jec == 'met_uPara_zll':
+                        varTitle =  'u_{||} + Z p_{T} [GeV]'
+                        vari = '((-met_pt*cos(met_phi) - zll_pt*cos(zll_phi))*zll_pt*cos(zll_phi)+(-met_pt*sin(met_phi)-zll_pt*sin(zll_phi))*zll_pt*sin(zll_phi))/zll_pt+zll_pt'  
+                    elif jec == 'met_uPara_zll_Up':
+                        vari = '((-met_jecUp_pt*cos(met_jecUp_phi)-zll_pt*cos(zll_phi))*zll_pt*cos(zll_phi)+(-met_jecUp_pt*sin(met_jecUp_phi)-zll_pt*sin(zll_phi))*zll_pt*sin(zll_phi))/zll_pt+zll_pt'  
+                    elif jec == 'met_uPara_zll_Down':
+                        vari = '((-met_jecDown_pt*cos(met_jecDown_phi)-zll_pt*cos(zll_phi))*zll_pt*cos(zll_phi)+(-met_jecDown_pt*sin(met_jecDown_phi)-zll_pt*sin(zll_phi))*zll_pt*sin(zll_phi))/zll_pt+zll_pt'  
+                    elif jec == 'met_uPerp_gamma':
+                        varTitle    = 'u_{#perp}'+"  "+ ' [GeV]'
+                        vari = '((-met_pt*cos(met_phi)-gamma_pt*cos(gamma_phi))*gamma_pt*sin(gamma_phi)-(-met_pt*sin(met_phi)-gamma_pt*sin(gamma_phi))*gamma_pt*cos(gamma_phi))/gamma_pt' 
+                    elif jec == 'met_uPerp_gamma_Up':
+                        vari = '((-met_jecUp_pt*cos(met_jecUp_phi)-gamma_pt*cos(gamma_phi))*gamma_pt*sin(gamma_phi)-(-met_jecUp_pt*sin(met_jecUp_phi)-gamma_pt*sin(gamma_phi))*gamma_pt*cos(gamma_phi))/gamma_pt' 
+                    elif jec == 'met_uPerp_gamma_Down':
+                        vari = '((-met_jecDown_pt*cos(met_jecDown_phi)-gamma_pt*cos(gamma_phi))*gamma_pt*sin(gamma_phi)-(-met_jecDown_pt*sin(met_jecDown_phi)-gamma_pt*sin(gamma_phi))*gamma_pt*cos(gamma_phi))/gamma_pt' 
+                    elif jec == 'met_uPara_gamma':
+                        varTitle =  'u_{||} + Z p_{T} [GeV]'
+                        vari = '((-met_pt*cos(met_phi)-gamma_pt*cos(gamma_phi))*gamma_pt*cos(gamma_phi)+(-met_pt*sin(met_phi)-gamma_pt*sin(gamma_phi))*gamma_pt*sin(gamma_phi))/gamma_pt+gamma_pt'  
+                    elif jec == 'met_uPara_gamma_Up':
+                        vari = '((-met_jecUp_pt*cos(met_jecUp_phi)-gamma_pt*cos(gamma_phi))*gamma_pt*cos(gamma_phi)+(-met_jecUp_pt*sin(met_jecUp_phi)-gamma_pt*sin(gamma_phi))*gamma_pt*sin(gamma_phi))/gamma_pt+gamma_pt'  
+                    elif jec == 'met_uPara_gamma_Down':
+                        vari = '((-met_jecDown_pt*cos(met_jecDown_phi)-gamma_pt*cos(gamma_phi))*gamma_pt*cos(gamma_phi)+(-met_jecDown_pt*sin(met_jecDown_phi)-gamma_pt*sin(gamma_phi))*gamma_pt*sin(gamma_phi))/gamma_pt+gamma_pt'  
+                    elif jec == 'nVert':
+                        varTitle = 'nVert'
+                        vari = 'nVert'  
+                    elif jec == 'nVertUp':
+                        vari = 'nVert'  
+                    elif jec == 'nVertDown':
+                        vari = 'nVert'  
+                    elif jec == 'zll_pt':
+                        varTitle    = 'Z p_{T} [GeV]'
+                        vari = 'zll_pt'               
+                    elif jec == 'zll_pt_Up':
+                        vari = 'zll_pt'              
+                    elif jec == 'zll_pt_Down':
+                        vari = 'zll_pt'              
+                    elif jec == 'zll_mass':
+                        varTitle    = 'm_{ll} [GeV]'
+                        vari = 'zll_mass'       
+                    elif jec == 'gamma_pt':
+                        varTitle    = '#gamma p_{T} [GeV]'
+                        vari = 'gamma_pt'       
+                    tmp_histo = 0
+                    tmp_full = 0
+                    for tree in ( ([treeDA] +mcTrees) if reg.doData else mcTrees):
+                        ind = 0
+                        cuts = CutManager.CutManager()
+                        treename = tree.name.lower()
+                        print '... doing tree %s' %treename
+                        dataMC = ('DATA' if tree == treeDA else 'MC'); isData = dataMC == 'DATA';
+                        block = tree.blocks[0]
+                        attr = (var+'' if tree.name in ['DATA'] else jec+'')
+                        tmp_full= tree.getTH1F(lumi, jec+"_"+eta+reg.name+treename, vari, reg.bins[reg.rvars.index(var)], 1, 1, reg.cuts , "", varTitle)
+                        tmp_full.SetFillColorAlpha(block.color, 0.5)
+                        tmp_full.SetTitle(block.name)
+                        if treename == 'gjets':
+                            tmp_full.SetTitle("#gamma + jets")
+                        if treename == 'dy':
+                            if doee:
+                                tmp_full.SetTitle("Z #rightarrow ee")
+                            else:                                    
+                                tmp_full.SetTitle("Z #rightarrow #mu#mu")
+                        if treename == 'tt':
+                            tmp_full.SetTitle("top")
+                        getattr(reg, attr).setHisto(tmp_full, dataMC, eta)
+                        if isData: 
+                            print "data", tmp_full.Integral()
+                            continue
+                        tmp_histo = copy.deepcopy(tmp_full.Clone(var+eta+reg.name))
+                        tmp_histo.GetXaxis().SetTitle(varTitle)
+                        if jecs.index(jec) == 0:
+                            mc_stack.Add(tmp_histo)
+                            if not ind: mc_stack.Draw()
+                            ind+=1
+                            mc_stack.GetXaxis().SetTitle(tmp_histo.GetXaxis().GetTitle())
+                            print treename,  'histo has integral %.2f'%tmp_histo.Integral()
+                            if not mc_histo:
+                                mc_histo = copy.deepcopy(tmp_histo)
+                            else:
+                                mc_histo.Add(tmp_histo, 1.)   
+                        if jecs.index(jec) == 1:
+                            if not mc_up:                                    
+                                mc_up = copy.deepcopy(tmp_histo)
+                            else:
+                                mc_up.Add(tmp_histo, 1.)                    
+                        if jecs.index(jec) == 2:
+                            if not mc_down:
+                                mc_down = copy.deepcopy(tmp_histo)
+                            else:
+                                mc_down.Add(tmp_histo, 1.)                    
+                    #mc_histo.SetMinimum(0);
+                    setattr(reg, '%s_mc_histo_%s'%(jec, eta), mc_histo)
+                    setattr(reg, '%s_mc_stack_%s'%(jec, eta), mc_stack)
+                    setattr(reg, '%s_mc_up_%s'%(jec, eta), mc_up)
+                    setattr(reg, '%s_mc_down_%s'%(jec, eta), mc_down)
                 print 'plotting %s in region %s in %s' %(var, reg.name, eta)
                 plot_var = Canvas.Canvas("test/%s/%s_%s%s"%(lumi_str, var,reg.name, channel), "png,root", 0.7, 0.6, 0.9, 0.9)
                 plot_var.addStack(mc_stack  , "hist" , 1, 1)
                 plot_var.addHisto(getattr(reg, var).getHisto('DATA', eta), "E,SAME"   , "Data"  , "PL", r.kBlack , 1, 0)
-                plot_var.saveRatio(1, 1, 1, lumi, getattr(reg, var).getHisto('DATA', eta), mc_histo )
+                plot_var.saveRatio(1, 1, 1, lumi, getattr(reg, var).getHisto('DATA', eta), mc_histo, mc_up, mc_down )
                 time.sleep(0.1)
 

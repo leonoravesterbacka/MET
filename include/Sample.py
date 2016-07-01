@@ -65,19 +65,15 @@ class Sample:
           if self.isZjets:
               addCut = "1."
           else:   
-              #addCut = "1." 
               addCut = "prescaleWeight" 
           cut = cut + "* (" + addCut +") "
 
       if(self.isData == 0):
-          #addCut = "1. "
           addCut = "puWeight"
           addCut2 = "1."
           if self.dokfactorWeight:
-            #addCut2 = "1."  
             addCut2 = "kfactorWeight"  
           if self.doqtWeight:    
-            #addCut2 = "1."
             addCut2 = "qtWeight"
           cut =  cut  + "* ( " + addCut + " )" +  "* ( " + addCut2 + " )" + "* ( " + str(self.lumWeight*lumi)  +  " )" #kommentera ut det har
       print "cuts ", cut
@@ -282,16 +278,18 @@ class Tree:
        _nbins = len(nbin)-1
        _arr = array('d', nbin)
        h = TH1F(name, "", _nbins, _arr)
-       #_newarr = array('d', [-205.0, -200.0, -195.0, -190.0, -185.0, -180.0, -175.0, -170.0, -165.0, -160.0, -155.0, -150.0, -145.0, -140.0, -135.0, -130.0, -125.0, -120.0, -115.0, -110.0, -105.0, -100.0, -95.0, -90.0, -85.0, -80.0, -75.0, -70.0, -65.0, -60.0, -55.0, -50.0, -45.0, -40.0, -35.0, -30.0, -25.0, -20.0, -15.0, -10.0, -5.0, 0.0, 5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 35.0, 40.0, 45.0, 50.0, 55.0, 60.0, 65.0, 70.0, 75.0, 80.0, 85.0, 90.0, 95.0, 100.0, 105.0, 110.0, 115.0, 120.0, 125.0, 130.0, 135.0, 140.0, 145.0, 150.0, 155.0, 160.0, 165.0, 170.0, 175.0, 180.0, 185.0, 190.0, 195.0, 200.0])
-       _newarr = _arr + array('d', [ 2*_arr[-1]-_arr[-2] ]) 
-       h_of = TH1F(name+'_of', "", _nbins+1, _newarr)
-       #h_of = TH1F(name+'_of', "", _nbins+2, _newarr)
+       if len(nbin) > 41 :  # this option is for when you want underflow bins, make sure to modify the nbins if you want underflow bins for a plot with fewer bins 
+           _newarr = array('d', [ 2*_arr[0]-_arr[1] ]) +_arr +  array('d', [ 2*_arr[-1]-_arr[-2] ]) 
+           h_of = TH1F(name+'_of', "", _nbins+2, _newarr)
+       else:
+           _newarr = _arr + array('d', [ 2*_arr[-1]-_arr[-2] ]) 
+           h_of = TH1F(name+'_of', "", _nbins+1, _newarr)
        ylabel = "# events"
      else:
-       h = TH1F(name, "", nbin, xmin, xmax)
-       bw = int((xmax-xmin)/nbin)
-       ylabel = "Events / " + str(bw) + " GeV"
-       h_of = TH1F(name+'_of', '', nbin+1, xmin, xmax+bw)
+         h = TH1F(name, "", nbin, xmin, xmax)
+         bw = int((xmax-xmin)/nbin)
+         ylabel = "Events / " + str(bw) + " GeV"
+         h_of = TH1F(name+'_of', '', nbin+1, xmin, xmax+bw)
 
      h.Sumw2()
      h.GetXaxis().SetTitle(xlabel)
@@ -303,19 +301,17 @@ class Tree:
        h.Add(haux)
        del haux
 
-     for _bin in range(1, h_of.GetNbinsX()+1):
-         h_of.SetBinContent(_bin, h.GetBinContent(_bin))
-         h_of.SetBinContent(_bin, h.GetBinContent(_bin))
-         
-    #for _bin in range(0, h_of.GetNbinsX()+1):
-    #     h_of.SetBinContent(_bin, h.GetBinContent(_bin))
-    #     h_of.SetBinError  (_bin, h.GetBinError  (_bin)) # with underflow bin, uncomment this, change binning to newarr including the underflow bin and nbins+2
-                                                                
+     if ((xmin == xmax) and len(nbin) > 41):    
+         for _bin in range(0, h_of.GetNbinsX()+1):
+             h_of.SetBinContent(_bin+1, h.GetBinContent(_bin))
+             h_of.SetBinError  (_bin+1, h.GetBinError  (_bin)) 
+     else:
+         for _bin in range(1, h_of.GetNbinsX()+1):
+             h_of.SetBinContent(_bin, h.GetBinContent(_bin))
+             h_of.SetBinError(_bin, h.GetBinError(_bin))
                                                                
      return h_of
-     return h_uf
      del h_of
-     del h_uf
      del h
 
    def getTH2F(self, lumi, name, var, nbinx, xmin, xmax, nbiny, ymin, ymax, cut, options, xlabel, ylabel):
