@@ -5,10 +5,11 @@ class CutManager:
 
    def __init__(self):
 
-      self.filters = "( Flag_HBHENoiseIsoFilter > 0 && Flag_HBHENoiseFilter > 0 &&   Flag_goodVertices > 0 && Flag_eeBadScFilter > 0 && Flag_EcalDeadCellTriggerPrimitiveFilter > 0 && Flag_CSCTightHalo2015Filter > 0)"
+      self.filters = "(Flag_badMuonFilter > 0 && Flag_badChargedHadronFilter > 0 && Flag_HBHENoiseIsoFilter > 0 && Flag_HBHENoiseFilter > 0 &&   Flag_goodVertices > 0 && Flag_eeBadScFilter > 0 && Flag_EcalDeadCellTriggerPrimitiveFilter > 0 && Flag_CSCTightHalo2015Filter > 0)"
       self.trigMMc = "(HLT_mu17mu8_dz > 0 || HLT_mu27tkmu8 > 0 || HLT_mu17tkmu8_dz > 0)"
       self.twoLeptons = "nLeptons > 1"
-      self.twoGoodLeptons = "nLepGood20 ==2"
+      #self.twoGoodLeptons = "(nLepGood20 ==2 )"
+      self.twoGoodLeptons = "((nLepGood20 ==2 ) && (abs(lep_eta < 2.4))  && abs(abs(lep_eta) - 1.5) > 0.1) "
       self.noLeptons = "nLepGood10 ==0"
       self.bla = "met_pt >= 0"
       self.trigEEc = "(HLT_el17el12_dz > 0 || HLT_ele33ele33 > 0)"
@@ -19,6 +20,8 @@ class CutManager:
       self.leptonsMll = "t.lepsMll_Edge > 20"
       self.goodLepton =   self.leptonPt + "&&" + self.leptonDR + "&&" + self.leptonEta + "&&" + self.leptonsMll
       self.nj2 = "(t.nJetSel_Edge >= 2)"
+      self.jet1_pt = "(jet1_pt >= 0) && (jet2_pt < 0)"
+      self.jet2_pt = "(jet2_pt >= 0) && (jet1_pt>= 0)"
       self.InclusiveCR = "(t.nJetSel_Edge >= 1 && t.lepsMll_Edge > 60 && t.lepsMll_Edge < 120)"
       self.nj0 = "(t.nJetSel_Edge >= 0)"
       self.puWeight = "puWeight"
@@ -30,10 +33,10 @@ class CutManager:
       self.centralPhoton = "(abs(gamma_eta)<1.4) "
       self.central = "(abs(t.Lep1_eta_Edge)<1.4 && abs(t.Lep2_eta_Edge)<1.4)"
       self.forward = "(abs(t.Lep1_eta_Edge)>1.4 || abs(t.Lep2_eta_Edge)>1.4)"
-      self.trigger = "((" + self.trigMMc + " && " + self.mm + ") || (" + self.trigEEc + " && " + self.ee + ") || (" + self.trigEMc + " && " + self.OF + "))"
-      self.noOStrigger = "((" + self.trigMMc +" && " + self.SSmm + ") || (" + self.trigEEc  +" && " + self.SSee + ") || (" + self.trigEMc +" && " + self.SSOF + "))"
-      self.noSignTrigger = "((" + self.trigMMc +") || (" + self.trigEEc  + ") || (" + self.trigEMc + "))"
-      self.triggerHT = "(HLT_pfht200 > 0 || HLT_pfht250 > 0 || HLT_pfht300 > 0 || HLT_pfht300 > 0 || HLT_pfht400>0 || HLT_pfht475>0 || HLT_pfht600>0 || HLT_pfht800>0 || HLT_at51>0 || HLT_at52 >0 || HLT_at53 > 0 || HLT_at55 > 0)"
+      #self.trigger = "((" + self.trigMMc + " && " + self.mm + ") || (" + self.trigEEc + " && " + self.ee + ") || (" + self.trigEMc + " && " + self.OF + "))"
+      #self.noOStrigger = "((" + self.trigMMc +" && " + self.SSmm + ") || (" + self.trigEEc  +" && " + self.SSee + ") || (" + self.trigEMc +" && " + self.SSOF + "))"
+      #self.noSignTrigger = "((" + self.trigMMc +") || (" + self.trigEEc  + ") || (" + self.trigEMc + "))"
+      #self.triggerHT = "(HLT_pfht200 > 0 || HLT_pfht250 > 0 || HLT_pfht300 > 0 || HLT_pfht300 > 0 || HLT_pfht400>0 || HLT_pfht475>0 || HLT_pfht600>0 || HLT_pfht800>0 || HLT_at51>0 || HLT_at52 >0 || HLT_at53 > 0 || HLT_at55 > 0)"
       self.trigger12090 = "HLT_Photon120>0 && HLT_Photon90>0"
       self.trigger120 = "(HLT_Photon120>0  && gamma_pt > 85 && gamma_pt < 120  )* (HLT_BIT_HLT_Photon120_R9Id90_HE10_IsoM_v_Prescale)"                     
       self.trigger9075 = "HLT_Photon90>0 && HLT_Photon75>0"
@@ -72,6 +75,8 @@ class CutManager:
    
    def leps(self):
 
-      return self.brackets(self.filters + " && " +self.Zmasswindow  + " && "+ self.twoGoodLeptons ) 
-  
-                                                                  
+          return self.brackets(self.filters + " && " +self.Zmasswindow  + " && "+ self.twoGoodLeptons ) 
+
+      
+
+

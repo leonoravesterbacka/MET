@@ -6,30 +6,30 @@ from ROOT import TTree, TFile, TCut, TH1F, TH2F, THStack, TCanvas
 class Sample:
    'Common base class for all Samples'
 
-   def __init__(self, name, location, xsection, isdata, doqtweight, dokfactorweight, iszjets):
+   def __init__(self, name, location, xsection, isdata, doee, dokfactorweight, iszjets):
       self.name = name
       self.location = location
       self.xSection = xsection
       self.isData = isdata
-      self.doqtWeight = doqtweight
+      self.isee = doee
       self.dokfactorWeight = dokfactorweight
       self.isZjets = iszjets
       self.tfile = TFile(self.location+self.name+'/jes_jes_METtree.root')
       self.ttree = self.tfile.Get('METtree')
       
       self.puWeight  = "1.0"
-      self.qtWeight  = "1.0"
-      #if not self.isData:
-      #  gw = 0.
-      #  for i in self.ttree:
-            #gw = abs(i.genWeight)
-            #self.qtWeight = str(i.qtWeight)
-            #gw = 1.0
-            #if gw: break
-      self.count = self.tfile.Get('Count').GetEntries()
-      #else:
       if not self.isData:
-        self.lumWeight = xsection / self.count
+          gw = 0.
+          for i in self.ttree:
+              gw = abs(i.genWeight)
+              if gw: break
+          
+          self.count = self.tfile.Get('SumGenWeights').GetBinContent(1)/abs(gw)
+      else:
+          self.count = self.tfile.Get('Count').GetBinContent(1)
+      self.lumWeight =  1.0
+      if not self.isData:
+        self.lumWeight = self.xSection / self.count
         print 'name ',self.name
         print 'xsec ',self.xSection
         print 'count ',self.count
@@ -63,20 +63,26 @@ class Sample:
       
       if self.isData:
           if self.isZjets:
-              addCut = "1."
+              addTriggers = "&&( HLT_DoubleMu == 1 || HLT_DoubleEG  == 1 || HLT_SingleMu == 1 || HLT_SingleEle == 1 )"
           else:   
               addCut = "prescaleWeight" 
-          cut = cut + "* (" + addCut +") "
+              addTriggers = "" 
+          cut = cut + addTriggers + "* (" + addCut +") "
 
       if(self.isData == 0):
+          #addCut = "1"
           addCut = "puWeight"
           addCut2 = "1."
           if self.dokfactorWeight:
-            addCut2 = "kfactorWeight"  
-          if self.doqtWeight:    
-            addCut2 = "qtWeight"
-          cut =  cut  + "* ( " + addCut + " )" +  "* ( " + addCut2 + " )" + "* ( " + str(self.lumWeight*lumi)  +  " )" #kommentera ut det har
-      print "cuts ", cut
+              cut =  cut  + "* ( " + addCut + " )" +  "*( kfactorWeight )" + "* ( " + str(self.lumWeight*lumi)  +  " )" + "* ( " + "genWeight/abs(genWeight) " +  " )" 
+          else:
+              if self.isee:
+                  cut =  cut  + "* ( " + addCut + " )" +  "*0.83320698315*( " + str(self.lumWeight*lumi)  +  " )" + "* ( " + "genWeight/abs(genWeight) " +  " )"
+                  #cut =  cut  + "* ( " + addCut + " )" +  "*( " + str(self.lumWeight*lumi)  +  " )" + "* ( " + "genWeight/abs(genWeight) " +  " )"
+              else:
+                  cut =  cut  + "* ( " + addCut + " )" +  "* 0.86905641268*( " + str(self.lumWeight*lumi)  +  " )" + "* ( " + "genWeight/abs(genWeight) " +  " )" 
+                  #cut =  cut  + "* ( " + addCut + " )" +  "* ( " + str(self.lumWeight*lumi)  +  " )" + "* ( " + "genWeight/abs(genWeight) " +  " )" 
+      #print "cuts ", cut
       self.ttree.Project(name, var, cut, options)
       return h
 
@@ -278,7 +284,7 @@ class Tree:
        _nbins = len(nbin)-1
        _arr = array('d', nbin)
        h = TH1F(name, "", _nbins, _arr)
-       if len(nbin) > 41 :  # this option is for when you want underflow bins, make sure to modify the nbins if you want underflow bins for a plot with fewer bins 
+       if len(nbin) > 50 :  # this option is for when you want underflow bins, make sure to modify the nbins if you want underflow bins for a plot with fewer bins 
            _newarr = array('d', [ 2*_arr[0]-_arr[1] ]) +_arr +  array('d', [ 2*_arr[-1]-_arr[-2] ]) 
            h_of = TH1F(name+'_of', "", _nbins+2, _newarr)
        else:
