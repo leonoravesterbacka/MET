@@ -17,7 +17,12 @@ import include.Canvas     as Canvas
 import include.CutManager as CutManager
 import include.Sample     as Sample
 
-
+def makeUpara(met, phi,boson, boson_phi):
+    uPara = ( "((( -"+ met + "*cos("+phi +" ) "+ " - " +boson + "*cos( " + boson_phi +"))* " + boson + "*cos( " +boson_phi +" )+(- "+ met + "*sin( "+ phi+ " )- " +boson+"*sin(" + boson_phi +" ))* " +boson +"*sin( " +boson_phi +" ))/" +boson + " + " + boson +")" )
+    return uPara
+def makeUperp(met, phi,boson, boson_phi):
+    uPerp = ( "((( -"+ met + "*cos("+phi +" ) "+ " - " +boson + "*cos( " + boson_phi +"))* " + boson + "*sin( " +boson_phi +" )-(- "+ met + "*sin( "+ phi+ " )- " +boson+"*sin(" + boson_phi +" ))* " +boson +"*cos( " +boson_phi +" ))/" +boson +")" )                             
+    return uPerp
 
 def constructModel(Hist, bkg_hist,  m, um,uM, BKGSubtraction, eemm, upd,  cut, var, plot_name):
     f = 0
@@ -38,15 +43,12 @@ def constructModel(Hist, bkg_hist,  m, um,uM, BKGSubtraction, eemm, upd,  cut, v
         model.plotOn(xFrame, RooFit.Components("bkg_pdf"), RooFit.LineColor(r.kRed)  ,RooFit.LineStyle(r.kDashed),RooFit.FillColor(r.kRed)  ,RooFit.DrawOption("F"))
         model.plotOn(xFrame, RooFit.Components("voigt")  , RooFit.LineColor(r.kGreen)  ,RooFit.LineStyle(r.kDashed),RooFit.FillColor(r.kGreen)  ,RooFit.DrawOption("L")) 
         xFrame.Draw()
-        plot.save(0, 1, 0, xFrame.chiSquare())
     else:   
         plotmc = Canvas.Canvas("met/gammajets/resolution/mcfit/"+dire+var+dependence+cut , "png",0.6, 0.7, 0.8, 0.9)
         result = voigt.fitTo(Hist, RooFit.Minimizer("Minuit","Migrad"), RooFit.Strategy(2), RooFit.SumW2Error(False), RooFit.Save(True), RooFit.PrintLevel(-1)) 
         voigt.plotOn(xFrame,RooFit.FillColor(r.kGray),RooFit.VisualizeError(result,1),RooFit.Components("voigt"))
         voigt.plotOn(xFrame,RooFit.LineColor(r.kGray))  
         xFrame.Draw()
-        if (upd ==""):
-            plotmc.save(0, 1, 0, xFrame.chiSquare())                                                                                                                                                      
     sigma = g_w.getVal()
     gamma = gamma_Z0.getVal()
     esigma = g_w.getError()
@@ -57,6 +59,11 @@ def constructModel(Hist, bkg_hist,  m, um,uM, BKGSubtraction, eemm, upd,  cut, v
     Vgg = result.correlation(gamma_Z0, gamma_Z0)
     f = FWHM(sigma, gamma)
     efwhm = FWHMError_fixed (sigma, gamma, esigma, egamma, Vss, Vsg, Vgs, Vgg)
+    if BKGSubtraction:
+        plotda.save(0, 1, 0, xFrame.chiSquare(), "FWHM = %.1f " %(f))
+    else:
+        if (upd ==""):
+            plotmc.save(0, 1, 0, xFrame.chiSquare(),  "FWHM = %.1f " %(f)) 
     print 'fwhm', f
     return f, efwhm
 
@@ -93,15 +100,15 @@ if __name__ == "__main__":
     print 'Going to load DATA and MC trees...'
     channel = 'gamma'
     if doBKGSubtraction: 
-        bkgDatasets = ['QCD_HT200to300_ext', 'QCD_HT300to500', 'QCD_HT500to700','QCD_HT700to1000', 'QCD_HT1000to1500', 'QCD_HT1500to2000', 'QCD_HT2000toInf', 'TTGJets', 'ZGJets','ZGJets40-130', 'WGToLNuG', 'WJetsToLNu_HT100to200_ext','WJetsToLNu_HT200to400', 'WJetsToLNu_HT400to600', 'WJetsToLNu_HT600to800', 'WJetsToLNu_HT800to1200', 'WJetsToLNu_HT1200to2500', 'WJetsToLNu_HT2500toInf']
-        gjetsDatasets = ['ZGTo2LG' ,'GJets_HT40to100', 'GJets_HT100to200', 'GJets_HT200to400', 'GJets_HT400to600', 'GJets_HT600toInf']
-        daDatasets = ['SinglePhoton_Run2016B_PromptReco_v2NEW'] 
+        bkgDatasets = ['QCD_HT300to500', 'QCD_HT1000to1500', 'QCD_HT1500to2000', 'QCD_HT2000toInf', 'TGJets_ext', 'ZGJets','ZGJets40to130', 'WGToLNuG', 'WJetsToLNu_HT200to400', 'WJetsToLNu_HT400to600', 'WJetsToLNu_HT600to800', 'WJetsToLNu_HT800to1200_ext', 'WJetsToLNu_HT1200to2500', 'WJetsToLNu_HT2500toInf']
+        gjetsDatasets = ['ZGTo2LG' ,'GJets_HT40to100', 'GJets_HT100to200', 'GJets_HT200to400', 'GJets_HT400to600']
+        daDatasets = ['SinglePhoton_Run2016B_PromptReco_v2V6'] 
         plot_name = 'Data'
         treeBKG = Sample.Tree(helper.selectSamples(opts.sampleFile, bkgDatasets, 'bkg'), 'bkg'  , 0)
         treeGJETS = Sample.Tree(helper.selectSamples(opts.sampleFile, gjetsDatasets, 'gjets'), 'gjets'  , 0)
         treeDA = Sample.Tree(helper.selectSamples(opts.sampleFile, daDatasets, 'da'), 'da', 1)
     else:
-        gjetsDatasets = [ 'ZGTo2LG', 'GJets_HT40to100', 'GJets_HT100to200', 'GJets_HT200to400', 'GJets_HT400to600', 'GJets_HT600toInf']
+        gjetsDatasets = [ 'ZGTo2LG', 'GJets_HT40to100', 'GJets_HT100to200', 'GJets_HT200to400', 'GJets_HT400to600']
         treeGJETS = Sample.Tree(helper.selectSamples(opts.sampleFile, gjetsDatasets, 'gjets'), 'gjets'  , 0)
         plot_name =  'GJets'
 
@@ -109,39 +116,31 @@ if __name__ == "__main__":
         trees = [treeBKG, treeGJETS, treeDA] 
         direction = [plot_name]  
         updown = [""]  
-        uPerp = ['((-met_pt*sin(met_phi)- gamma_pt*sin(gamma_phi))*gamma_pt*cos(gamma_phi) - (-met_pt*cos(met_phi) - gamma_pt*cos(gamma_phi))*gamma_pt*sin(gamma_phi))/gamma_pt'] 
-        uPara = ['((-met_pt*sin(met_phi)- gamma_pt*sin(gamma_phi))*gamma_pt*sin(gamma_phi)+(-met_pt*cos(met_phi) - gamma_pt*cos(gamma_phi))*gamma_pt*cos(gamma_phi))/gamma_pt + gamma_pt']
-        uPerpPuppi = ['((-metPuppi_pt*sin(metPuppi_phi)- gamma_pt*sin(gamma_phi))*gamma_pt*cos(gamma_phi) - (-metPuppi_pt*cos(metPuppi_phi) - gamma_pt*cos(gamma_phi))*gamma_pt*sin(gamma_phi))/gamma_pt'] 
-        uParaPuppi = ['((-metPuppi_pt*sin(metPuppi_phi)- gamma_pt*sin(gamma_phi))*gamma_pt*sin(gamma_phi)+(-metPuppi_pt*cos(metPuppi_phi) - gamma_pt*cos(gamma_phi))*gamma_pt*cos(gamma_phi))/gamma_pt + gamma_pt']
-    else:      
+        uPerp = [makeUperp('met_pt', 'met_phi', 'gamma_pt', 'gamma_phi')] 
+        uPara = [makeUpara('met_pt', 'met_phi', 'gamma_pt', 'gamma_phi')]
+        metx = ['met_pt*sin(met_phi)']
+        mety = ['met_pt*cos(met_phi)']
+        uPerpPuppi = [makeUperp('metPuppi_pt', 'metPuppi_phi', 'gamma_pt', 'gamma_phi')] 
+        uParaPuppi = [makeUpara('metPuppi_pt', 'metPuppi_phi', 'gamma_pt', 'gamma_phi')] 
+    else:
         trees = [treeGJETS]
         direction = [plot_name]  
-        #direction = [plot_name,plot_name+'_up_jes_GJets', plot_name+'_down_jes_GJets']  
         updown = [""]  
-        #updown = ["","_up", "_down"]  
-        uPerp = ['((-met_pt*sin(met_phi)- gamma_pt*sin(gamma_phi))*gamma_pt*cos(gamma_phi) - (-met_pt*cos(met_phi) - gamma_pt*cos(gamma_phi))*gamma_pt*sin(gamma_phi))/gamma_pt', 
-            '((-met_JetEnUp_Pt*sin(met_JetEnUp_Phi)- gamma_pt*sin(gamma_phi))*gamma_pt*cos(gamma_phi) - (-met_JetEnUp_Pt*cos(met_JetEnUp_Phi) - gamma_pt*cos(gamma_phi))*gamma_pt*sin(gamma_phi))/gamma_pt',
-            '((-met_JetEnDown_Pt*sin(met_JetEnDown_Phi)- gamma_pt*sin(gamma_phi))*gamma_pt*cos(gamma_phi) - (-met_JetEnDown_Pt*cos(met_JetEnDown_Phi) - gamma_pt*cos(gamma_phi))*gamma_pt*sin(gamma_phi))/gamma_pt']
-        uPara = ['((-met_pt*sin(met_phi)- gamma_pt*sin(gamma_phi))*gamma_pt*sin(gamma_phi)+(-met_pt*cos(met_phi) - gamma_pt*cos(gamma_phi))*gamma_pt*cos(gamma_phi))/gamma_pt + gamma_pt', 
-            '((-met_JetEnUp_Pt*sin(met_JetEnUp_Phi)- gamma_pt*sin(gamma_phi))*gamma_pt*sin(gamma_phi)+(-met_JetEnUp_Pt*cos(met_JetEnUp_Phi) - gamma_pt*cos(gamma_phi))*gamma_pt*cos(gamma_phi))/gamma_pt + gamma_pt',
-            '((-met_JetEnDown_Pt*sin(met_JetEnDown_Phi)- gamma_pt*sin(gamma_phi))*gamma_pt*sin(gamma_phi)+(-met_JetEnDown_Pt*cos(met_JetEnDown_Phi)-gamma_pt*cos(gamma_phi))*gamma_pt*cos(gamma_phi))/gamma_pt+ gamma_pt']
-        uPerpPuppi = ['((-metPuppi_pt*sin(metPuppi_phi)- gamma_pt*sin(gamma_phi))*gamma_pt*cos(gamma_phi) - (-metPuppi_pt*cos(metPuppi_phi) - gamma_pt*cos(gamma_phi))*gamma_pt*sin(gamma_phi))/gamma_pt',                                    
-            '((-metPuppi_JetEnUp_Pt*sin(metPuppi_JetEnUp_Phi)- gamma_pt*sin(gamma_phi))*gamma_pt*cos(gamma_phi) - (-metPuppi_JetEnUp_Pt*cos(metPuppi_JetEnUp_Phi) - gamma_pt*cos(gamma_phi))*gamma_pt*sin(gamma_phi))/gamma_pt',
-            '((-metPuppi_JetEnDown_Pt*sin(metPuppi_JetEnDown_Phi)- gamma_pt*sin(gamma_phi))*gamma_pt*cos(gamma_phi) - (-metPuppi_JetEnDown_Pt*cos(metPuppi_JetEnDown_Phi) - gamma_pt*cos(gamma_phi))*gamma_pt*sin(gamma_phi))/gamma_pt']
-        uParaPuppi = ['((-metPuppi_pt*sin(metPuppi_phi)- gamma_pt*sin(gamma_phi))*gamma_pt*sin(gamma_phi)+(-metPuppi_pt*cos(metPuppi_phi) - gamma_pt*cos(gamma_phi))*gamma_pt*cos(gamma_phi))/gamma_pt + gamma_pt', 
-            '((-metPuppi_JetEnUp_Pt*sin(metPuppi_JetEnUp_Phi)- gamma_pt*sin(gamma_phi))*gamma_pt*sin(gamma_phi)+(-metPuppi_JetEnUp_Pt*cos(metPuppi_JetEnUp_Phi) - gamma_pt*cos(gamma_phi))*gamma_pt*cos(gamma_phi))/gamma_pt + gamma_pt',
-            '((-metPuppi_JetEnDown_Pt*sin(metPuppi_JetEnDown_Phi)- gamma_pt*sin(gamma_phi))*gamma_pt*sin(gamma_phi)+(-metPuppi_JetEnDown_Pt*cos(metPuppi_JetEnDown_Phi)-gamma_pt*cos(gamma_phi))*gamma_pt*cos(gamma_phi))/gamma_pt+ gamma_pt']
+        uPerp = [makeUperp('met_pt', 'met_phi', 'gamma_pt', 'gamma_phi'), makeUperp('met_jecUp_pt', 'met_jecUp_phi', 'gamma_pt', 'gamma_phi'), makeUperp('met_jecDown_pt', 'met_jecDown_phi', 'gamma_pt', 'gamma_phi'), makeUperp('met_shifted_UnclusteredEnUp_pt', 'met_shifted_UnclusteredEnUp_phi', 'gamma_pt', 'gamma_phi'),  makeUperp('met_shifted_UnclusteredEnDown_pt', 'met_shifted_UnclusteredEnDown_phi', 'gamma_pt', 'gamma_phi')] 
+        uPara = [makeUpara('met_pt', 'met_phi', 'gamma_pt', 'gamma_phi'), makeUpara('met_jecUp_pt', 'met_jecUp_phi', 'gamma_pt', 'gamma_phi'), makeUpara('met_jecDown_pt', 'met_jecDown_phi', 'gamma_pt', 'gamma_phi'), makeUpara('met_shifted_UnclusteredEnUp_pt', 'met_shifted_UnclusteredEnUp_phi', 'gamma_pt', 'gamma_phi'),  makeUpara('met_shifted_UnclusteredEnDown_pt', 'met_shifted_UnclusteredEnDown_phi', 'gamma_pt', 'gamma_phi')] 
+        metx = ['met_pt*sin(met_phi)']
+        mety = ['met_pt*cos(met_phi)']
+        uPerpPuppi = [makeUperp('metPuppi_pt', 'metPuppi_phi', 'gamma_pt', 'gamma_phi'), makeUperp('metPuppi_jecUp_pt', 'metPuppi_jecUp_phi', 'gamma_pt', 'gamma_phi'), makeUperp('metPuppi_jecDown_pt', 'metPuppi_jecDown_phi', 'gamma_pt', 'gamma_phi'), makeUperp('metPuppi_shifted_UnclusteredEnUp_pt', 'metPuppi_shifted_UnclusteredEnUp_phi', 'gamma_pt', 'gamma_phi'),  makeUperp('metPuppi_shifted_UnclusteredEnDown_pt', 'met_shifted_UnclusteredEnDown_phi', 'gamma_pt', 'gamma_phi')] 
+        uParaPuppi = [makeUpara('metPuppi_pt', 'metPuppi_phi', 'gamma_pt', 'gamma_phi'), makeUpara('metPuppi_jecUp_pt', 'metPuppi_jecUp_phi', 'gamma_pt', 'gamma_phi'), makeUpara('metPuppi_jecDown_pt', 'metPuppi_jecDown_phi', 'gamma_pt', 'gamma_phi'), makeUpara('metPuppi_shifted_UnclusteredEnUp_pt', 'metPuppi_shifted_UnclusteredEnUp_phi', 'gamma_pt', 'gamma_phi'),  makeUpara('metPuppi_shifted_UnclusteredEnDown_pt', 'met_shifted_UnclusteredEnDown_phi', 'gamma_pt', 'gamma_phi')] 
 
-        
-    variable = [uPerp]
+    variable = [uPerp, uPara]
     #variable = [uPerp, uPara, uPerpPuppi, uParaPuppi]
-    variablename = ['_uPerp']
+    #variablename = ['_uPerp', '_uPara']
+    variablename = ['_metx', '_mety']
     #variablename = ['_uPerp', '_uPara', '_uPerpPuppi', '_uParaPuppi']
-    #dependences = [ 'met_sumEt-gamma_pt']
-    dependences = ['gamma_pt']
-    dependence = "gamma_pt"
+    dependences = [  'nVert']
     print 'Trees successfully loaded...'
-    lumi = 0.803015796
+    lumi = 4.324217067946
 
    
     gROOT.ProcessLine('.L include/tdrstyle.C')
@@ -154,22 +153,20 @@ if __name__ == "__main__":
     GammaJets = Region.region('met' +variablename[0], 
             [cuts.gammas()],
             'met_pt',
-            dependence,
+            'gamma_pt',
             variablename[0], 
             [range(-100,300,50)],
             False)
     regions.append(GammaJets)                                 
     
-    vtxbins = [[0, 5],[5, 7],[7, 9], [9, 11],[11 ,13],[13, 15],[15, 18], [18, 25], [25, 40]]
-    #qtbins = [[0, 20], [20, 40],[40, 60],  [60, 80],[80, 100], [100, 120], [120, 140], [140, 190], [190, 240], [240, 300],[300,600]]
+    vtxbins = [[0, 6],[6, 8],[8, 10], [10, 12],[12 ,14],[14, 16],[16, 20], [20,  40]]
     qtbins = [[0, 15], [15, 30],[30, 51],  [51, 65],[65, 80],[80,110], [110, 140], [140, 170], [170, 200],[200, 250] ,[250, 330]]
-    sumetbins = [[300, 400], [400, 500],[500, 600], [600, 700], [700, 800],[800, 900],  [900, 1000],[1000, 1100], [1100, 1200], [1200, 1350], [1350, 1600], [1600, 2500]]
+    sumetbins = [ [400, 500],[500, 600], [600, 700], [700, 800],[800, 900],  [900, 1000],[1000, 1100], [1100, 1300],  [1300, 1600], [1600, 2500]]
 
     cutsList = []
     binposition = []
     binerror = []
     x = RooRealVar("x", "x", -80, 80)
-
     g_w = RooRealVar("g_w", "width Gaus", 10.,0. , 100., "GeV") # sigma
     gamma_Z0 = RooRealVar("gamma_Z0_U", "Z0 width", 2.3, 0., 100., "GeV") # gamma
     v_m = RooRealVar("v_m", "v_m",0,-10.,10.)
@@ -180,9 +177,8 @@ if __name__ == "__main__":
             bins = qtbins       
         if dependence == 'met_sumEt-gamma_pt':
             bins = sumetbins           
-        
         for dire in direction:
-            f2 = TFile(dire+ "gjetsResolution.root", "UPDATE");   
+            f2 = TFile(dire+ "gjetsResolutionV1.root", "UPDATE");   
             upd = updown[direction.index(dire)]
             for vari in variable:
                 var = vari[direction.index(dire)]
