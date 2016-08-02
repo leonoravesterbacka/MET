@@ -35,7 +35,6 @@
 #include "TString.h"
 using namespace std;
 
-//TH1::SetDefaultSumw2();
 TGraphErrors *h1= new TGraphErrors;
 TGraphErrors *h2= new TGraphErrors;
 TGraphErrors *h1up= new TGraphErrors;
@@ -62,13 +61,13 @@ TGraphAsymmErrors TOTerror(TH1F *, TH1F *, TH1F *, TH1F *, TH1F *, TH1F *  );
 void PlotWithRatioEEMuMuGJetsComparison(TCanvas *c1, TGraphErrors *mcdyee,  TGraphErrors *datadyee,  TGraphErrors *mcdymm,  TGraphErrors *datadymm,TGraphErrors *mcdygg,  TGraphErrors *datadygg,  TGraphErrors *mcdyeeup, TGraphErrors *mcdyeedown, TGraphErrors *mcdyeeupUncl, TGraphErrors *mcdyeedownUncl,  TString EjeX, TString histogramaname) {
 
 TH1::SetDefaultSumw2();
-  c1->cd();
-   Float_t xbins[] = { 0, 15, 30, 51, 65, 80, 110, 140,170, 200,250, 330};
+  c1->cd(); 
+  Float_t xbins[] = { 0, 15, 30, 51, 65, 80, 110, 140,170, 200,250, 330};
     double nbins=11.;
  //     cout << "plotting resolution as a function of qt" << endl;
  //   if (histogramaname.Contains("over")){
-  //  Float_t xbins[] = { 20,28,36, 44,52,60, 68,76, 84,92,100, 120, 150, 175, 200, 225,250, 275, 305, 335, 365, 395, 430, 500}; 
-  //   double nbins=23.;
+ //   Float_t xbins[] = { 20,28,36, 44,52,60, 68,76, 84,92,100, 120, 150, 175, 200, 225,250, 275, 305, 335, 365, 395, 430, 500}; 
+ //   double nbins=23.;
  //     cout << "plotting scale " << endl;
  //   }
 ///    else if (histogramaname.Contains("nVert")){
@@ -137,8 +136,7 @@ TH1::SetDefaultSumw2();
     pad1->SetLeftMargin(0.1);
     pad1->Draw();
     pad1->cd();
-    hdatadyee->GetYaxis()->SetRangeUser(0, 40);
-    if (histogramaname.Contains("over")) hdatadyee->GetYaxis()->SetRangeUser(0.8,1.2);
+    hdatadyee->GetYaxis()->SetRangeUser(0., 40.);
     hdatadyee->GetXaxis()->SetLabelFont(43); //font in pixels
     hdatadyee->GetXaxis()->SetLabelSize(1); //in pixels
     hdatadyee->GetYaxis()->SetLabelFont(43);
@@ -155,8 +153,8 @@ TH1::SetDefaultSumw2();
 if (histogramaname=="met_uPara_over_zll_pt") ylabel="   -<u_{||}/q_{T}> ";
 if (histogramaname=="met_metx_over_nVert") ylabel="   <E_{X}^{miss}> ";
 if (histogramaname=="met_mety_over_nVert") ylabel="   <E_{Y}^{miss}> ";
-if (histogramaname=="met_uPara_vs_zll_pt") ylabel="#sigma ( u_{||} ) [GeV]";
-if (histogramaname=="met_uPerp_vs_zll_pt") ylabel="#sigma ( u_{#perp}  ) [GeV]";
+if (histogramaname=="met_uParavs_zll_pt") ylabel="#sigma ( u_{||} ) [GeV]";
+if (histogramaname=="met_uPerpvs_zll_pt") ylabel="#sigma ( u_{#perp}  ) [GeV]";
 if (histogramaname=="met_uPara_vs_met_sumEt-zll_pt") ylabel="#sigma ( u_{||}  ) [GeV]";
 if (histogramaname=="met_uPerp_vs_met_sumEt-zll_pt")ylabel="#sigma ( u_{#perp}  ) [GeV]";
 if (histogramaname=="met_uPara_vs_nVert")ylabel="#sigma ( u_{||}  ) [GeV]";
@@ -167,11 +165,10 @@ if (histogramaname.Contains("over")) hdatadyee->GetYaxis()->SetRangeUser(0.58,1.
    
     hdatadymm->Draw("e1, X0 same");
     hdatadyee->Draw("AXIS");
-    //hdatadyee->Draw("AXIS");
     hdatadygg->Draw("e1, X0 same");
     hdatadymm->Draw("e1, X0 same");
-    //hdatadyee->Draw("e1, X0 same");
     hdatadyee->Draw("e1, X0 same");
+    //hdatadyee->Draw("e1, X0 same");
     if (histogramaname.Contains("over")){   
         TLine *line =  new TLine ( hdatadyee->GetXaxis ()->GetXmin (), 1, hdatadyee->GetXaxis ()->GetXmax (), 1);
         line->SetLineColor (kBlack); line -> SetLineStyle(2); line->Draw();
@@ -189,7 +186,7 @@ if (histogramaname.Contains("over")) hdatadyee->GetYaxis()->SetRangeUser(0.58,1.
     leg->AddEntry(hdatadymm, "Data Z#rightarrow #mu#mu", "lp");
     //leg->AddEntry(hmcdymm, "MC Z#rightarrow #mu#mu ", "lp");
     leg->AddEntry(hdatadyee, "Data Z#rightarrow ee", "lp");
-    leg->AddEntry(hdatadygg, "Data #gamma + jets", "lp");
+    leg->AddEntry(hdatadygg, "Data #gamma", "lp");
 
     leg->Draw();
     c1->Modified();
@@ -264,7 +261,7 @@ if (histogramaname.Contains("over")) hdatadyee->GetYaxis()->SetRangeUser(0.58,1.
    lineR->SetLineColor (kBlue + 1); lineR->SetLineWidth (2); lineR->SetLineStyle (2); lineR->Draw();     
         
     TLegend* legratio(0);
-    
+   
     legratio = new TLegend(0.12,0.8,0.8,0.95);
     if (histogramaname.Contains("over")){   
         legratio = new TLegend(0.2,0.8,0.89,0.95);
@@ -276,9 +273,9 @@ if (histogramaname.Contains("over")) hdatadyee->GetYaxis()->SetRangeUser(0.58,1.
     legratio->AddEntry(&erree, "JES + Stat","f");
     legratio->AddEntry(&staterree, "Stat","f");
     legratio->Draw();
-    ratiodygg->Draw("e1, X0 same "); //"e2"
-    ratiodymm->Draw("e1, X0 same"); //"e2"
-    ratiodyee->Draw("e1, X0 same"); //"e2"
+//    ratiodygg->Draw("e1, X0 same "); //"e2"
+//    ratiodymm->Draw("e1, X0 same"); //"e2"
+//    ratiodyee->Draw("e1, X0 same"); //"e2"
 
     pad1->cd();
     TLatex latex;                  
@@ -289,14 +286,18 @@ if (histogramaname.Contains("over")) hdatadyee->GetYaxis()->SetRangeUser(0.58,1.
     latex.SetTextSize(0.07);
     latex.DrawLatex(0.21, 0.91, "#bf{CMS}");
 
-    if ((histogramaname.Contains("sumEt"))  or (histogramaname.Contains("nVert")) ) {
+//    if ((histogramaname.Contains("sumEt"))  or (histogramaname.Contains("nVert")) ) {
         TLatex latexz;
         latexz.SetNDC();
         latexz.SetTextAngle(0);
         latexz.SetTextFont(42);
         latexz.SetTextAlign(31);
         latexz.SetTextSize(0.05);
-        latexz.DrawLatex(0.42, 0.58, "Z/#gamma p_{T} > 50 GeV");
+   if  (histogramaname.Contains("over")){ 
+        latexz.DrawLatex(0.78, 0.1, "p_{T}^{#gamma} > 50 GeV");
+    }
+    else {
+        latexz.DrawLatex(0.35, 0.58, "p_{T}^{#gamma} > 50 GeV");
     }
     
     TLatex latexb;
@@ -313,7 +314,7 @@ if (histogramaname.Contains("over")) hdatadyee->GetYaxis()->SetRangeUser(0.58,1.
     latexc.SetTextFont(42);
     latexc.SetTextAlign(31);
     latexc.SetTextSize(0.05);
-    latexc.DrawLatex(0.90, 0.91, "5.8 fb^{-1} (13 TeV, 2016)");              
+    latexc.DrawLatex(0.90, 0.91, "12.9 fb^{-1} (13 TeV, 2016)");              
     TLatex latexd;
     latexd.SetNDC();
     latexd.SetTextAngle(0);
@@ -322,6 +323,7 @@ if (histogramaname.Contains("over")) hdatadyee->GetYaxis()->SetRangeUser(0.58,1.
     latexd.SetTextSize(0.06);
     latexd.SetTextAngle(90); 
     latexd.DrawLatex(0.038, 0.87, ylabel);      
+    
   
     pad1->Modified();
     pad2->Modified();
@@ -330,9 +332,9 @@ if (histogramaname.Contains("over")) hdatadyee->GetYaxis()->SetRangeUser(0.58,1.
     pad1->cd();
     c1->Update();
     c1->cd();
-    c1->Print("~/www/met/comparisons/July20/"+histogramaname+".png");
-    c1->Print("~/www/met/comparisons/July20/"+histogramaname+".root");
-    c1->Print("~/www/met/comparisons/July20/"+histogramaname+".pdf");
+    c1->Print("~/www/met/comparisons/Aug02/"+histogramaname+".png");
+    c1->Print("~/www/met/comparisons/Aug02/"+histogramaname+".root");
+    c1->Print("~/www/met/comparisons/Aug02/"+histogramaname+".pdf");
 
 }
 
@@ -342,39 +344,41 @@ void testRatioEEMuMuGJetsComparison(TString histograma, TString histograma2, TSt
 
 TCanvas *c1 = new TCanvas("c1","example",600,700);
 if (histograma.Contains("over")){
-    TFile file1EE ("DYEZllScaleV5.root");
-    TFile file2EE ("DataEZllScaleV5.root");
-    TFile file1MM ("DYMZllScaleV5.root"); 
-    TFile file2MM ("DataMZllScaleV5.root");
-    TFile file1GG ("GJetsgjetsScale.root"); 
-    TFile file2GG ("DatagjetsScaleNEW.root");
-    TFile file1EEup     ("DY_up_jes_DYEZllScaleV5.root"); 
-    TFile file1EEdown   ("DY_down_jes_DYEZllScaleV5.root"); 
-    TFile file1EEupUncl ("DY_up_uncl_DYEZllScaleV5.root");
-    TFile file1EEdownUncl ("DY_down_uncl_DYEZllScaleV5.root");
-    h1EE = (TGraphErrors*) file1EE.Get("E_"+ histograma); 
-    h2EE = (TGraphErrors*) file2EE.Get("E_"+ histograma); 
-    h1MM = (TGraphErrors*) file1MM.Get("M_"+histograma); 
-    h2MM = (TGraphErrors*) file2MM.Get("M_"+histograma); 
-    h1GG = (TGraphErrors*) file1GG.Get(histograma2); 
-    h2GG = (TGraphErrors*) file2GG.Get(histograma2); 
-    h1EEup = (TGraphErrors*)   file1EEup.Get("E_"+ histograma); 
-    h1EEdown = (TGraphErrors*) file1EEdown.Get("E_"+ histograma); 
-    h1EEupUncl = (TGraphErrors*)   file1EEupUncl.Get("E_"+ histograma); 
-    h1EEdownUncl = (TGraphErrors*)   file1EEdownUncl.Get("E_"+ histograma); 
+    
+    
+ TFile file1EE ("DYEZllScaleTestwoOF.root");
+ TFile file2EE ("DataEZllScaleTestwoOF.root");
+ TFile file1MM ("DYMZllScaleTestwoOF.root"); 
+ TFile file2MM ("DataMZllScaleTestwoOF.root");
+ TFile file1GG ("GJetsgjetsScalewoOF.root"); 
+ TFile file2GG ("DatagjetsScalewoOF.root");
+ TFile file1EEup     ("DY_up_jes_DYEZllScaleTestwoOF.root"); 
+ TFile file1EEdown   ("DY_down_jes_DYEZllScaleTestwoOF.root"); 
+ TFile file1EEupUncl ("DY_up_uncl_DYEZllScaleTestwoOF.root");
+ TFile file1EEdownUncl ("DY_down_uncl_DYEZllScaleTestwoOF.root");
+ h1EE = (TGraphErrors*) file1EE.Get("E_"+ histograma); 
+ h2EE = (TGraphErrors*) file2EE.Get("E_"+ histograma); 
+ h1MM = (TGraphErrors*) file1MM.Get("M_"+histograma); 
+ h2MM = (TGraphErrors*) file2MM.Get("M_"+histograma); 
+ h1GG = (TGraphErrors*) file1GG.Get(histograma2); 
+ h2GG = (TGraphErrors*) file2GG.Get(histograma2); 
+ h1EEup = (TGraphErrors*)   file1EEup.Get("E_"+ histograma); 
+ h1EEdown = (TGraphErrors*) file1EEdown.Get("E_"+ histograma); 
+ h1EEupUncl = (TGraphErrors*)   file1EEupUncl.Get("E_"+ histograma); 
+ h1EEdownUncl = (TGraphErrors*)   file1EEdownUncl.Get("E_"+ histograma); 
 
 }
 else{
-    TFile file1EE ("DYEZllResolutionV5.root");
-    TFile file2EE ("DataEZllResolutionV5.root");
-    TFile file1MM ("DYMZllResolutionV5.root"); 
-    TFile file2MM ("DataMZllResolutionV5.root");
-    TFile file1GG ("GJetsgjetsResolution.root");
-    TFile file2GG ("DatagjetsResolution.root");
-    TFile file1EEup ("DY_up_jes_DYEZllResolutionV5.root"); 
-    TFile file1EEdown ("DY_down_jes_DYEZllResolutionV5.root"); 
-    TFile file1EEupUncl ("DY_up_uncl_DYEZllResolutionV5.root");
-    TFile file1EEdownUncl ("DY_down_uncl_DYEZllResolutionV5.root"); 
+    TFile file1EE ("DYEZllResolutionwoOF.root");
+    TFile file2EE ("DataEZllResolutionwoOF.root");
+    TFile file1MM ("DYMZllResolutionwoOF.root"); 
+    TFile file2MM ("DataMZllResolutionwoOF.root");
+    TFile file1GG ("GJetsgjetsResolutionwoOF.root");
+    TFile file2GG ("DatagjetsResolutionwoOF.root");
+    TFile file1EEup ("DY_up_jes_DYEZllResolutionwoOF.root"); 
+    TFile file1EEdown ("DY_down_jes_DYEZllResolutionwoOF.root"); 
+    TFile file1EEupUncl ("DY_up_uncl_DYEZllResolutionwoOF.root");
+    TFile file1EEdownUncl ("DY_down_uncl_DYEZllResolutionwoOF.root"); 
     h1EE = (TGraphErrors*) file1EE.Get("E_"+ histograma); 
     h2EE = (TGraphErrors*) file2EE.Get("E_"+ histograma); 
     h1MM = (TGraphErrors*) file1MM.Get("M_"+histograma); 
@@ -643,11 +647,19 @@ TGraphAsymmErrors TOTerror(TH1F *Background, TH1F *Backgrounddown, TH1F *Backgro
         double conte2 =
             sqrt (Background->GetBinError (km) *Background->GetBinError (km) + (Background->GetBinContent (km) -BackgroundUncldown->GetBinContent (km)) *(Background->GetBinContent (km) -BackgroundUncldown->GetBinContent (km)) +(Background->GetBinContent (km) -Backgrounddown->GetBinContent (km)) *(Background->GetBinContent (km) -Backgrounddown->GetBinContent (km)));
 
-	    den1->SetBinContent (km,
+	    if (conte1> conte2){
+        den1->SetBinContent (km,
 	  		   Background->GetBinContent (km) + conte1);
 	    den2->SetBinContent (km,
-	  		   Background->GetBinContent (km) - conte2);
-	          ymax = Background->GetBinContent(km) + conte1;
+	  		   Background->GetBinContent (km) - conte1);
+        }
+        else{
+        den1->SetBinContent (km,
+        	   Background->GetBinContent (km) + conte2);
+        den2->SetBinContent (km,
+        	   Background->GetBinContent (km) - conte2);
+        }
+	    ymax = Background->GetBinContent(km) + conte1;
 	    x1[km] = Background->GetBinCenter (km);
 	    y1[km] = Background->GetBinContent (km);
 	    exl1[km] = Background->GetBinWidth (km) / 2;

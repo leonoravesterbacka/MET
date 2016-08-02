@@ -28,7 +28,7 @@ class Canvas:
       self.myLegend.SetBorderSize(0)
 
 
-   def banner(self, isData, lumi, isLog, event, isnVert):
+   def banner(self, isData, lumi, isLog, event, isnVert, isSig1jet):
     
       latex = TLatex()                                
       latex.SetNDC();
@@ -58,7 +58,7 @@ class Canvas:
       else:
         latexb.DrawLatex(0.42, 0.93, "#it{Simulation}")
 
-      text_lumi = "5.8 fb^{-1} (13 TeV, 2016)"
+      text_lumi = "12.9 fb^{-1} (13 TeV, 2016)"
       latexc = TLatex()
       latexc.SetNDC();
       latexc.SetTextAngle(0);
@@ -66,7 +66,7 @@ class Canvas:
       latexc.SetTextFont(42);
       latexc.SetTextAlign(31);
       latexc.SetTextSize(0.06);
-      latexc.DrawLatex(0.90, 0.93, text_lumi)          
+      latexc.DrawLatex(0.91, 0.93, text_lumi)          
 
       latexd = TLatex()
       latexd.SetNDC();
@@ -85,11 +85,12 @@ class Canvas:
       latexe.SetTextColor(r.kBlack);
       latexe.SetTextFont(42);
       latexe.SetTextAlign(31);
-      latexe.SetTextSize(0.045);
-      #latexe.DrawLatex(0.88, 0.56, "#gamma p_{T} > 50 GeV")   
+      latexe.SetTextSize(0.045);         
+      if isSig1jet:
+          latexe.DrawLatex(0.88, 0.55, "p_{T}^{jet1} > 50 GeV")   
 
 
-   def banner2(self, isData, chisquare, value):
+   def banner2(self, isData, chisquare, mean, title, event, isNVert, isSig1jet):
     
       latex = TLatex()
       latex.SetNDC();
@@ -98,8 +99,34 @@ class Canvas:
       latex.SetTextFont(42);
       latex.SetTextAlign(31);
       latex.SetTextSize(0.06);
-      latex.DrawLatex(0.33, 0.93, "#bf{CMS}")
+      if isNVert:
+          latex.DrawLatex(0.33, 0.93, "#bf{CMS}")
+      else:
+          latex.DrawLatex(0.26, 0.93, "#bf{CMS}")
 
+      latexd = TLatex()
+      latexd.SetNDC();
+      latexd.SetTextAngle(90);
+      latexd.SetTextColor(r.kBlack);
+      latexd.SetTextFont(42);
+      latexd.SetTextAlign(31);
+      latexd.SetTextSize(0.06);
+      if event == 0:
+          latexd.DrawLatex(0.047, 0.93, "Events")          
+      else:
+          latexd.DrawLatex(0.059, 0.93, "Events / " +str(event) + " GeV")        
+      
+
+
+      latexe = TLatex()
+      latexe.SetNDC();
+      latexe.SetTextColor(r.kBlack);
+      latexe.SetTextFont(42);
+      latexe.SetTextAlign(31);
+      latexe.SetTextSize(0.045);         
+      if isSig1jet:
+          latexe.DrawLatex(0.88, 0.55, "p_{T}^{jet1} > 50 GeV")   
+      
       latexb = TLatex()
       latexb.SetNDC();
       latexb.SetTextAngle(0);
@@ -108,12 +135,12 @@ class Canvas:
       latexb.SetTextAlign(31);
       latexb.SetTextSize(0.05);
  
-      if(isData):
-        latexb.DrawLatex(0.56, 0.93, "#it{Preliminary}")
+      if isNVert:
+          latexb.DrawLatex(0.56, 0.93, "#it{Preliminary}")
       else:
-        latexb.DrawLatex(0.52, 0.93, "#it{Simulation}")
+          latexb.DrawLatex(0.49, 0.93, "#it{Preliminary}")
 
-      text_lumi = "5.8 fb^{-1} (13 TeV)"
+      text_lumi = "12.9 fb^{-1} (13 TeV)"
       latexc = TLatex()
       latexc.SetNDC();
       latexc.SetTextAngle(0);
@@ -121,9 +148,12 @@ class Canvas:
       latexc.SetTextFont(42);
       latexc.SetTextAlign(31);
       latexc.SetTextSize(0.05);
-      latexc.DrawLatex(0.90, 0.93, text_lumi)
-      latexc.DrawLatex(0.46, 0.8,  value)
-      latexc.DrawLatex(0.39, 0.7,  "#chi^{2} = %1.f " %(chisquare))
+      latexc.DrawLatex(0.91, 0.93, text_lumi)
+      latexc.DrawLatex(0.46, 0.8,  mean)
+      if mean == "":
+          latexc.DrawLatex(0.90, 0.04,  mean)
+      else:
+          latexc.DrawLatex(0.39, 0.7,  "#chi^{2} = %1.f " %(chisquare))
 
    def addBand(self, x1, y1, x2, y2, color, opacity):
 
@@ -220,30 +250,55 @@ class Canvas:
    def saveRatio(self, legend, isData, log, lumi, hdata, hMC, hjecUp, hjecDown , hunclUp, hunclDown, title,  option,   r_ymin=0, r_ymax=2):
       
       events = 5  
-      fixAxis = 0 
+      setUpAxis = 0 
+      setLowAxis = 1 
       log = 1
       doAllErrors = 1
       isNVert = 0
+      puppi = 0
+      statOnly = 0
+      tightRatio = 0
+      isSig1jet = 0
       if option == 'nvert':
-          log = 0
+          log =0
           events = 0
           doAllErrors = 0
+          statOnly = 1
           isNVert = 1
-      if option == 'sig':
+          tightRatio = 1
+      if option == 'sig0':
           log =1
           events = 2
           doAllErrors = 0  
+          statOnly = 1     
+      if option == 'sig1':
+          log =1
+          events = 2
+          doAllErrors = 0  
+          statOnly = 1  
+          isSig1jet = 1      
       if option == 'chi':
           log =0
           events = 0
           doAllErrors = 0  
+          statOnly = 1
       if option == 'qt':
-          fixAxis = 1
+          setLowAxis = 1
+          setUpAxis = 1
           doAllErrors = 0  
+          statOnly = 1
+          tightRatio = 1
       if option == 'mass':
           fixAxis = 0
           doAllErrors = 0
-          events = 2
+          events = 2          
+          statOnly = 1
+          tightRatio = 1
+      if option == 'puppi':
+          puppi = 1
+          doAllErrors = 0
+          setLowAxis = 1          
+      
       self.myCanvas.cd()
       pad1 = TPad("pad1", "pad1", 0, 0.3, 1, 1.0) 
       pad1.SetBottomMargin(0.01)
@@ -259,9 +314,10 @@ class Canvas:
 
       for i in range(0, len(self.histos)):
           if(self.ToDraw[i] != 0):
-              if fixAxis:
-                  self.histos[i].SetMinimum(1.)
-                  self.histos[i].SetMaximum(10000000.)
+              if setLowAxis:
+                  self.histos[i].SetMinimum(10.)
+              if setUpAxis:    
+                  self.histos[i].SetMaximum(hMC.Integral()*10)
               self.histos[i].Draw(self.options[i])
 
       if(legend):
@@ -288,16 +344,15 @@ class Canvas:
       ratio = copy.deepcopy(hdata.Clone("ratio"))
       ratio.Divide(hMC)
 
-      ratio.SetTitle("")
-      #if hjecUp.Integral() == hjecDown.Integral():
-      #    r_ymin = 0.5
-      #    r_ymax = 1.5
-      ratio.GetYaxis().SetRangeUser(r_ymin, r_ymax);
+      if tightRatio:
+          ratio.GetYaxis().SetRangeUser(0.5, 1.5);
+      else:
+          ratio.GetYaxis().SetRangeUser(r_ymin, r_ymax);
       ratio.GetYaxis().SetTitle("Data / MC")
       ratio.GetYaxis().CenterTitle();
       ratio.GetYaxis().SetLabelSize(0.12);
       ratio.GetXaxis().SetLabelSize(0.12);
-      ratio.GetYaxis().SetTitleOffset(0.2);
+      ratio.GetXaxis().SetTitleOffset(0.91);
       ratio.GetYaxis().SetNdivisions(4);
       ratio.GetYaxis().SetTitleSize(0.13);
       ratio.GetXaxis().SetTitleSize(0.135);
@@ -455,32 +510,69 @@ class Canvas:
           legratio.Draw("same")
           line.Draw("same")
           ratio.Draw("same");                                                      
-      else:
-          legratio = TLegend(0.14,0.32,0.43,0.5);
+      if puppi: 
+          legratio = TLegend(0.14,0.31,0.4,0.45);                                   
           legratio.SetFillColor(0);
           legratio.SetBorderSize(0);
+          legratio.SetNColumns(2);
+          legratio.AddEntry(err, "JES + Stat","f");
           legratio.AddEntry(staterr, "Stat","f");                                  
+          err.Draw("2")
           staterr.Draw("2 same")
           legratio.Draw("same")
           line.Draw("same")
           ratio.Draw("same");                                                      
-      #legratio.Draw("same")
+      if statOnly:
+          legratio = TLegend(0.14,0.32,0.43,0.5);
+          legratio.SetFillColor(0);
+          legratio.SetBorderSize(0);
+          legratio.AddEntry(staterr, " ","f");                                  
+          staterr.Draw("2 same")
+          legratio.Draw("same")
+          line.Draw("same")
+          ratio.Draw("same");                                                      
          
 
       pad1.cd()
-      self.banner(isData, lumi, log, events, isNVert)
+      self.banner(isData, lumi, log, events, isNVert, isSig1jet)
       for plotName in self.plotNames:
           path = 'plots/'+plotName
           self.ensurePath(path)
           self.myCanvas.SaveAs(path)
 
-   def save(self, legend, isData, log,chisquare, value):
+   def save(self, legend, isData, log,chisquare, value, title, option):
 
+
+      events = 5  
+      setUpAxis = 0 
+      setLowAxis = 1 
+      log = 0
+      isNVert = 0
+      puppi = 0
+      isSig1jet = 0
+      if option == 'nvert':
+          log = 0
+          events = 0
+          isNVert = 1
+      if option == 'sig0':
+          log =1
+          events = 2
+      if option == 'sig1':
+          log =1
+          events = 2
+          isSig1jet = 1      
+      if option == 'qt':
+          setLowAxis = 1
+          setUpAxis = 1
+          log = 1
+  
       self.myCanvas.cd()
       if(log):
           self.myCanvas.GetPad(0).SetLogy(1)
      
       for i in range(0, len(self.histos)):
+          if setLowAxis:
+              self.histos[i].SetMinimum(10.)
           if(self.ToDraw[i] != 0):        
               self.histos[i].Draw(self.options[i])
 
@@ -501,10 +593,10 @@ class Canvas:
           lat.DrawLatex(latex[0], latex[1], latex[2])
   
       if(legend):
-          self.makeLegend()
+          self.makeLegend(log)
           self.myLegend.Draw()
 
-      self.banner2(isData, chisquare, value )
+      self.banner2(isData, chisquare, value , title, events, isNVert, isSig1jet)
       for plotName in self.plotNames:
           path = 'plots/'+plotName
           self.ensurePath(path)

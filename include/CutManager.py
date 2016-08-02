@@ -5,7 +5,8 @@ class CutManager:
 
    def __init__(self):
 
-      self.filters = "(Flag_badMuonFilter > 0 && Flag_badChargedHadronFilter > 0 && Flag_HBHENoiseIsoFilter > 0 && Flag_HBHENoiseFilter > 0 &&   Flag_goodVertices > 0 && Flag_eeBadScFilter > 0 && Flag_EcalDeadCellTriggerPrimitiveFilter > 0 && Flag_CSCTightHalo2015Filter > 0)"
+      #self.filters = "(  Flag_badMuonFilter == 1 && Flag_badChargedHadronFilter ==1 && Flag_HBHENoiseIsoFilter==1 && Flag_HBHENoiseFilter ==1 &&   Flag_goodVertices ==1 && Flag_eeBadScFilter ==1 && Flag_EcalDeadCellTriggerPrimitiveFilter ==1)"
+      self.filters = "(Flag_globalTightHalo2016Filter ==1 &&  Flag_badMuonFilter == 1 && Flag_badChargedHadronFilter ==1 && Flag_HBHENoiseIsoFilter==1 && Flag_HBHENoiseFilter ==1 &&   Flag_goodVertices ==1 && Flag_eeBadScFilter ==1 && Flag_EcalDeadCellTriggerPrimitiveFilter ==1)"
       self.trigMMc = "(HLT_mu17mu8_dz > 0 || HLT_mu27tkmu8 > 0 || HLT_mu17tkmu8_dz > 0)"
       self.twoLeptons = "nLeptons > 1"
       #self.twoGoodLeptons = "(nLepGood20 ==2 )"
@@ -20,12 +21,12 @@ class CutManager:
       self.leptonsMll = "t.lepsMll_Edge > 20"
       self.goodLepton =   self.leptonPt + "&&" + self.leptonDR + "&&" + self.leptonEta + "&&" + self.leptonsMll
       self.nj2 = "(t.nJetSel_Edge >= 2)"
-      self.jet1_pt = "(jet1_pt >= 0) && (jet2_pt < 0)"
+      self.jet1_pt = "(jet1_pt >= 0)"
       self.jet2_pt = "(jet2_pt >= 0) && (jet1_pt>= 0)"
       self.InclusiveCR = "(t.nJetSel_Edge >= 1 && t.lepsMll_Edge > 60 && t.lepsMll_Edge < 120)"
       self.nj0 = "(t.nJetSel_Edge >= 0)"
       self.puWeight = "puWeight"
-      self.gamma = "(gamma_pt > 50)" + " && "  +  "(ngamma == 1)"+ "&&" +  "(gamma_r9 < 1.0)" + " && " + "(gamma_r9 > 0.9) " + " && "+ "gamma_hOverE < 0.05" + " && " + "gamma_sigmaIetaIeta < 0.01 " 
+      self.gamma =  "(gamma_pt > 50)" +  " && "  +  "(ngamma == 1)"+ "&&" +  "(gamma_r9 < 1.0)" + " && " + "(gamma_r9 > 0.9) " + " && "+ "gamma_hOverE < 0.05" + " && " + "gamma_sigmaIetaIeta < 0.01 "+ " && " + "gamma_sigmaIetaIeta <= 0.005 " 
       self.noLeptons = "nLepGood10 ==0"
       self.Zmasswindow = "zll_mass > 81 && zll_mass < 101"
       self.Zpt = "zll_pt > 50 "
@@ -77,6 +78,21 @@ class CutManager:
 
           return self.brackets(self.filters + " && " +self.Zmasswindow  + " && "+ self.twoGoodLeptons ) 
 
-      
+   def MaxRun(self, run):
+       
+       return self.brackets("run <= %d"%(run))
+   
+   def MinRun(self, run):
+       
+       return self.brackets("run >  %d"%(run))
+
+
+
+
+
+
+
+
+
 
 

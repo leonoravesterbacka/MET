@@ -25,6 +25,7 @@ def selectSamples(inputfile, selList, sType = 'DATA'):
             sys.exit('exiting...')
     if not len(set(typeList)) == 1:
             print 'ERROR: you\'re mixing DATA and MC!'
+            print 'sampels', _selSample
             sys.exit('exiting...')
             
     return tmp_file.name

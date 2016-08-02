@@ -65,24 +65,29 @@ class Sample:
           if self.isZjets:
               addTriggers = "&&( HLT_DoubleMu == 1 || HLT_DoubleEG  == 1 || HLT_SingleMu == 1 || HLT_SingleEle == 1 )"
           else:   
-              addCut = "prescaleWeight" 
-              addTriggers = "" 
-          cut = cut + addTriggers + "* (" + addCut +") "
+              #addCut = "1." 
+              addCut = "bosonWeight" 
+              #addTriggers = "&&(HLT_Photon120 == 1 || HLT_Photon90 == 1 || HLT_Photon75==1 || HLT_Photon50 ==1 || HLT_Photon30 ==1 ) " 
+              addTriggers = "&&(HLT_Photon165 == 1 || HLT_Photon120 == 1 || HLT_Photon90==1 ||HLT_Photon75 == 1 || HLT_Photon50 ==1 || HLT_Photon30 ==1 ) " 
+              #addTriggers = " " 
+          cut = "("+ cut + addTriggers+ ")" + "* (" + addCut +")" 
 
       if(self.isData == 0):
-          #addCut = "1"
+          #addCut = "1."
           addCut = "puWeight"
           addCut2 = "1."
           if self.dokfactorWeight:
-              cut =  cut  + "* ( " + addCut + " )" +  "*( kfactorWeight )" + "* ( " + str(self.lumWeight*lumi)  +  " )" + "* ( " + "genWeight/abs(genWeight) " +  " )" 
+              #cut =  cut  + "*( " + addCut + " )" +  "*( kfactorWeight )" + "* ( " + str(self.lumWeight*lumi)  +  " )" + "* ( " + "genWeight/abs(genWeight) " +  " )" 
+              cut =  cut  + "*0.96*( " + addCut + " )" +  "*( kfactorWeight )" + "* ( " + str(self.lumWeight*lumi)  +  " )" + "* ( " + "genWeight/abs(genWeight) " +  " )" 
           else:
               if self.isee:
-                  cut =  cut  + "* ( " + addCut + " )" +  "*0.83320698315*( " + str(self.lumWeight*lumi)  +  " )" + "* ( " + "genWeight/abs(genWeight) " +  " )"
+                  cut =  cut  + "* ( " + addCut + " )" +  "*0.87680212522*( " + str(self.lumWeight*lumi)  +  " )" + "* ( " + "genWeight/abs(genWeight) " +  " )"
                   #cut =  cut  + "* ( " + addCut + " )" +  "*( " + str(self.lumWeight*lumi)  +  " )" + "* ( " + "genWeight/abs(genWeight) " +  " )"
               else:
-                  cut =  cut  + "* ( " + addCut + " )" +  "* 0.86905641268*( " + str(self.lumWeight*lumi)  +  " )" + "* ( " + "genWeight/abs(genWeight) " +  " )" 
+                  cut =  cut  + "* ( " + addCut + " )" +  "* 0.87653998535*( " + str(self.lumWeight*lumi)  +  " )" + "* ( " + "genWeight/abs(genWeight) " +  " )" 
+                  #cut =  cut  + "* ( " + addCut + " )" +  "* 0.8642787118*( " + str(self.lumWeight*lumi)  +  " )" + "* ( " + "genWeight/abs(genWeight) " +  " )" 
                   #cut =  cut  + "* ( " + addCut + " )" +  "* ( " + str(self.lumWeight*lumi)  +  " )" + "* ( " + "genWeight/abs(genWeight) " +  " )" 
-      #print "cuts ", cut
+      print "cuts ", cut
       self.ttree.Project(name, var, cut, options)
       return h
 
@@ -279,7 +284,7 @@ class Tree:
 
 
    def getTH1F(self, lumi, name, var, nbin, xmin, xmax, cut, options, xlabel):
-   
+     
      if(xmin == xmax):
        _nbins = len(nbin)-1
        _arr = array('d', nbin)
@@ -307,15 +312,24 @@ class Tree:
        h.Add(haux)
        del haux
 
-     if ((xmin == xmax) and len(nbin) > 41):    
-         for _bin in range(0, h_of.GetNbinsX()+1):
-             h_of.SetBinContent(_bin+1, h.GetBinContent(_bin))
-             h_of.SetBinError  (_bin+1, h.GetBinError  (_bin)) 
+     if options == 'noOF':
+         for _bin in range(0, h_of.GetNbinsX()):
+            h_of.SetBinContent(_bin, h.GetBinContent(_bin))
+            h_of.SetBinError(_bin, h.GetBinError(_bin))        
      else:
-         for _bin in range(1, h_of.GetNbinsX()+1):
-             h_of.SetBinContent(_bin, h.GetBinContent(_bin))
-             h_of.SetBinError(_bin, h.GetBinError(_bin))
-                                                               
+         if ((xmin == xmax) and len(nbin) > 50):    
+             for _bin in range(0, h_of.GetNbinsX()+1):
+                 h_of.SetBinContent(_bin+1, h.GetBinContent(_bin))
+                 h_of.SetBinError  (_bin+1, h.GetBinError  (_bin)) 
+         else:
+             for _bin in range(1, h_of.GetNbinsX()+1):
+                 h_of.SetBinContent(_bin, h.GetBinContent(_bin))
+                 h_of.SetBinError(_bin, h.GetBinError(_bin))        
+
+
+
+
+
      return h_of
      del h_of
      del h
