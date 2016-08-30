@@ -85,9 +85,3 @@ DoubleEG_Run2016D_PromptReco_v2     r.kBlack    DoubleEG_Run2016D_PromptReco_v2 
 SinglePhoton_Run2016B_PromptReco_v2 r.kBlack    SinglePhoton_Run2016B_PromptReco_v2 SinglePhoton_Run2016B_PromptReco_v2 /afs/cern.ch/work/m/mvesterb/public/MC_samples/met/approval/gjets/ 1   1  0  0  0
 SinglePhoton_Run2016C_PromptReco_v2 r.kBlack    SinglePhoton_Run2016C_PromptReco_v2 SinglePhoton_Run2016C_PromptReco_v2 /afs/cern.ch/work/m/mvesterb/public/MC_samples/met/approval/gjets/ 1   1  0  0  0
 SinglePhoton_Run2016D_PromptReco_v2 r.kBlack    SinglePhoton_Run2016D_PromptReco_v2 SinglePhoton_Run2016D_PromptReco_v2 /afs/cern.ch/work/m/mvesterb/public/MC_samples/met/approval/gjets/ 1   1  0  0  0
-#DoubleMuon_Run2016B_PromptReco_v2       r.kBlack      DoubleMuon_Run2016B_PromptReco_v2       DoubleMuon_Run2016B_PromptReco_v2       /afs/cern.ch/work/m/mvesterb/public/MC_samples/met/July19/mm/     1   1  0  0  1 
-#DoubleEG_Run2016B_PromptReco_v2       r.kBlack      DoubleEG_Run2016B_PromptReco_v2       DoubleEG_Run2016B_PromptReco_v2       /afs/cern.ch/work/m/mvesterb/public/MC_samples/met/July19/ee/     1   1  0  0  1 
-#DoubleEG_Run2016B_PromptReco_v2NEW       r.kBlack      DoubleEG_Run2016B_PromptReco_v2NEW       DoubleEG_Run2016B_PromptReco_v2NEW       /afs/cern.ch/work/m/mvesterb/public/MC_samples/met/new/zjets/ee/     1   1  0  0  1 
-#SinglePhoton_Run2016B_PromptReco_v2V6       r.kBlack      SinglePhoton_Run2016B_PromptReco_v2V6       SinglePhoton_Run2016B_PromptReco_v2V6       /afs/cern.ch/work/m/mvesterb/public/MC_samples/met/new/gjets/     1   1  0  0  0 
-##
-##synchfile r.kPink      TTLep_pow_synch           TTLep_pow_synch       /afs/cern.ch/work/m/mdunser/public/synchFiles/                                   87314.8  0
