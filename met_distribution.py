@@ -108,6 +108,7 @@ if __name__ == "__main__":
     phibins = [  -4, -3.8, -3.6, -3.4, -3.2, -3.,-2.8, -2.6, -2.4, -2.2, -2, -1.8, -1.6, -1.4, -1.2, -1., -0.8, -0.6, -0.4, -0.2, 0., 0.2, 0.4, 0.6, 0.8, 1., 1.2, 1.4, 1.6, 1.8, 2., 2.2, 2.4, 2.6, 2.8, 3. , 3.2 , 3.4, 3.6, 3.8, 4.]
     regions = []
     met = []
+    # doVariables below is a list of all the variables which should be plotted, select some or all and go for a coffee.
     if doDY:
         doVariables = ['nVert', 'met_sig', 'met_sig_1jet', 'met_pt', 'metPuppi_pt', 'met_uPerp', 'met_uPara',  'metPuppi_uPerp', 'metPuppi_uPara']
         binnings    = [range(0, 50, 2),range(2, 100, 2), range(2, 100, 2), range(0, 200, 5), range(0, 200, 5) ,range(-200, 200, 5),range(-200, 200, 5), range(-200, 200, 5),range(-200, 200, 5)]
