@@ -90,7 +90,7 @@ def FWHM(sigma, gamma):
 if __name__ == "__main__":
 
 
-    doBKGSubtraction = False
+    doBKGSubtraction = True
     parser = optparse.OptionParser(usage="usage: %prog [opts] FilenameWithSamples", version="%prog 1.0")
     parser.add_option("-t", "--test", action="store_true", dest="test", default=False, help="just do a testrun. takes one variable in one eta for one region")
     parser.add_option('-s', '--samples', action='store', type=str, dest='sampleFile', default='samples.dat', help='the samples file. default \'samples.dat\'')
@@ -102,9 +102,8 @@ if __name__ == "__main__":
     channel = 'gamma'
     if doBKGSubtraction: 
         treeBKG = Sample.Tree(helper.selectSamples(opts.sampleFile, bkgDatasets, 'bkg'), 'bkg'  , 0)
-        treeGJETS = Sample.Tree(helper.selectSamples(opts.sampleFile, gjetsDatasets, 'gjets'), 'gjets'  , 0)
         treeDA = Sample.Tree(helper.selectSamples(opts.sampleFile, daDatasets, 'da'), 'da', 1)
-        trees = [treeBKG, treeGJETS, treeDA] 
+        trees = [treeBKG, treeDA] 
         plot_name = 'Data'
     else:
         treeGJETS = Sample.Tree(helper.selectSamples(opts.sampleFile, gjetsDatasets, 'gjets'), 'gjets'  , 0)
@@ -119,12 +118,8 @@ if __name__ == "__main__":
     uPerpPuppi = [makeUperp('metPuppi_pt', 'metPuppi_phi', 'gamma_pt', 'gamma_phi')] 
     uParaPuppi = [makeUpara('metPuppi_pt', 'metPuppi_phi', 'gamma_pt', 'gamma_phi')] 
 
-    variable = [uPerp, uPara]
-    #variable = [uPerp, uPara, uPerpPuppi, uParaPuppi]
-    variablename = ['_uPerp', '_uPara']
-    #variablename = ['_metx', '_mety']
-    #variablename = ['_uPerp', '_uPara', '_uPerpPuppi', '_uParaPuppi']
-    #dependences = [  'nVert']
+    variable = [uPerp, uPara, uPerpPuppi, uParaPuppi]
+    variablename = ['_uPerp', '_uPara', '_uPerpPuppi', '_uParaPuppi']
     dependences = [  'gamma_pt']
     print 'Trees successfully loaded...'
     lumi = 12.9
@@ -154,7 +149,6 @@ if __name__ == "__main__":
     cutsList = []
     binposition = []
     binerror = []
-    x = RooRealVar("x", "x", -80, 80)
     g_w = RooRealVar("g_w", "width Gaus", 10.,0. , 100., "GeV") # sigma
     gamma_Z0 = RooRealVar("gamma_Z0_U", "Z0 width", 2.3, 0., 100., "GeV") # gamma
     v_m = RooRealVar("v_m", "v_m",0,-10.,10.)
@@ -166,26 +160,7 @@ if __name__ == "__main__":
         if dependence == 'met_sumEt-gamma_pt':
             bins = sumetbins           
         for dire in direction:
-            #if doBKGSubtraction:
-            #    fileData =  TFile("DatagjetsScaleV1.root");
-            #else: 
-            #    fileData =  TFile("GJetsgjetsScaleV1.root");
-            #hScale = fileData.Get("met_uPara_over_qt");
-            #
-            #a = "*("
-            #for q in scalebins:   
-            #    miniqt = float(min(scalebins[scalebins.index(q)]))
-            #    maxiqt = float(max(scalebins[scalebins.index(q)]))
-            #    midqt = float((miniqt+maxiqt)/2)
-            #    x = hScale.GetY() 
-            #    if scalebins.index(q)== 0:
-            #        a = a + " ("+ str(miniqt) +" < gamma_pt && gamma_pt < "+ str(maxiqt) +")*(1/ " + str(x[scalebins.index(q)]) +")" 
-            #    else:
-            #        a = a + " + ("+ str(miniqt) +" < gamma_pt && gamma_pt < "+ str(maxiqt) +")*(1/" + str(x[scalebins.index(q)])   +")"
-            #a = a+ ")"                                                                                                                  
-            #
-            #fileData.Close()                                                                                                            
-            f2 = TFile(dire+ "gjetsResolutionwoOF.root", "UPDATE");                  
+            f2 = TFile(dire+ "gjetsResolution.root", "UPDATE");                  
             upd = updown[direction.index(dire)]
             for vari in variable:
                 var = vari[direction.index(dire)]
@@ -215,33 +190,24 @@ if __name__ == "__main__":
                             cutsList.append(cuts.AddList(reg.cuts + [  dependence +  "<"+ str(maxi) + "&&" + dependence + " >" + str(mini)]))
                     for i in cutsList:
                         print i
+                        binLow = -80.; binHigh = 80.; nbins = 70;
+                        x = RooRealVar("x", "x", binLow, binHigh)
                         for tree in trees:
-
-                            x = RooRealVar("x", "x", -80, 80)
                             if doBKGSubtraction:
                                 if tree.name == 'bkg':
-                                    if ((cutsList.index(i) > 8) ):
-                                        bkg_hist = tree.getTH1F(lumi, variablename[variable.index(vari)]+i+'bkg', var,70, -80., 80.,  i, 'noOF', variablename[variable.index(vari)]+i)    
-                                    else:
-                                        bkg_hist = tree.getTH1F(lumi, variablename[variable.index(vari)]+i+'bkg', var,90, -80., 80.,  i, 'noOF', variablename[variable.index(vari)]+i)    
+                                    bkg_hist = tree.getTH1F(lumi, variablename[variable.index(vari)]+i+'bkg', var,nbins, binLow, binHigh,  i, 'noOF', variablename[variable.index(vari)]+i)    
                                     bkg_Hist = RooDataHist("bkg","bkg"+i,RooArgList(x),bkg_hist)                 
                                     m_bkg = bkg_hist.GetMean()
                                     um_bkg = bkg_hist.GetMean()-bkg_hist.GetRMS()
                                     uM_bkg = bkg_hist.GetMean()+bkg_hist.GetRMS()
                                 if tree.name == 'da':
-                                    if ((cutsList.index(i) > 8) ):
-                                        data_hist = tree.getTH1F(lumi, variablename[variable.index(vari)]+i+'da', var,70, -80., 80.,  i, 'noOF', variablename[variable.index(vari)]+i)
-                                    else:
-                                        data_hist = tree.getTH1F(lumi, variablename[variable.index(vari)]+i+'da', var,90, -80., 80.,  i, 'noOF', variablename[variable.index(vari)]+i)
+                                    data_hist = tree.getTH1F(lumi, variablename[variable.index(vari)]+i+'da', var,nbins, binLow, binHigh,  i, 'noOF', variablename[variable.index(vari)]+i)
                                     data_Hist = RooDataHist("da","da"+i, RooArgList(x), data_hist)                  
                                     m_da = data_hist.GetMean()  
                                     um_da = data_hist.GetMean()-data_hist.GetRMS()
                                     uM_da = data_hist.GetMean()+data_hist.GetRMS()                                                   
                             if tree.name == 'gjets':
-                                if ((cutsList.index(i) > 8) ):
-                                    gjets_hist = tree.getTH1F(lumi, variablename[variable.index(vari)]+i+'gjets', var,50, -80., 80.,  i, 'noOF', variablename[variable.index(vari)]+i)
-                                else:
-                                    gjets_hist = tree.getTH1F(lumi, variablename[variable.index(vari)]+i+'gjets', var,90, -80., 80.,  i, 'noOF', variablename[variable.index(vari)]+i)
+                                gjets_hist = tree.getTH1F(lumi, variablename[variable.index(vari)]+i+'gjets', var, nbins, binLow, binHigh,  i, 'noOF', variablename[variable.index(vari)]+i)
                                 gjets_Hist = RooDataHist("gjets","gjets"+i, RooArgList(x), gjets_hist)
                                 gjets_BkgHist = RooDataHist()                                                          
                                 m_gjets = gjets_hist.GetMean() 

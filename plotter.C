@@ -66,7 +66,7 @@ TH1::SetDefaultSumw2();
     double nbins=11.;
  //     cout << "plotting resolution as a function of qt" << endl;
  //   if (histogramaname.Contains("over")){
- //   Float_t xbins[] = { 20,28,36, 44,52,60, 68,76, 84,92,100, 120, 150, 175, 200, 225,250, 275, 305, 335, 365, 395, 430, 500}; 
+//    Float_t xbins[] = { 20,28,36, 44,52,60, 68,76, 84,92,100, 120, 150, 175, 200, 225,250, 275, 305, 335, 365, 395, 430, 500}; 
  //   double nbins=23.;
  //     cout << "plotting scale " << endl;
  //   }
@@ -150,7 +150,7 @@ TH1::SetDefaultSumw2();
     pad1->Update();
     TString ylabel="";
 
-if (histogramaname=="met_uPara_over_zll_pt") ylabel="   -<u_{||}/q_{T}> ";
+if (histogramaname=="met_uPara_over_zll_pt") ylabel="   -<u_{||}>/<q_{T}> ";
 if (histogramaname=="met_metx_over_nVert") ylabel="   <E_{X}^{miss}> ";
 if (histogramaname=="met_mety_over_nVert") ylabel="   <E_{Y}^{miss}> ";
 if (histogramaname=="met_uParavs_zll_pt") ylabel="#sigma ( u_{||} ) [GeV]";
@@ -177,7 +177,7 @@ if (histogramaname.Contains("over")) hdatadyee->GetYaxis()->SetRangeUser(0.58,1.
     TLegend* leg(0);
     leg = new TLegend(0.15,0.65,0.35,0.85);
     if (histogramaname.Contains("over")){
-        leg = new TLegend(0.55,0.15,0.85,0.35);
+        leg = new TLegend(0.45,0.15,0.85,0.35);
     }
     leg->SetBorderSize(0);
     leg->SetTextFont(42);
@@ -186,7 +186,7 @@ if (histogramaname.Contains("over")) hdatadyee->GetYaxis()->SetRangeUser(0.58,1.
     leg->AddEntry(hdatadymm, "Data Z#rightarrow #mu#mu", "lp");
     //leg->AddEntry(hmcdymm, "MC Z#rightarrow #mu#mu ", "lp");
     leg->AddEntry(hdatadyee, "Data Z#rightarrow ee", "lp");
-    leg->AddEntry(hdatadygg, "Data #gamma", "lp");
+    leg->AddEntry(hdatadygg, "Data #gamma, q_{T} > 50 GeV", "lp");
 
     leg->Draw();
     c1->Modified();
@@ -247,7 +247,7 @@ if (histogramaname.Contains("over")) hdatadyee->GetYaxis()->SetRangeUser(0.58,1.
    TAxis *toterree_yaxis = toterree.GetYaxis ();
    toterree_yaxis->SetRangeUser (0, 2);
    toterree.SetTitle (0);
-   toterree.SetFillColor (kBlue);
+   toterree.SetFillColor (kGray+3);
    toterree.SetFillStyle (3002);                                   
    
    ratiodyee->Draw("e1, X0"); //"e2"
@@ -255,8 +255,8 @@ if (histogramaname.Contains("over")) hdatadyee->GetYaxis()->SetRangeUser(0.58,1.
    ratiodymm->Draw("e1, X0 same"); //"e2"
    ratiodyee->Draw("e1, X0 same"); //"e2"
    toterree.Draw ("2 same");
-   erree.Draw ("2 same");
-   staterree.Draw("2 same");
+  // erree.Draw ("2 same");
+  // staterree.Draw("2 same");
    TLine *lineR =  new TLine ( ratiodyee->GetXaxis ()->GetXmin (), 1, ratiodyee->GetXaxis ()->GetXmax (), 1);
    lineR->SetLineColor (kBlue + 1); lineR->SetLineWidth (2); lineR->SetLineStyle (2); lineR->Draw();     
         
@@ -272,7 +272,7 @@ if (histogramaname.Contains("over")) hdatadyee->GetYaxis()->SetRangeUser(0.58,1.
     legratio->AddEntry(&toterree, "Uncl E_{T}^{miss}+ JES + Stat","f");
     legratio->AddEntry(&erree, "JES + Stat","f");
     legratio->AddEntry(&staterree, "Stat","f");
-    legratio->Draw();
+    //legratio->Draw();
 //    ratiodygg->Draw("e1, X0 same "); //"e2"
 //    ratiodymm->Draw("e1, X0 same"); //"e2"
 //    ratiodyee->Draw("e1, X0 same"); //"e2"
@@ -293,12 +293,12 @@ if (histogramaname.Contains("over")) hdatadyee->GetYaxis()->SetRangeUser(0.58,1.
         latexz.SetTextFont(42);
         latexz.SetTextAlign(31);
         latexz.SetTextSize(0.05);
-   if  (histogramaname.Contains("over")){ 
-        latexz.DrawLatex(0.78, 0.1, "p_{T}^{#gamma} > 50 GeV");
-    }
-    else {
-        latexz.DrawLatex(0.35, 0.58, "p_{T}^{#gamma} > 50 GeV");
-    }
+//   if  (histogramaname.Contains("over")){ 
+//        latexz.DrawLatex(0.78, 0.1, "p_{T}^{#gamma} > 50 GeV");
+//    }
+//    else {
+//        latexz.DrawLatex(0.35, 0.58, "p_{T}^{#gamma} > 50 GeV");
+//    }
     
     TLatex latexb;
     latexb.SetNDC();
@@ -332,9 +332,9 @@ if (histogramaname.Contains("over")) hdatadyee->GetYaxis()->SetRangeUser(0.58,1.
     pad1->cd();
     c1->Update();
     c1->cd();
-    c1->Print("~/www/met/comparisons/Aug02/"+histogramaname+".png");
-    c1->Print("~/www/met/comparisons/Aug02/"+histogramaname+".root");
-    c1->Print("~/www/met/comparisons/Aug02/"+histogramaname+".pdf");
+    c1->Print("~/www/met/comparisons/Aug04/"+histogramaname+".png");
+    c1->Print("~/www/met/comparisons/Aug04/"+histogramaname+".root");
+    c1->Print("~/www/met/comparisons/Aug04/"+histogramaname+".pdf");
 
 }
 

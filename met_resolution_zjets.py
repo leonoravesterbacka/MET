@@ -51,7 +51,6 @@ def constructModel(Hist, bkg_hist,  m, um,uM, BKGSubtraction, eemm, upd, cut, va
         xFrame.Draw()
     sigma = g_w.getVal()
     gamma = gamma_Z0.getVal()
-
     esigma = g_w.getError()
     egamma = gamma_Z0.getError()
     Vsg = result.correlation(g_w, gamma_Z0)
@@ -61,10 +60,10 @@ def constructModel(Hist, bkg_hist,  m, um,uM, BKGSubtraction, eemm, upd, cut, va
     f = FWHM(sigma, gamma)
     efwhm = FWHMError_fixed (sigma, gamma, esigma, egamma, Vss, Vsg, Vgs, Vgg)
     if BKGSubtraction:
-        plotda.save(0, 1, 0, xFrame.chiSquare(), "FWHM = %.1f " %(f), "x")
+        plotda.save(0, 1, 0, xFrame.chiSquare(), "FWHM = %.1f " %(f), "x", "")
     else:
         if (upd ==""):
-            plotmc.save(0, 1, 0, xFrame.chiSquare(),  "FWHM = %.1f " %(f), "x") 
+            plotmc.save(0, 1, 0, xFrame.chiSquare(),  "FWHM = %.1f " %(f), "x", "") 
     print 'fwhm', f
     return f, efwhm
 
@@ -130,7 +129,7 @@ if __name__ == "__main__":
         treeDY = Sample.Tree(helper.selectSamples(opts.sampleFile, dy, 'dy'), 'dy', 0)
 
     if doBKGSubtraction:
-        trees = [treeDY, treeTT, treeDA] 
+        trees = [treeTT, treeDA] 
         updown = [""]  
         direction = [plot_name] 
         uPerp = [makeUperp('met_pt', 'met_phi', 'zll_pt', 'zll_phi')] 
@@ -142,9 +141,8 @@ if __name__ == "__main__":
     else:
         trees = [treeDY]
         direction = [plot_name,plot_name+'_up_jes_DY', plot_name+'_down_jes_DY', plot_name+'_up_uncl_DY', plot_name+'_down_uncl_DY']  
-        #direction = [plot_name] 
         updown = ["","_up", "_down", "_unclUp", "_unclDown"]  
-        #updown = [""]  
+        
         uPerp = [makeUperp('met_pt', 'met_phi', 'zll_pt', 'zll_phi'), makeUperp('met_jecUp_pt', 'met_jecUp_phi', 'zll_pt', 'zll_phi'), makeUperp('met_jecDown_pt', 'met_jecDown_phi', 'zll_pt', 'zll_phi'), makeUperp('met_shifted_UnclusteredEnUp_pt', 'met_shifted_UnclusteredEnUp_phi', 'zll_pt', 'zll_phi'),  makeUperp('met_shifted_UnclusteredEnDown_pt', 'met_shifted_UnclusteredEnDown_phi', 'zll_pt', 'zll_phi')] 
         uPara = [makeUpara('met_pt', 'met_phi', 'zll_pt', 'zll_phi'), makeUpara('met_jecUp_pt', 'met_jecUp_phi', 'zll_pt', 'zll_phi'), makeUpara('met_jecDown_pt', 'met_jecDown_phi', 'zll_pt', 'zll_phi'), makeUpara('met_shifted_UnclusteredEnUp_pt', 'met_shifted_UnclusteredEnUp_phi', 'zll_pt', 'zll_phi'),  makeUpara('met_shifted_UnclusteredEnDown_pt', 'met_shifted_UnclusteredEnDown_phi', 'zll_pt', 'zll_phi')] 
         metx = ['met_pt*sin(met_phi)',  'met_jecUp_pt*sin(met_jecUp_phi)','met_jecDown_pt*sin(met_jecDown_phi)', 'met_shifted_UnclusteredEnUp_pt*sin(met_shifted_UnclusteredEnUp_phi)','met_shifted_UnclusteredEnDown_pt*sin(met_shifted_UnclusteredEnDown_phi)']
@@ -200,51 +198,12 @@ if __name__ == "__main__":
         if dependence == 'met_sumEt-zll_pt':
             bins = sumetbins           
         for dire in direction:
-            #if (direction.index(dire) == 0):
-            #    if doBKGSubtraction:
-            #        fileData =  TFile("DataEZllScaleV1.root");
-            #    else: 
-            #        fileData =  TFile("DYEZllScaleV1.root");
-            #if (direction.index(dire) == 1):
-            #    fileData =  TFile("DY_up_jes_DYEZllScaleV1.root");
-            #if (direction.index(dire) == 2):
-            #    fileData =  TFile("DY_down_jes_DYEZllScaleV1.root");
-            #if (direction.index(dire) == 3):
-            #    fileData =  TFile("DY_up_uncl_DYEZllScaleV1.root");
-            #if (direction.index(dire) == 4):
-            #    fileData =  TFile("DY_up_uncl_DYEZllScaleV1.root");     
-            #hScale = fileData.Get("E_met_uPara_over_zll_pt");
-            #
-            #a = "*("
-            #for q in scalebins:   
-            #    miniqt = float(min(scalebins[scalebins.index(q)]))
-            #    maxiqt = float(max(scalebins[scalebins.index(q)]))
-            #    midqt = float((miniqt+maxiqt)/2)
-            #    x = hScale.GetY() 
-            #    if scalebins.index(q)== 0:
-            #        a = a + " ("+ str(miniqt) +" < zll_pt && zll_pt < "+ str(maxiqt) +")*(1/ " + str(x[scalebins.index(q)]) +")" 
-            #    else:
-            #        a = a + " + ("+ str(miniqt) +" < zll_pt && zll_pt < "+ str(maxiqt) +")*(1/" + str(x[scalebins.index(q)])   +")"
-            #a = a+ ")"                                                                                                                      
-            #
-            #fileData.Close()                                                                                                                
-            f2 = TFile(dire+channel + "ZllResolutionwoOF.root", "UPDATE");                                                        
+            f2 = TFile(dire+channel + "ZllResolution.root", "UPDATE");                                                        
             upd = updown[direction.index(dire)]
             for vari in variable:
                 var = vari[direction.index(dire)]
                 for reg in regions:
-                    cutsList = []
-                    binposition = []
-                    binerror = []
-                    ratio = []
-                    data_fwhms = []
-                    data_fwhm = []
-                    data_errors = []
-                    data_error = []
-                    mc_fwhm = []
-                    mc_fwhms = []
-                    mc_error = []
-                    mc_errors = []
+                    cutsList = [];binposition = [];binerror = [];ratio = [];data_fwhms = [];data_fwhm = [];data_errors = [];data_error = [];mc_fwhm = [];mc_fwhms = [];mc_error = [];mc_errors = []
                     print 'doing variable: ', dire , variablename[variable.index(vari)]
                     for i in bins:
                         mini = float(min(bins[bins.index(i)]))
@@ -258,23 +217,24 @@ if __name__ == "__main__":
                             cutsList.append(cuts.AddList(reg.cuts + [  dependence +  "<"+ str(maxi) + "&&" + dependence + " >" + str(mini)]))
                     for i in cutsList:
                         print i
-                        x = RooRealVar("x", "x", -100,100)
+                        binLow = -100.; binHigh = 100.; nbins = 80;
+                        x = RooRealVar("x", "x", binLow, binHigh)
                         for tree in trees:
                             if doBKGSubtraction:
                                 if tree.name == 'tt':
-                                    tt_hist = tree.getTH1F(lumi, variablename[variable.index(vari)]+i+'tt', var,80, -100., 100.,  i, 'noOF', variablename[variable.index(vari)]+i)    
+                                    tt_hist = tree.getTH1F(lumi, variablename[variable.index(vari)]+i+'tt', var,nbins, binLow, binHigh,  i, 'noOF', variablename[variable.index(vari)]+i)    
                                     tt_Hist = RooDataHist("tt","tt"+i,RooArgList(x),tt_hist)                 
                                     m_tt = tt_hist.GetMean()
                                     um_tt = tt_hist.GetMean()-tt_hist.GetRMS()
                                     uM_tt = tt_hist.GetMean()+tt_hist.GetRMS()
                                 if tree.name == 'da':
-                                    data_hist = tree.getTH1F(lumi, variablename[variable.index(vari)]+i+'da', var, 80, -100., 100.,  i , 'noOF', variablename[variable.index(vari)]+i)
+                                    data_hist = tree.getTH1F(lumi, variablename[variable.index(vari)]+i+'da', var, nbins, binLow, binHigh,  i , 'noOF', variablename[variable.index(vari)]+i)
                                     data_Hist = RooDataHist("da","da"+i, RooArgList(x), data_hist)                  
                                     m_da = data_hist.GetMean()  
                                     um_da = data_hist.GetMean()-data_hist.GetRMS()
                                     uM_da = data_hist.GetMean()+data_hist.GetRMS()                                                   
-                            if tree.name == 'dy':
-                                dy_hist = tree.getTH1F(lumi, variablename[variable.index(vari)]+i+'dy', var,80, -100., 100.,  i, 'noOF', variablename[variable.index(vari)]+i)
+                            else:
+                                dy_hist = tree.getTH1F(lumi, variablename[variable.index(vari)]+i+'dy', var, nbins, binLow, binHigh,  i, 'noOF', variablename[variable.index(vari)]+i)
                                 dy_Hist = RooDataHist("dy","dy"+i, RooArgList(x), dy_hist)
                                 dy_BkgHist = RooDataHist()                                                          
                                 m_dy = dy_hist.GetMean() 
@@ -291,10 +251,10 @@ if __name__ == "__main__":
                             mc_errors.append(mc_error)
                     if doBKGSubtraction:
                         graph = TGraphErrors(len(binposition), array("f", binposition), array("f", data_fwhms), array("f", binerror), array("f", data_errors))
-                        graph.Write (channel+"_met" +variablename[variable.index(vari)]+ "vs_" + dependence);
+                        graph.Write (channel+"_met" +variablename[variable.index(vari)]+ "_vs_" + dependence);
                     else:
                         graph_mc = TGraphErrors(len(binposition), array("f", binposition), array("f", mc_fwhms), array("f", binerror), array("f", mc_errors))
-                        graph_mc.Write (channel+"_met"+variablename[variable.index(vari)] + "vs_" + dependence);
+                        graph_mc.Write (channel+"_met"+variablename[variable.index(vari)] + "_vs_" + dependence);
         f2.Close()
 
 

@@ -73,9 +73,8 @@ if __name__ == "__main__":
     channel = 'gamma'
     if doBKGSubtraction:
         treeBKG = Sample.Tree(helper.selectSamples(opts.sampleFile, bkgDatasets, 'bkg'), 'bkg'  , 0)
-        treeGJETS = Sample.Tree(helper.selectSamples(opts.sampleFile, gjetsDatasets, 'gjets'), 'gjets'  , 0)
         treeDA = Sample.Tree(helper.selectSamples(opts.sampleFile, daDatasets, 'da'), 'da', 1)
-        trees = [treeBKG, treeGJETS, treeDA] 
+        trees = [treeBKG, treeDA] 
         plot_name = 'Data'
     else:
         treeGJETS = Sample.Tree(helper.selectSamples(opts.sampleFile, gjetsDatasets, 'gjets'), 'gjets', 0)
@@ -150,78 +149,42 @@ if __name__ == "__main__":
                         binposition.append(mid)
                         binerror.append(0.0)
                         cutsList.append(cuts.AddList(reg.cuts + [  dependence +  "<"+ str(maxi) + "&&" + dependence + " >" + str(mini)]))
-                    
                     for i in cutsList:
                         print i
-                        if (dependence == 'nVert'):
-                            x = RooRealVar("x", "x", -100,100)
-                        else:
-                            x = RooRealVar("x", "x", -1.6,-0.4)
+                        binLow = -1.6; binHigh = -0.4; nbins = 200;
+                        if ((cutsList.index(i) < 9) ):               
+                            binLow = -1.6; binHigh = -0.4; nbins = 400;
+                        if ((cutsList.index(i) < 6) ):
+                            binLow = -2; binHigh = 0; nbins = 400;
+                        x = RooRealVar("x", "x", binLow, binHigh)
                         for tree in trees:
                             if doBKGSubtraction:
-                                if tree.name == 'bkg' :
-                                    if (dependence == 'nVert'):
-                                        bkg_hist = tree.getTH1F(lumi, variablename[variable.index(vari)]+i+'bkg', var,100, -100, 100,  i, 'noOF', variablename[variable.index(vari)]+i)    
-                                    else:
-                                        if ((cutsList.index(i) < 9) ):
-                                            if ((cutsList.index(i) < 6) ):
-                                                x = RooRealVar("x", "x", -2,0)
-                                                bkg_hist = tree.getTH1F(lumi, variablename[variable.index(vari)]+i+'bkg', var,400, -2, 0,  i, 'noOF', variablename[variable.index(vari)]+i)    
-                                            else:
-                                                bkg_hist = tree.getTH1F(lumi, variablename[variable.index(vari)]+i+'bkg', var,400, -1.6, -0.4,  i, 'noOF', variablename[variable.index(vari)]+i)    
-                                        else:
-                                            bkg_hist = tree.getTH1F(lumi, variablename[variable.index(vari)]+i+'bkg', var,200, -1.6, -0.4,  i, 'noOF', variablename[variable.index(vari)]+i)    
+                                if tree.name == 'bkg':
+                                    bkg_hist = tree.getTH1F(lumi, variablename[variable.index(vari)]+i+'bkg', var, nbins, binLow, binHigh,  i, 'noOF', variablename[variable.index(vari)]+i)    
                                     bkg_Hist = RooDataHist("bkg","bkg"+i,RooArgList(x),bkg_hist)                 
                                     m_bkg = bkg_hist.GetMean()
                                     um_bkg = bkg_hist.GetMean()-bkg_hist.GetRMS()
                                     uM_bkg = bkg_hist.GetMean()+bkg_hist.GetRMS()                                                                                                      
                                 if tree.name == 'da':
-                                    if (dependence == 'nVert'):
-                                        data_hist = tree.getTH1F(lumi, variablename[variable.index(vari)]+i+'da', var,100, -100, 100,  i, 'noOF', variablename[variable.index(vari)]+i)
-                                    else:
-                                        if ((cutsList.index(i) < 9) ):
-                                            if ((cutsList.index(i) < 6) ):
-                                                x = RooRealVar("x", "x", -2,0)
-                                                data_hist = tree.getTH1F(lumi, variablename[variable.index(vari)]+i+'da', var,400, -2, 0,  i, 'noOF', variablename[variable.index(vari)]+i)
-                                            else:
-                                                data_hist = tree.getTH1F(lumi, variablename[variable.index(vari)]+i+'da', var,400, -1.6, -0.4,  i, 'noOF', variablename[variable.index(vari)]+i)
-                                        else:
-                                            data_hist = tree.getTH1F(lumi, variablename[variable.index(vari)]+i+'da', var,200, -1.6, -0.4,  i, 'noOF', variablename[variable.index(vari)]+i)
+                                    data_hist = tree.getTH1F(lumi, variablename[variable.index(vari)]+i+'da', var, nbins, binLow, binHigh,  i, 'noOF', variablename[variable.index(vari)]+i)
                                     data_Hist = RooDataHist("da","da"+i, RooArgList(x), data_hist)                  
                                     m_da = data_hist.GetMean()
                                     um_da = data_hist.GetMean()-data_hist.GetRMS()
                                     uM_da = data_hist.GetMean()+data_hist.GetRMS()                                                   
-                            if tree.name == 'gjets':
-                                if (dependence == 'nVert'):
-                                    gjets_hist = tree.getTH1F(lumi, variablename[variable.index(vari)]+i+'gjets', var,100, -100., 100.,  i, 'noOF', variablename[variable.index(vari)]+i)    
-                                else:
-                                    if ((cutsList.index(i) < 9) ):
-                                        if ((cutsList.index(i) < 6) ):
-                                            x = RooRealVar("x", "x", -2, 0)
-                                            gjets_hist = tree.getTH1F(lumi, variablename[variable.index(vari)]+i+'gjets', var,400, -2, 0,  i, 'noOF', variablename[variable.index(vari)]+i)    
-                                        else:
-                                            gjets_hist = tree.getTH1F(lumi, variablename[variable.index(vari)]+i+'gjets', var,400, -1.6, -0.4,  i, 'noOF', variablename[variable.index(vari)]+i)    
-                                    else: 
-                                        gjets_hist = tree.getTH1F(lumi, variablename[variable.index(vari)]+i+'gjets', var,200, -1.6, -0.4,  i, 'noOF', variablename[variable.index(vari)]+i)
+                            else:
+                                gjets_hist = tree.getTH1F(lumi, variablename[variable.index(vari)]+i+'gjets', var, nbins, binLow, binHigh,  i, 'noOF', variablename[variable.index(vari)]+i)
                                 gjets_Hist = RooDataHist("gjets","gjets"+i, RooArgList(x), gjets_hist)
                                 gjets_BkgHist = RooDataHist()
                                 m_gjets = gjets_hist.GetMean() 
                                 um_gjets = gjets_hist.GetMean()-gjets_hist.GetRMS()
                                 uM_gjets = gjets_hist.GetMean()+gjets_hist.GetRMS()
-                     
                         if doBKGSubtraction:
                             data_mean, data_error = constructModel(data_Hist, bkg_Hist, m_da, um_da, uM_da, True, channel,  upd,  str(cutsList.index(i)), variablename[variable.index(vari)], plot_name)
-                            if (dependence == 'nVert'):
-                                data_means.append(data_mean)
-                            else:
-                                data_means.append(-data_mean)
+                            data_means.append(-data_mean)
                             data_errors.append(data_error)
                         else:
                             mc_mean, mc_error = constructModel(gjets_Hist, gjets_BkgHist, m_gjets, um_gjets, uM_gjets, False, channel, upd, str(cutsList.index(i)), variablename[variable.index(vari)], plot_name)
-                            if (dependence == 'nVert'):
-                                mc_means.append(mc_mean)
-                            else:
-                                mc_means.append(-mc_mean)
+                            mc_means.append(-mc_mean)
                             mc_errors.append(mc_error)                                                                                                                                                       
                     if doBKGSubtraction:
                         graph = TGraphErrors(len(binposition), array("f", binposition), array("f", data_means), array("f", binerror), array("f", data_errors))
