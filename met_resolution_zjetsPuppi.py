@@ -150,14 +150,9 @@ if __name__ == "__main__":
         uPerpPuppi = [makeUperp('metPuppi_pt', 'metPuppi_phi', 'zll_pt', 'zll_phi'), makeUperp('metPuppi_jecUp_pt', 'metPuppi_jecUp_phi', 'zll_pt', 'zll_phi'), makeUperp('metPuppi_jecDown_pt', 'metPuppi_jecDown_phi', 'zll_pt', 'zll_phi'), makeUperp('metPuppi_shifted_UnclusteredEnUp_pt', 'metPuppi_shifted_UnclusteredEnUp_phi', 'zll_pt', 'zll_phi'),  makeUperp('metPuppi_shifted_UnclusteredEnDown_pt', 'met_shifted_UnclusteredEnDown_phi', 'zll_pt', 'zll_phi')] 
         uParaPuppi = [makeUpara('metPuppi_pt', 'metPuppi_phi', 'zll_pt', 'zll_phi'), makeUpara('metPuppi_jecUp_pt', 'metPuppi_jecUp_phi', 'zll_pt', 'zll_phi'), makeUpara('metPuppi_jecDown_pt', 'metPuppi_jecDown_phi', 'zll_pt', 'zll_phi'), makeUpara('metPuppi_shifted_UnclusteredEnUp_pt', 'metPuppi_shifted_UnclusteredEnUp_phi', 'zll_pt', 'zll_phi'),  makeUpara('metPuppi_shifted_UnclusteredEnDown_pt', 'met_shifted_UnclusteredEnDown_phi', 'zll_pt', 'zll_phi')] 
 
-    #variable = [metx, mety]
-    #variable = [uPerp]
-    variable = [uPerp, uPara,uPerpPuppi, uParaPuppi]
-    #variablename = ['_metx_', '_mety_']
-    #variablename = ['_uPerp']
-    variablename = ['_uPerp', '_uPara','_uPerpPuppi', '_uParaPuppi']
+    variable = [uPerp, uPara, uPerpPuppi, uParaPuppi]
+    variablename = ['_uPerp', '_uPara', '_uPerpPuppi', '_uParaPuppi']
     dependences = ['nVert']
-    #dependences = ['zll_pt']
     print 'Trees successfully loaded...'
     gROOT.ProcessLine('.L include/tdrstyle.C')
     gROOT.SetBatch(1)
@@ -212,11 +207,6 @@ if __name__ == "__main__":
             if (direction.index(dire) == 4):
                 fileData =  TFile("DY_down_uncl_DYMZllScaleTestwoOF.root");        
             
-            
-            
-            
-            
-            
             if (variablename == '_uPerpPuppi' or variablename == '_uPerpPuppi'):
                 hScale = fileData.Get("M_met_uParaPuppi_over_zll_pt");
             else: 
@@ -267,23 +257,24 @@ if __name__ == "__main__":
                             cutsList.append(cuts.AddList(reg.cuts + [  dependence +  "<"+ str(maxi) + "&&" + dependence + " >" + str(mini)]))
                     for i in cutsList:
                         print i
-                        x = RooRealVar("x", "x", -90,90)
+                        binLow = -90.; binHigh = 90.; nbins = 125;
+                        x = RooRealVar("x", "x", binLow, binHigh)
                         for tree in trees:
                             if doBKGSubtraction:
                                 if tree.name == 'tt':
-                                    tt_hist = tree.getTH1F(lumi, variablename[variable.index(vari)]+i+'tt', var+a,125, -90., 90.,  i, 'noOF', variablename[variable.index(vari)]+i)    
+                                    tt_hist = tree.getTH1F(lumi, variablename[variable.index(vari)]+i+'tt', var+a, nbins, binLow, binHigh,  i, 'noOF', variablename[variable.index(vari)]+i)    
                                     tt_Hist = RooDataHist("tt","tt"+i,RooArgList(x),tt_hist)                 
                                     m_tt = tt_hist.GetMean()
                                     um_tt = tt_hist.GetMean()-tt_hist.GetRMS()
                                     uM_tt = tt_hist.GetMean()+tt_hist.GetRMS()
                                 if tree.name == 'da':
-                                    data_hist = tree.getTH1F(lumi, variablename[variable.index(vari)]+i+'da', var+a ,125, -90., 90.,  i , 'noOF', variablename[variable.index(vari)]+i)
+                                    data_hist = tree.getTH1F(lumi, variablename[variable.index(vari)]+i+'da', var+a ,  nbins, binLow, binHigh,  i , 'noOF', variablename[variable.index(vari)]+i)
                                     data_Hist = RooDataHist("da","da"+i, RooArgList(x), data_hist)                  
                                     m_da = data_hist.GetMean()  
                                     um_da = data_hist.GetMean()-data_hist.GetRMS()
                                     uM_da = data_hist.GetMean()+data_hist.GetRMS()                                                   
                             if tree.name == 'dy':
-                                dy_hist = tree.getTH1F(lumi, variablename[variable.index(vari)]+i+'dy', var+a,125, -90., 90.,  i, 'noOF', variablename[variable.index(vari)]+i)
+                                dy_hist = tree.getTH1F(lumi, variablename[variable.index(vari)]+i+'dy', var+a,  nbins, binLow, binHigh,  i, 'noOF', variablename[variable.index(vari)]+i)
                                 dy_Hist = RooDataHist("dy","dy"+i, RooArgList(x), dy_hist)
                                 dy_BkgHist = RooDataHist()                                                          
                                 m_dy = dy_hist.GetMean() 
