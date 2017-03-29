@@ -14,7 +14,9 @@ class Sample:
       self.isee = doee
       self.dokfactorWeight = dokfactorweight
       self.isZjets = iszjets
-      self.tfile = TFile(self.location+self.name+'/jes_jes_METtree.root')
+      #self.tfile = TFile(self.location+self.name+'/METtree.root')
+      self.tfile = TFile(self.location+self.name+'/jes_ALLMETtree.root')
+      #self.tfile = TFile(self.location+self.name+'/jes_jes_BCDMETtree.root')
       self.ttree = self.tfile.Get('METtree')
       
       self.puWeight  = "1.0"
@@ -45,7 +47,7 @@ class Sample:
       print "#################################"
 
 
-   def getTH1F(self, lumi, name, var, nbin, xmin, xmax, cut, options, xlabel):
+   def getTH1F(self, lumi, name, var, nbin, xmin, xmax, cut, options, xlabel, doReReco):
  
       if(xmin == xmax):
         h = TH1F(name, "", len(nbin)-1, array('d', nbin))
@@ -59,36 +61,36 @@ class Sample:
       h.GetYaxis().SetTitle(ylabel)
 
       addCut = "1."
-      addCut2 = ""
       
       if self.isData:
+          addDataFilters = "&&(  (Flag_eeBadScFilter == 1  ))"
           if self.isZjets:
-              addTriggers = "&&( HLT_DoubleMu == 1 || HLT_DoubleEG  == 1 || HLT_SingleMu == 1 || HLT_SingleEle == 1 )"
+              addTriggers = "&&( ((HLT_DoubleMu == 1 || HLT_SingleMu == 1 || HLT_HighPTMuNonIso == 1) && (lep_tightId[0] == 1 && lep_tightId[1] == 1)) || ((HLT_DoubleEG  == 1  || HLT_SingleEle == 1 || HLT_HighPTEleNonIso ==1 ) && ( lep_tightId[0] == 3 && lep_tightId[1] == 3 )))"
           else:   
-              #addCut = "1." 
-              addCut = "bosonWeight" 
-              #addTriggers = "&&(HLT_Photon120 == 1 || HLT_Photon90 == 1 || HLT_Photon75==1 || HLT_Photon50 ==1 || HLT_Photon30 ==1 ) " 
-              addTriggers = "&&(HLT_Photon165 == 1 || HLT_Photon120 == 1 || HLT_Photon90==1 ||HLT_Photon75 == 1 || HLT_Photon50 ==1 || HLT_Photon30 ==1 ) " 
-              #addTriggers = " " 
-          cut = "("+ cut + addTriggers+ ")" + "* (" + addCut +")" 
+              #addTriggers = "&&( HLT_BIT_HLT_Photon120_R9Id90_HE10_IsoM_v ==1 || HLT_Photon165 == 1 || HLT_BIT_HLT_Photon90_R9Id90_HE10_IsoM_v == 1 || HLT_BIT_HLT_Photon75_R9Id90_HE10_IsoM_v == 1 || HLT_BIT_HLT_Photon50_R9Id90_HE10_IsoM_v == 1 ) " 
+              #addTriggers = "&&( tr120 ==1 || tr165 == 1 || tr90 == 1 || tr75 == 1 || tr50 == 1 || tr30 == 1   ) " 
+              addTriggers = "&&( HLT_Photon120 ==1 || HLT_Photon165 == 1 || HLT_Photon90 == 1 || HLT_Photon75 == 1 || HLT_Photon50 == 1 || HLT_Photon30 == 1   ) " 
+              
+              #addPrescale = "(( tr165 == 1  && tr90 ==0 && tr75==0 && tr50==0 && tr30==0  ) + (ps120)*( tr120 == 1 &&  tr165 == 0 && tr75 == 0 && tr50==0 &&  tr30==0  ) + (ps90)*( tr90 == 1 && tr120 == 0 &&  tr75 == 1  &&tr50 == 1  && tr30==1  ) +   (ps75)*( tr75 == 1 && tr120 == 0  &&  tr50 == 0 && tr30 == 0 ) +   (ps50)*( tr50 == 1 && tr120 == 0 && tr90 == 0&& tr75 == 0 && tr30 == 0) ) " 
+              addPrescale = "(( HLT_Photon165 == 1  && HLT_Photon90==0 && HLT_Photon75==0 && HLT_Photon50==0 && HLT_Photon30==0  ) + (HLT_BIT_HLT_Photon120_R9Id90_HE10_IsoM_v_Prescale)*( HLT_Photon120 == 1 &&  HLT_Photon165 == 0 && HLT_Photon75 == 0 && HLT_Photon50==0 &&  HLT_Photon30==0  ) + (HLT_BIT_HLT_Photon90_R9Id90_HE10_IsoM_v_Prescale)*( HLT_Photon90 == 1 && HLT_Photon120 == 0 &&  HLT_Photon75 == 1  &&  HLT_Photon50 == 1  && HLT_Photon30==1  ) +   (HLT_BIT_HLT_Photon75_R9Id90_HE10_IsoM_v_Prescale)*( HLT_Photon75 == 1 && HLT_Photon120 == 0  &&  HLT_Photon50 == 0 && HLT_Photon30 == 0 ) +   (HLT_BIT_HLT_Photon50_R9Id90_HE10_IsoM_v_Prescale)*( HLT_Photon50 == 1 && HLT_Photon120 == 0 && HLT_Photon90 == 0&& HLT_Photon75 == 0 && HLT_Photon30 == 0) ) " 
+              #addPrescale = "(( HLT_Photon165 == 1  && HLT_BIT_HLT_Photon90_R9Id90_HE10_IsoM_v==0 && HLT_BIT_HLT_Photon75_R9Id90_HE10_IsoM_v==0 && HLT_BIT_HLT_Photon50_R9Id90_HE10_IsoM_v==0 && HLT_BIT_HLT_Photon30_R9Id90_HE10_IsoM_v==0  ) + (HLT_BIT_HLT_Photon120_R9Id90_HE10_IsoM_v_Prescale)*( HLT_BIT_HLT_Photon120_R9Id90_HE10_IsoM_v == 1 &&  HLT_Photon165 == 0 && HLT_BIT_HLT_Photon75_R9Id90_HE10_IsoM_v == 0 && HLT_BIT_HLT_Photon50_R9Id90_HE10_IsoM_v==0 &&  HLT_BIT_HLT_Photon30_R9Id90_HE10_IsoM_v==0  ) + (HLT_BIT_HLT_Photon90_R9Id90_HE10_IsoM_v_Prescale)*( HLT_BIT_HLT_Photon90_R9Id90_HE10_IsoM_v == 1 && HLT_BIT_HLT_Photon120_R9Id90_HE10_IsoM_v == 0 &&  HLT_BIT_HLT_Photon75_R9Id90_HE10_IsoM_v == 1  &&  HLT_BIT_HLT_Photon50_R9Id90_HE10_IsoM_v == 1  && HLT_BIT_HLT_Photon30_R9Id90_HE10_IsoM_v==1  ) +   (HLT_BIT_HLT_Photon75_R9Id90_HE10_IsoM_v_Prescale)*( HLT_BIT_HLT_Photon75_R9Id90_HE10_IsoM_v == 1 && HLT_BIT_HLT_Photon120_R9Id90_HE10_IsoM_v == 0  &&  HLT_BIT_HLT_Photon50_R9Id90_HE10_IsoM_v == 0 && HLT_BIT_HLT_Photon30_R9Id90_HE10_IsoM_v == 0 ) +   (HLT_BIT_HLT_Photon50_R9Id90_HE10_IsoM_v_Prescale)*( HLT_BIT_HLT_Photon50_R9Id90_HE10_IsoM_v == 1 && HLT_BIT_HLT_Photon120_R9Id90_HE10_IsoM_v == 0 && HLT_BIT_HLT_Photon90_R9Id90_HE10_IsoM_v == 0&& HLT_BIT_HLT_Photon75_R9Id90_HE10_IsoM_v == 0 && HLT_BIT_HLT_Photon30_R9Id90_HE10_IsoM_v == 0) ) " 
+          cut = "("+ cut + addTriggers + addDataFilters+ ")" + "* (" + addPrescale +")" 
 
       if(self.isData == 0):
-          #addCut = "1."
-          addCut = "puWeight"
-          addCut2 = "1."
+          addCut = "1."
+          if doReReco: 
+              addCut = "puWeightGJets"
+          else:
+              addCut = "puWeightReReco"
           if self.dokfactorWeight:
-              #cut =  cut  + "*( " + addCut + " )" +  "*( kfactorWeight )" + "* ( " + str(self.lumWeight*lumi)  +  " )" + "* ( " + "genWeight/abs(genWeight) " +  " )" 
-              cut =  cut  + "*0.96*( " + addCut + " )" +  "*( kfactorWeight )" + "* ( " + str(self.lumWeight*lumi)  +  " )" + "* ( " + "genWeight/abs(genWeight) " +  " )" 
+              cut =  cut  + "*( " + addCut + " )"+  "*( photonEff )"  +  "*( kfactorWeight )" + "* ( " + str(self.lumWeight*lumi)  +  " )" + "* ( " + "genWeight/abs(genWeight) " +  " )" 
           else:
               if self.isee:
-                  cut =  cut  + "* ( " + addCut + " )" +  "*0.87680212522*( " + str(self.lumWeight*lumi)  +  " )" + "* ( " + "genWeight/abs(genWeight) " +  " )"
-                  #cut =  cut  + "* ( " + addCut + " )" +  "*( " + str(self.lumWeight*lumi)  +  " )" + "* ( " + "genWeight/abs(genWeight) " +  " )"
+                  cut =  cut  + "* ( " + addCut + " )" + "*((lep_tightId[0]==3)*lep1eff )"+ "*((lep_tightId[1]==3) *lep2eff )" + "*( " + str(self.lumWeight*lumi)  +  " )" + "* ( " + "genWeight/abs(genWeight) " +  " )"
               else:
-                  cut =  cut  + "* ( " + addCut + " )" +  "* 0.87653998535*( " + str(self.lumWeight*lumi)  +  " )" + "* ( " + "genWeight/abs(genWeight) " +  " )" 
-                  #cut =  cut  + "* ( " + addCut + " )" +  "* 0.8642787118*( " + str(self.lumWeight*lumi)  +  " )" + "* ( " + "genWeight/abs(genWeight) " +  " )" 
-                  #cut =  cut  + "* ( " + addCut + " )" +  "* ( " + str(self.lumWeight*lumi)  +  " )" + "* ( " + "genWeight/abs(genWeight) " +  " )" 
-      print "cuts ", cut
+                  cut =  cut  + "* ( " + addCut + " )" + "*((lep_tightId[0]==1)*lep1eff )"+ "*((lep_tightId[1]==1) *lep2eff )" + "*( " + str(self.lumWeight*lumi)  +  " )" + "* ( " + "genWeight/abs(genWeight) " +  " )"
       self.ttree.Project(name, var, cut, options)
+      print cut
       return h
 
    def getTH2F(self, lumi, name, var, nbinx, xmin, xmax, nbiny, ymin, ymax, cut, options, xlabel, ylabel):
@@ -130,7 +132,7 @@ class Block:
    def addSample(self, s):
       self.samples.append(s)
 
-   def getTH1F(self, lumi, name, var, nbin, xmin, xmax, cut, options, xlabel):
+   def getTH1F(self, lumi, name, var, nbin, xmin, xmax, cut, options, xlabel, rereco):
 
      if(xmin == xmax):
        h = TH1F(name, "", len(nbin)-1, array('d', nbin))
@@ -145,7 +147,7 @@ class Block:
 
      for s in self.samples:
        AuxName = "auxT1_sample" + s.name
-       haux = s.getTH1F(lumi, AuxName, var, nbin, xmin, xmax, cut, options, xlabel)
+       haux = s.getTH1F(lumi, AuxName, var, nbin, xmin, xmax, cut, options, xlabel, rereco)
        h.Add(haux)
        del haux
 
@@ -248,7 +250,7 @@ class Tree:
 
    def getYields(self, lumi, var, xmin, xmax, cut):
   
-      h = self.getTH1F(lumi, "yields", var, 1, xmin, xmax, cut, "", "")
+      h = self.getTH1F(lumi, "yields", var, 1, xmin, xmax, cut, "", "", rereco)
       nbinmin = h.FindBin(xmin)
       nbinmax = h.FindBin(xmax)
       error = r.Double()
@@ -264,7 +266,7 @@ class Tree:
      for b in self.blocks:
      
        AuxName = "auxStack_block_" + name + "_" + b.name
-       haux = b.getTH1F(lumi, AuxName, var, nbin, xmin, xmax, cut, options, xlabel)
+       haux = b.getTH1F(lumi, AuxName, var, nbin, xmin, xmax, cut, options, xlabel, rereco)
        haux.SetFillColor(b.color)
        hs.Add(haux)
        del haux
@@ -283,7 +285,7 @@ class Tree:
      return hs   
 
 
-   def getTH1F(self, lumi, name, var, nbin, xmin, xmax, cut, options, xlabel):
+   def getTH1F(self, lumi, name, var, nbin, xmin, xmax, cut, options, xlabel, rereco):
      
      if(xmin == xmax):
        _nbins = len(nbin)-1
@@ -308,7 +310,7 @@ class Tree:
      
      for b in self.blocks:
        AuxName = "auxh1_block_" + name + "_" + b.name
-       haux = b.getTH1F(lumi, AuxName, var, nbin, xmin, xmax, cut, options, xlabel)
+       haux = b.getTH1F(lumi, AuxName, var, nbin, xmin, xmax, cut, options, xlabel, rereco)
        h.Add(haux)
        del haux
 

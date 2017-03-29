@@ -91,7 +91,7 @@ def FWHM(sigma, gamma):
 if __name__ == "__main__":
 
 
-    doBKGSubtraction = False
+    doBKGSubtraction = True
     doPostFix = True
     parser = optparse.OptionParser(usage="usage: %prog [opts] FilenameWithSamples", version="%prog 1.0")
     parser.add_option("-t", "--test", action="store_true", dest="test", default=False, help="just do a testrun. takes one variable in one eta for one region")
@@ -117,18 +117,20 @@ if __name__ == "__main__":
     if doBKGSubtraction:
         direction = [plot_name]  
         updown = [""]  
-        uPerp = [makeUperp('met_pt', 'met_phi', 'gamma_pt', 'gamma_phi')] 
-        uPara = [makeUpara('met_pt', 'met_phi', 'gamma_pt', 'gamma_phi')]
+        uPerpPuppi = [makeUperp('metPuppi_pt', 'metPuppi_phi', 'gamma_pt', 'gamma_phi')] 
+        uParaPuppi = [makeUpara('metPuppi_pt', 'metPuppi_phi', 'gamma_pt', 'gamma_phi')] 
     else:
-        direction = [plot_name,plot_name+'_up_jes_DY', plot_name+'_down_jes_DY', plot_name+'_up_jer_DY', plot_name+'_down_jer_DY',plot_name+'_up_uncl_DY', plot_name+'_down_uncl_DY']
-        updown = ["","_up", "_down",  "_jerUp", "_jerDown", "_unclUp", "_unclDown"]
+        direction = [plot_name]  
+        #direction = [plot_name,plot_name+'_up_jes_DY', plot_name+'_down_jes_DY', plot_name+'_up_jer_DY', plot_name+'_down_jer_DY',plot_name+'_up_uncl_DY', plot_name+'_down_uncl_DY']  
+        updown = [""]  
+        #updown = ["","_up", "_down",  "_jerUp", "_jerDown", "_unclUp", "_unclDown"]  
 
-        uPara = [makeUpara('met_pt', 'met_phi', 'gamma_pt', 'gamma_phi'), makeUpara('met_jecUp_pt', 'met_jecUp_phi', 'gamma_pt', 'gamma_phi'), makeUpara('met_jecDown_pt', 'met_jecDown_phi', 'gamma_pt', 'gamma_phi'), makeUpara('met_shifted_JetResUp_pt', 'met_shifted_JetResUp_phi', 'gamma_pt', 'gamma_phi'), makeUpara('met_shifted_JetResDown_pt', 'met_shifted_JetResDown_phi', 'gamma_pt', 'gamma_phi'), makeUpara('met_shifted_UnclusteredEnUp_pt', 'met_shifted_UnclusteredEnUp_phi', 'gamma_pt', 'gamma_phi'),  makeUpara('met_shifted_UnclusteredEnDown_pt', 'met_shifted_UnclusteredEnDown_phi', 'gamma_pt', 'gamma_phi')] 
-        uPerp = [makeUperp('met_pt', 'met_phi', 'gamma_pt', 'gamma_phi'), makeUperp('met_jecUp_pt', 'met_jecUp_phi', 'gamma_pt', 'gamma_phi'), makeUperp('met_jecDown_pt', 'met_jecDown_phi', 'gamma_pt', 'gamma_phi'), makeUperp('met_shifted_JetResUp_pt', 'met_shifted_JetResUp_phi', 'gamma_pt', 'gamma_phi'), makeUperp('met_shifted_JetResDown_pt', 'met_shifted_JetResDown_phi', 'gamma_pt', 'gamma_phi'), makeUperp('met_shifted_UnclusteredEnUp_pt', 'met_shifted_UnclusteredEnUp_phi', 'gamma_pt', 'gamma_phi'),  makeUperp('met_shifted_UnclusteredEnDown_pt', 'met_shifted_UnclusteredEnDown_phi', 'gamma_pt', 'gamma_phi')] 
+        uParaPuppi = [makeUpara('metPuppi_pt', 'metPuppi_phi', 'gamma_pt', 'gamma_phi'), makeUpara('metPuppi_jecUp_pt', 'metPuppi_jecUp_phi', 'gamma_pt', 'gamma_phi'), makeUpara('metPuppi_jecDown_pt', 'metPuppi_jecDown_phi', 'gamma_pt', 'gamma_phi'), makeUpara('metPuppi_shifted_JetResUp_pt', 'metPuppi_shifted_JetResUp_phi', 'gamma_pt', 'gamma_phi'), makeUpara('metPuppi_shifted_JetResDown_pt', 'metPuppi_shifted_JetResDown_phi', 'gamma_pt', 'gamma_phi'), makeUpara('metPuppi_shifted_UnclusteredEnUp_pt', 'metPuppi_shifted_UnclusteredEnUp_phi', 'gamma_pt', 'gamma_phi'),  makeUpara('metPuppi_shifted_UnclusteredEnDown_pt', 'metPuppi_shifted_UnclusteredEnDown_phi', 'gamma_pt', 'gamma_phi')] 
+        uPerpPuppi = [makeUperp('metPuppi_pt', 'metPuppi_phi', 'gamma_pt', 'gamma_phi'), makeUperp('metPuppi_jecUp_pt', 'metPuppi_jecUp_phi', 'gamma_pt', 'gamma_phi'), makeUperp('metPuppi_jecDown_pt', 'metPuppi_jecDown_phi', 'gamma_pt', 'gamma_phi'), makeUperp('metPuppi_shifted_JetResUp_pt', 'metPuppi_shifted_JetResUp_phi', 'gamma_pt', 'gamma_phi'), makeUperp('metPuppi_shifted_JetResDown_pt', 'metPuppi_shifted_JetResDown_phi', 'gamma_pt', 'gamma_phi'), makeUperp('metPuppi_shifted_UnclusteredEnUp_pt', 'metPuppi_shifted_UnclusteredEnUp_phi', 'gamma_pt', 'gamma_phi'),  makeUperp('metPuppi_shifted_UnclusteredEnDown_pt', 'metPuppi_shifted_UnclusteredEnDown_phi', 'gamma_pt', 'gamma_phi')] 
 
 
-    variable = [uPerp, uPara]
-    variablename = ['_uPerp', '_uPara']
+    variable = [uPerpPuppi, uParaPuppi]
+    variablename = ['_uPerpPuppi', '_uParaPuppi']
     dependences = [  'nVert']
     print 'Trees successfully loaded...'
     lumi = 35.9
@@ -168,15 +170,15 @@ if __name__ == "__main__":
         for dire in direction:
             if doBKGSubtraction:
                 if doPostFix:
-                    fileD =  TFile("tgraphs/DatagjetsScaleMarch27_03Feb.root");
+                    fileD =  TFile("tgraphs/DatagjetsScaleMarch27Puppi_03Feb.root");
                 else:
-                    fileD =  TFile("tgraphs/DatagjetsScaleMarch27_23Sep.root");
+                    fileD =  TFile("tgraphs/DatagjetsScaleMarch27Puppi_23Sep.root");
             else: 
                 if doPostFix:
-                    fileD =  TFile("tgraphs/GJetsgjetsScaleMarch27_03Feb.root");
+                    fileD =  TFile("tgraphs/GJetsgjetsScaleMarch27Puppi_03Feb.root");
                 else:
-                    fileD =  TFile("tgraphs/GJetsgjetsScaleMarch27_23Sep.root");
-            hScale = fileD.Get("met_uPara_over_qt");
+                    fileD =  TFile("tgraphs/GJetsgjetsScaleMarch27Puppi_23Sep.root");
+            hScale = fileD.Get("met_uParaPuppi_over_qt");
             a = "*( "
             for q in scalebins:   
                 miniqt = float(min(scalebins[scalebins.index(q)]))
@@ -191,9 +193,9 @@ if __name__ == "__main__":
             print a
             fileD.Close()                                                                                                                
             if doPostFix:
-                f2 = TFile(dire + "gjetsResolutionMarch27_03Feb.root", "UPDATE");   
+                f2 = TFile(dire + "gjetsResolutionMarch27Puppi_03Feb.root", "UPDATE");   
             else:
-                f2 = TFile(dire + "gjetsResolutionMarch27_23Sep.root", "UPDATE");   
+                f2 = TFile(dire + "gjetsResolutionMarch27Puppi_23Sep.root", "UPDATE");   
             upd = updown[direction.index(dire)]
             for vari in variable:
                 var = vari[direction.index(dire)]

@@ -1,7 +1,7 @@
 #####################################################################
 #################### MET SCALE ######################################
 #####################################################################
-# this one makes the tgraphs with the scale of the different met types, in ee/mumu 
+# this one plots scale of the different met types, in ee/mumu 
 
 
 import ROOT as r
@@ -59,35 +59,37 @@ def constructModel(Hist, bkg_hist,  m, um,uM, BKGSubtraction, eemm,  updo, cut, 
     return mean, error
 
 if __name__ == "__main__":
-    
-    ##################################################################################################################################
-    # start here: pick if you want to make the tgraph of the scale for data or mc, and ee or mumu
+
     doBKGSubtraction = False
     doee = True
     parser = optparse.OptionParser(usage="usage: %prog [opts] FilenameWithSamples", version="%prog 1.0")
     parser.add_option('-s', '--samples', action='store', type=str, dest='sampleFile', default='samples.dat', help='the samples file. default \'samples.dat\'')
     (opts, args) = parser.parse_args()
     print 'Going to load DATA and MC trees...'
-    # pick all the trees and samples
+
     if doBKGSubtraction:
         if doee:
+            dy = ['DYJetsToLL_M50_ee', 'ZZTo4L_ee', 'ZZTo2L2Q_ee', 'WZTo2L2Q_ee']
             tt = ['TTJets_DiLepton_total_ee' , 'WWTo2L2Nu_ee', 'TBarToLep_tch_ee', 'TBar_tWch_ee', 'T_tWch_ee', 'TToLep_sch_ee','TToLep_tch_ee',  'ZZTo2L2Nu_ee', 'WZTo3LNu_ee', 'WWW_ee', 'WWZ_ee', 'WZZ_ee', 'ZZZ_ee']
             da = ['DoubleEG_Run2016B_ReReco', 'DoubleEG_Run2016C_ReReco', 'DoubleEG_Run2016D_ReReco', 'DoubleEG_Run2016E_ReReco', 'DoubleEG_Run2016F_ReReco', 'DoubleEG_Run2016G_ReReco', 'DoubleEG_Run2016H_PromptReco_v2', 'DoubleEG_Run2016H_PromptReco_v3']  
             channel = 'E'
-            lumi = 36.4
+            lumi =  36.4 
         else:
+            dy = ['DYJetsToLL_M50_mm', 'ZZTo4L_mm', 'ZZTo2L2Q_mm', 'WZTo2L2Q_mm' ]
             tt = ['TTJets_DiLepton_total_mm', 'WWTo2L2Nu_mm', 'TBarToLep_tch_mm', 'TBar_tWch_mm', 'T_tWch_mm', 'TToLep_sch_mm','TToLep_tch_mm',  'WWW_mm', 'WWZ_mm', 'WZZ_mm', 'ZZZ_mm', 'WZTo3LNu_mm', 'ZZTo2L2Nu_mm']
-            da = ['DoubleMuon_Run2016B_ReReco', 'DoubleMuon_Run2016C_ReReco', 'DoubleMuon_Run2016D_ReReco', 'DoubleMuon_Run2016E_ReReco', 'DoubleMuon_Run2016F_ReReco', 'DoubleMuon_Run2016G_ReReco', 'DoubleMuon_Run2016H_PromptReco_v2', 'DoubleMuon_Run2016H_PromptReco_v3']  
+            #da = ['DoubleMuon_Run2016B_PromptReco_v2', 'DoubleMuon_Run2016C_PromptReco_v2', 'DoubleMuon_Run2016D_PromptReco_v2', 'DoubleMuon_Run2016E_PromptReco_v2', 'DoubleMuon_Run2016F_PromptReco_v2', 'DoubleMuon_Run2016G_PromptReco_v2', 'DoubleMuon_Run2016H_PromptReco_v2', 'DoubleMuon_Run2016H_PromptReco_v3']  
+            da = ['DoubleMuon_Run2016B_ReReco', 'DoubleMuon_Run2016C_ReReco', 'DoubleMuon_Run2016D_ReReco', 'DoubleMuon_Run2016E_ReReco', 'DoubleMuon_Run2016F_ReReco', 'DoubleMuon_Run2016G_ReReco',  'DoubleMuon_Run2016H_PromptReco_v2', 'DoubleMuon_Run2016H_PromptReco_v3']  
             channel = 'M'            
             lumi =  36.4
         plot_name = 'Data'
+        treeDY = Sample.Tree(helper.selectSamples(opts.sampleFile, dy, 'dy'), 'dy', 0)
         treeTT = Sample.Tree(helper.selectSamples(opts.sampleFile, tt, 'tt'), 'tt', 0)
         treeDA = Sample.Tree(helper.selectSamples(opts.sampleFile, da, 'da'), 'da', 1)
     else:
         if doee:
             dy = ['DYJetsToLL_M50_ee', 'ZZTo4L_ee', 'ZZTo2L2Q_ee', 'WZTo2L2Q_ee']
             channel = 'E'                                                                 
-            lumi =  36.4
+            lumi =  36.4 
         else:                                                                             
             dy = ['DYJetsToLL_M50_mm', 'ZZTo4L_mm', 'ZZTo2L2Q_mm', 'WZTo2L2Q_mm' ]
             channel = 'M'                                                                 
@@ -96,30 +98,27 @@ if __name__ == "__main__":
         treeDY = Sample.Tree(helper.selectSamples(opts.sampleFile, dy, 'dy'), 'dy', 0)          
         
     if doBKGSubtraction:
-        # when doing the background subtraction, you only need the data and the background trees
-        trees = [treeTT, treeDA] 
-        updown = [""]  # the "direction" is set to just the regular value (i.e. uPara, uParaPuppi), since for data we don't want the jec and unclustered energy errors, this is just done in mc
+        trees = [treeDY, treeTT, treeDA] 
+        updown = [""]  
         direction = [plot_name] 
-        # define the uPara and uParaPuppi
         uPara = [makeUpara('met_pt', 'met_phi', 'zll_pt', 'zll_phi')] 
-        uParaRaw = [makeUpara('met_rawPt', 'met_rawPhi', 'zll_pt', 'zll_phi')] 
         uParaPuppi = [makeUpara('metPuppi_pt', 'metPuppi_phi', 'zll_pt', 'zll_phi')] 
         metx = ['met_pt*sin(met_phi)']
         mety = ['met_pt*cos(met_phi)']
-        times = 1
     else:    
-        # in this option you only need the signla mc, i.e. dy
         trees = [treeDY]
         times = 3
-        # here we need to make the tgraphs for jec up/down and unclustered energy up/down, this goes in to the error calculation later 
+        
+        
         direction = [plot_name,plot_name+'_up_jes_DY', plot_name+'_down_jes_DY', plot_name+'_up_jer_DY', plot_name+'_down_jer_DY',plot_name+'_up_uncl_DY', plot_name+'_down_uncl_DY']  
+        
         updown = ["","_up", "_down",  "_jerUp", "_jerDown", "_unclUp", "_unclDown"]  
-        uPara = [makeUpara('met_pt', 'met_phi', 'zll_pt', 'zll_phi'), makeUpara('met_jecUp_pt', 'met_jecUp_phi', 'zll_pt', 'zll_phi'), makeUpara('met_jecDown_pt', 'met_jecDown_phi', 'zll_pt', 'zll_phi'), makeUpara('met_shifted_JetResUp_pt', 'met_shifted_JetResUp_phi', 'zll_pt', 'zll_phi'), makeUpara('met_shifted_JetResDown_pt', 'met_shifted_JetResDown_phi', 'zll_pt', 'zll_phi'), makeUpara('met_shifted_UnclusteredEnUp_pt', 'met_shifted_UnclusteredEnUp_phi', 'zll_pt', 'zll_phi'),  makeUpara('met_shifted_UnclusteredEnDown_pt', 'met_shifted_UnclusteredEnDown_phi', 'zll_pt', 'zll_phi')] 
-        uParaPuppi = [makeUpara('metPuppi_pt', 'metPuppi_phi', 'zll_pt', 'zll_phi'), makeUpara('metPuppi_jecUp_pt', 'metPuppi_jecUp_phi', 'zll_pt', 'zll_phi'), makeUpara('metPuppi_jecDown_pt', 'metPuppi_jecDown_phi', 'zll_pt', 'zll_phi'), makeUpara('metPuppi_shifted_UnclusteredEnUp_pt', 'metPuppi_shifted_UnclusteredEnUp_phi', 'zll_pt', 'zll_phi'),  makeUpara('metPuppi_shifted_UnclusteredEnDown_pt', 'metPuppi_shifted_UnclusteredEnDown_phi', 'zll_pt', 'zll_phi')] 
+        uPara = [makeUpara('met_pt', 'met_phi', 'zll_pt', 'zll_phi'), makeUpara('met_jecUp_pt', 'met_jecUp_phi', 'zll_pt', 'zll_phi'), makeUpara('met_jecDown_pt', 'met_jecDown_phi', 'zll_pt', 'zll_phi'), makeUpara('met_shifted_UnclusteredEnUp_pt', 'met_shifted_UnclusteredEnUp_phi', 'zll_pt', 'zll_phi'),  makeUpara('met_shifted_UnclusteredEnDown_pt', 'met_shifted_UnclusteredEnDown_phi', 'zll_pt', 'zll_phi')] 
+        uParaPuppi = [makeUpara('metPuppi_pt', 'metPuppi_phi', 'zll_pt', 'zll_phi'), makeUpara('metPuppi_jecUp_pt', 'metPuppi_jecUp_phi', 'zll_pt', 'zll_phi'), makeUpara('metPuppi_jecDown_pt', 'metPuppi_jecDown_phi', 'zll_pt', 'zll_phi'), makeUpara('metPuppi_shifted_JetResUp_pt', 'metPuppi_shifted_JetResUp_phi', 'zll_pt', 'zll_phi'), makeUpara('metPuppi_shifted_JetResDown_pt', 'metPuppi_shifted_JetResDown_phi', 'zll_pt', 'zll_phi'), makeUpara('metPuppi_shifted_UnclusteredEnUp_pt', 'metPuppi_shifted_UnclusteredEnUp_phi', 'zll_pt', 'zll_phi'),  makeUpara('metPuppi_shifted_UnclusteredEnDown_pt', 'metPuppi_shifted_UnclusteredEnDown_phi', 'zll_pt', 'zll_phi')] 
         metx = ['met_pt*sin(met_phi)',  'met_jecUp_pt*sin(met_jecUp_phi)','met_jecDown_pt*sin(met_jecDown_phi)', 'met_shifted_UnclusteredEnUp_pt*sin(met_shifted_UnclusteredEnUp_phi)','met_shifted_UnclusteredEnDown_pt*sin(met_shifted_UnclusteredEnDown_phi)']
         mety = ['met_pt*cos(met_phi)',  'met_jecUp_pt*cos(met_jecUp_phi)','met_jecDown_pt*cos(met_jecDown_phi)', 'met_shifted_UnclusteredEnUp_pt*cos(met_shifted_UnclusteredEnUp_phi)','met_shifted_UnclusteredEnDown_pt*cos(met_shifted_UnclusteredEnDown_phi)']    
-    variable = [uPara]
-    variablename = [ '_uPara_']
+    variable = [uParaPuppi]
+    variablename = [ '_uParaPuppi_']
     dependence = 'zll_pt'
     dependences = [ 'zll_pt']
     print 'Trees successfully loaded...'
@@ -129,7 +128,6 @@ if __name__ == "__main__":
     cuts = CutManager.CutManager()
 
     regions = []
-    # this little thing with the regions is just a residue from how my code is set up, to deal with different control/singal regions, but for this case it is not really essential, but it is still here. the region here is just picking the right selection for the leptons, otherwise defined in the include/CutManager.py
     region = Region.region('met' +variablename[0], 
             [cuts.leps()],
             'met_uPerp_zll',
@@ -140,6 +138,8 @@ if __name__ == "__main__":
     regions.append(region)
     qtbins = [ [18,24],[24, 30],[30, 38],[38, 46], [46, 52], [52, 60], [60, 68], [68, 76], [76, 84],[84,92],[92,100], [100, 115], [115, 130],  [130, 150], [150, 175], [175, 200], [200, 225], [225, 250], [250, 275],[275, 305], [305, 335], [335, 365], [365, 400], [400, 440],  [440, 500]]
     vtxbins = [[2, 4],[4 ,6],[6, 8], [8,  10],[10, 12],[12, 14],[14 ,16],[16,  18], [18, 20], [20,  22],[22,  24], [24, 26],[26,  28], [28,  30], [30, 32],[32,  34], [34 ,36],[36, 38], [38,  40] ]
+    #vtxbins = [[3, 4], [4, 5],[5 ,6],[6, 7],[7, 8], [8,  9], [9, 10],[10, 11], [11, 12],[12, 13],[13, 14], [14, 15],[15 ,16],[16, 17],[17, 18], [18,  19], [19, 20], [20, 21], [21, 22],[22, 23],[23, 24], [24, 25],[25 ,26],[26, 27],[27, 28], [28,  29], [29, 30], [30, 31], [31, 32],[32, 33],[33, 34], [34, 35],[35 ,36],[36, 37],[37, 38], [38,  39], [39, 40], [40, 41], [41, 42],[42, 43], [43, 44], [44, 45] ]
+    #vtxbins = [[0, 6],[6, 8],[8, 10], [10, 12],[12 ,14],[14, 16],[16, 20], [20,  40]]
 
     cutsList = []; binposition = []; binerror = []
     g_w = RooRealVar("g_w", "width Gaus", 10.,0. , 100., "GeV") # sigma
@@ -151,7 +151,7 @@ if __name__ == "__main__":
         if dependence == 'zll_pt':
             bins = qtbins       
         for dire in direction:
-            f2 = TFile(dire + channel +"ZllScaleJan10ReReco.root", "UPDATE");   # this is the file where all the tgraphs end up
+            f2 = TFile(dire + channel +"ZllScaleJan10ReRecoPuppi.root", "UPDATE");   # this is the file where all the tgraphs end up
             upd = updown[direction.index(dire)]
             for vari in variable:
                 var = vari[direction.index(dire)]
@@ -159,28 +159,27 @@ if __name__ == "__main__":
                     cutsList = [];binposition = [];binerror = [];ratio = [];data_means = [];data_errors = [];mc_means = [];mc_errors = []
                     print 'doing variable: ', dire , variablename[variable.index(vari)]
                     for i in bins:
-                        # in this little loop is I make the cuts that should be applied on the z pt for every bin, might be a smarter way to do this but I DON'T CARE!!! :)
                         mini = float(min(bins[bins.index(i)]))
                         maxi = float(max(bins[bins.index(i)]))
                         mid = float((mini+maxi)/2)
                         binposition.append(mid)
                         binerror.append(0.0)
-                        # binposition and binerror are filled here, pretty self explanatory, used to fill the tgraphs later
+                        
                         cutsList.append(cuts.AddList(reg.cuts + [  dependence +  "<"+ str(maxi) + "&&" + dependence + " >" + str(mini) ] ))
                     for i in cutsList:
                         print 'doing variable: ', dire , variablename[variable.index(vari)]
                         print i
-                        # this is the most annoying part, the fit parameters, depending on the variable and the bin. These values are optimized for 12.9 inv fbs, but will have to change later. n.b. that this might also give different results depending on the flavour. GOOD LUCK HAVE FUN!
-                        if ((variablename[variable.index(vari)] == '_uPara_') or (variablename[variable.index(vari)] == '_uParaRaw_')):
-                            binLow = -1.7; binHigh = -0.3; nbins = 140;
+                        
+                        if ((variablename[variable.index(vari)] == '_uParaPuppi_') or (variablename[variable.index(vari)] == '_uParaRaw_')):
+                            binLow = -1.7; binHigh = -0.3; nbins = 180;
                             if ((cutsList.index(i) < 12) ):
-                                binLow = -2.3; binHigh = 0.3; nbins = 160;
+                                binLow = -2.3; binHigh = 0.3; nbins = 180;
                             if ((cutsList.index(i) < 7) ):
-                                binLow = -3; binHigh = 1; nbins = 200;
+                                binLow = -3; binHigh = 1; nbins = 190;
                             if ((cutsList.index(i) < 5) ):
-                                binLow = -3; binHigh = 1; nbins = 290;
+                                binLow = -2.5; binHigh = 1; nbins = 220;
                             if ((cutsList.index(i) ==0) ):
-                                binLow = -3.; binHigh = 1.; nbins = 240;
+                                binLow = -2.5; binHigh = 1.; nbins = 320;
                         x = RooRealVar("x", "x", binLow, binHigh)
                         for tree in trees:
                             # so here loop over the trees, and get the TH1s for bkg, data or signal
@@ -229,9 +228,4 @@ if __name__ == "__main__":
                         del m_dy; del um_dy ; del uM_dy
                 del nbins; del binLow; del binHigh; 
         f2.Close()                                                                                                                                                                                                                              
-
-
-
-
-
-
+                                                                                                                                                                                                                                        

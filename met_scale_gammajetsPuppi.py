@@ -78,14 +78,14 @@ def constructModel(Hist, bkg_hist,  m, um,uM, BKGSubtraction,  channel, updo,  c
 
 if __name__ == "__main__":
 
-    doBKGSubtraction = False
-    doPostFix = True
+    doBKGSubtraction = True
+    doPostFix = False
     parser = optparse.OptionParser(usage="usage: %prog [opts] FilenameWithSamples", version="%prog 1.0")
     parser.add_option("-t", "--test", action="store_true", dest="test", default=False, help="just do a testrun. takes one variable in one eta for one region")
     parser.add_option('-s', '--samples', action='store', type=str, dest='sampleFile', default='samples.dat', help='the samples file. default \'samples.dat\'')
-    (opts, args) = parser.parse_args()
+    (opts, args) = parser.parse_args() 
     print 'Going to load DATA and MC trees...'
-    bkgDatasets = ['QCD_HT200to300_ext', 'QCD_HT300to500_ext', 'QCD_HT500to700_ext',  'QCD_HT700to1000_ext','QCD_HT1000to1500_ext', 'QCD_HT1500to2000_ext', 'QCD_HT2000toInf_ext', 'TGJets_ext', 'TTGJets', 'WGToLNuG_amcatnlo_ext', 'ZGTo2LG_ext', 'ZGTo2NuG', 'WJetsToLNu_HT100to200_ext', 'WJetsToLNu_HT200to400_ext','WJetsToLNu_HT400to600_ext','WJetsToLNu_HT600to800_ext', 'WJetsToLNu_HT800to1200_ext','WJetsToLNu_HT1200to2500_ext', 'WJetsToLNu_HT2500toInf_ext']
+    bkgDatasets = ['QCD_HT200to300_ext', 'QCD_HT300to500_ext', 'QCD_HT500to700_ext',  'QCD_HT700to1000_ext','QCD_HT1000to1500_ext', 'QCD_HT1500to2000_ext', 'QCD_HT2000toInf_ext', 'TGJets_ext', 'TTGJets', 'WGToLNuG_amcatnlo_ext', 'ZGTo2LG_ext', 'ZGTo2NuG','WJetsToLNu_HT100to200_ext', 'WJetsToLNu_HT200to400_ext','WJetsToLNu_HT400to600_ext','WJetsToLNu_HT600to800_ext', 'WJetsToLNu_HT800to1200_ext','WJetsToLNu_HT1200to2500_ext', 'WJetsToLNu_HT2500toInf_ext']
     gjetsDatasets = ['GJets_HT40to100_ext','GJets_HT100to200_ext', 'GJets_HT200to400_ext', 'GJets_HT400to600_ext','GJets_HT600toInf_ext' ]
     if doPostFix:
         daDatasets = ['SinglePhoton_Run2016B_03Feb2017_v2', 'SinglePhoton_Run2016C_03Feb2017', 'SinglePhoton_Run2016D_03Feb2017', 'SinglePhoton_Run2016E_03Feb2017', 'SinglePhoton_Run2016F_03Feb2017', 'SinglePhoton_Run2016G_03Feb2017', 'SinglePhoton_Run2016H_03Feb2017_v2']
@@ -98,24 +98,23 @@ if __name__ == "__main__":
         trees = [treeBKG, treeDA] 
         plot_name = 'Data'
     else:
-        treeGJETS = Sample.Tree(helper.selectSamples(opts.sampleFile, gjetsDatasets, 'gjets'), 'gjets'  , 0)
-        trees = [treeGJETS]
-        plot_name =  'GJets'
+        treeGJETS = Sample.Tree(helper.selectSamples(opts.sampleFile, gjetsDatasets, 'gjets'), 'gjets', 0)
+        trees = [treeGJETS] 
+        plot_name = 'GJets'
     
     if doBKGSubtraction:
-        direction = [plot_name]  
-        updown = [""]  
-        uPara = [makeUpara('met_pt', 'met_phi', 'gamma_pt', 'gamma_phi')]
+        direction = [plot_name] 
+        updown = [""] 
         uParaPuppi = [makeUpara('metPuppi_pt', 'metPuppi_phi', 'gamma_pt', 'gamma_phi')] 
-    else:
+    else: 
         direction = [plot_name,plot_name+'_up_jes_DY', plot_name+'_down_jes_DY', plot_name+'_up_jer_DY', plot_name+'_down_jer_DY',plot_name+'_up_uncl_DY', plot_name+'_down_uncl_DY']  
         updown = ["","_up", "_down",  "_jerUp", "_jerDown", "_unclUp", "_unclDown"]  
-        uPara = [makeUpara('met_pt', 'met_phi', 'gamma_pt', 'gamma_phi'), makeUpara('met_jecUp_pt', 'met_jecUp_phi', 'gamma_pt', 'gamma_phi'), makeUpara('met_jecDown_pt', 'met_jecDown_phi', 'gamma_pt', 'gamma_phi'), makeUpara('met_shifted_JetResUp_pt', 'met_shifted_JetResUp_phi', 'gamma_pt', 'gamma_phi'), makeUpara('met_shifted_JetResDown_pt', 'met_shifted_JetResDown_phi', 'gamma_pt', 'gamma_phi'), makeUpara('met_shifted_UnclusteredEnUp_pt', 'met_shifted_UnclusteredEnUp_phi', 'gamma_pt', 'gamma_phi'),  makeUpara('met_shifted_UnclusteredEnDown_pt', 'met_shifted_UnclusteredEnDown_phi', 'gamma_pt', 'gamma_phi')] 
-    variable = [uPara]
-    variablename = ['_uPara_']
+        uParaPuppi = [makeUpara('metPuppi_pt', 'metPuppi_phi', 'gamma_pt', 'gamma_phi'), makeUpara('metPuppi_jecUp_pt', 'metPuppi_jecUp_phi', 'gamma_pt', 'gamma_phi'), makeUpara('metPuppi_jecDown_pt', 'metPuppi_jecDown_phi', 'gamma_pt', 'gamma_phi'), makeUpara('metPuppi_shifted_JetResUp_pt', 'metPuppi_shifted_JetResUp_phi', 'gamma_pt', 'gamma_phi'), makeUpara('metPuppi_shifted_JetResDown_pt', 'metPuppi_shifted_JetResDown_phi', 'gamma_pt', 'gamma_phi'), makeUpara('metPuppi_shifted_UnclusteredEnUp_pt', 'metPuppi_shifted_UnclusteredEnUp_phi', 'gamma_pt', 'gamma_phi'),  makeUpara('metPuppi_shifted_UnclusteredEnDown_pt', 'metPuppi_shifted_UnclusteredEnDown_phi', 'gamma_pt', 'gamma_phi')] 
+    variable = [uParaPuppi]
+    variablename = ['_uParaPuppi_']
     dependences = ['gamma_pt' ]
     print 'Trees successfully loaded...'
-    lumi = 35.9
+    lumi = 36.4
    
     gROOT.ProcessLine('.L include/tdrstyle.C')
     gROOT.SetBatch(1)
@@ -145,14 +144,15 @@ if __name__ == "__main__":
             bins = qtbins       
         for dire in direction:
             if doPostFix:
-                f2 = TFile(dire + "gjetsScaleMarch27_03Feb.root", "UPDATE");   
+                f2 = TFile(dire + "gjetsScaleMarch27Puppi_03Feb.root", "UPDATE");   
             else:
-                f2 = TFile(dire + "gjetsScaleMarch27_23Sep.root", "UPDATE");   
+                f2 = TFile(dire + "gjetsScaleMarch27Puppi_23Sep.root", "UPDATE");   
             upd = updown[direction.index(dire)]
             for vari in variable:
                 var = vari[direction.index(dire)]
                 for reg in regions:
                     cutsList = []; binposition = [];binerror = [];ratio = [];data_means = [];data_errors = [];mc_means = [];mc_errors = []
+                
                     print 'doing variable: ', dire , variablename[variable.index(vari)]
                     for i in bins:
                         mini = float(min(bins[bins.index(i)]))
@@ -168,9 +168,9 @@ if __name__ == "__main__":
                             if ((cutsList.index(i) < 12) ):
                                 binLow = -2; binHigh = 0; nbins = 130;
                             if ((cutsList.index(i) < 9) ):
-                                binLow = -2.5; binHigh = 0.5; nbins = 132;
+                                binLow = -2.5; binHigh = 0.5; nbins = 130;
                             if ((cutsList.index(i) < 7) ):
-                                binLow = -3; binHigh = 1; nbins = 125;                
+                                binLow = -3; binHigh = 1; nbins = 130;                
                         else:
                             binLow = -1.7; binHigh = -0.3; nbins =200;
                             if ((cutsList.index(i) < 12) ):

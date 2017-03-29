@@ -28,7 +28,7 @@ class Canvas:
       self.myLegend.SetBorderSize(0)
 
 
-   def banner(self, isData, lumi, isLog, event, isnVert, isSig1jet):
+   def banner(self, isData, lumi, isLog, event, isnVert, isSig1jet, run):
     
       latex = TLatex()                                
       latex.SetNDC();
@@ -58,7 +58,7 @@ class Canvas:
       else:
         latexb.DrawLatex(0.42, 0.93, "#it{Simulation}")
 
-      text_lumi = "12.9 fb^{-1} (13 TeV, 2016)"
+      text_lumi = str(lumi)+" fb^{-1} (13 TeV, "+ run + ")"
       latexc = TLatex()
       latexc.SetNDC();
       latexc.SetTextAngle(0);
@@ -87,10 +87,10 @@ class Canvas:
       latexe.SetTextAlign(31);
       latexe.SetTextSize(0.045);         
       if isSig1jet:
-          latexe.DrawLatex(0.88, 0.55, "p_{T}^{jet1} > 50 GeV")   
+          latexe.DrawLatex(0.86, 0.55, "p_{T}^{jet1} > 50 GeV")   
 
 
-   def banner2(self, isData, chisquare, mean, title, event, isNVert, isSig1jet):
+   def banner2(self, lumi, chisquare, mean, title, event, isNVert, isSig1jet):
     
       latex = TLatex()
       latex.SetNDC();
@@ -100,7 +100,7 @@ class Canvas:
       latex.SetTextAlign(31);
       latex.SetTextSize(0.06);
       if isNVert:
-          latex.DrawLatex(0.33, 0.93, "#bf{CMS}")
+          latex.DrawLatex(0.29, 0.83, "#bf{CMS}")
       else:
           latex.DrawLatex(0.26, 0.93, "#bf{CMS}")
 
@@ -113,6 +113,8 @@ class Canvas:
       latexd.SetTextSize(0.06);
       if event == 0:
           latexd.DrawLatex(0.047, 0.93, "Events")          
+      if event == '':
+          latexd.DrawLatex(0.047, 0.93, "")          
       else:
           latexd.DrawLatex(0.059, 0.93, "Events / " +str(event) + " GeV")        
       
@@ -125,7 +127,7 @@ class Canvas:
       latexe.SetTextAlign(31);
       latexe.SetTextSize(0.045);         
       if isSig1jet:
-          latexe.DrawLatex(0.88, 0.55, "p_{T}^{jet1} > 50 GeV")   
+          latexe.DrawLatex(0.86, 0.55, "p_{T}^{jet1} > 50 GeV")   
       
       latexb = TLatex()
       latexb.SetNDC();
@@ -136,11 +138,11 @@ class Canvas:
       latexb.SetTextSize(0.05);
  
       if isNVert:
-          latexb.DrawLatex(0.56, 0.93, "#it{Preliminary}")
+          latexb.DrawLatex(0.52, 0.83, "#it{Preliminary}")
       else:
           latexb.DrawLatex(0.49, 0.93, "#it{Preliminary}")
 
-      text_lumi = "12.9 fb^{-1} (13 TeV)"
+      text_lumi = str(lumi)+" fb^{-1} (Run B-H)"
       latexc = TLatex()
       latexc.SetNDC();
       latexc.SetTextAngle(0);
@@ -154,6 +156,18 @@ class Canvas:
           latexc.DrawLatex(0.90, 0.04,  mean)
       else:
           latexc.DrawLatex(0.39, 0.7,  "#chi^{2} = %1.f " %(chisquare))
+
+      latexd = TLatex()                                                  
+      latexd.SetNDC();
+      latexd.SetTextAngle(0);
+      latexd.SetTextColor(r.kBlack);
+      latexd.SetTextFont(42);
+      latexd.SetTextAlign(31);
+      latexd.SetTextSize(0.05);
+      latexd.DrawLatex(0.89, 0.01,  title)
+
+
+
 
    def addBand(self, x1, y1, x2, y2, color, opacity):
 
@@ -180,7 +194,7 @@ class Canvas:
           arrow.SetLineWidth(thickness)
       self.arrows.append(arrow)
 
-   def addLatex(self, x1, y1, text, font=42, size = 0.04):
+   def addLatex(self, x1, y1, text, font=42, size = 0.02):
       lat = [x1, y1, text, font, size]
       self.latexs.append(lat)
 
@@ -230,14 +244,14 @@ class Canvas:
 
  
    def makeLegend(self, log):
-      if log:  
-          for i in range(0, len(self.histos)):
-              for j in range(0, len(self.orderForLegend)):
-                  if(self.orderForLegend[j] != -1 and self.orderForLegend[j] == i):
-                      self.myLegend.AddEntry(self.histos[j], self.labels[j], self.labelsOption[j])
-      else:
-          self.myLegend.AddEntry(self.histos[4], self.labels[4], self.labelsOption[4])
-          self.myLegend.AddEntry(self.histos[3], self.labels[3], self.labelsOption[3])
+      #if log:  
+     for i in range(0, len(self.histos)):
+         for j in range(0, len(self.orderForLegend)):
+             if(self.orderForLegend[j] != -1 and self.orderForLegend[j] == i):
+                 self.myLegend.AddEntry(self.histos[j], self.labels[j], self.labelsOption[j])
+      #else:
+      #    self.myLegend.AddEntry(self.histos[4], self.labels[4], self.labelsOption[4])
+      #    self.myLegend.AddEntry(self.histos[3], self.labels[3], self.labelsOption[3])
 
 
           
@@ -247,7 +261,7 @@ class Canvas:
       if not os.path.exists(d):
          os.makedirs(d)
 
-   def saveRatio(self, legend, isData, log, lumi, hdata, hMC, hjecUp, hjecDown , hunclUp, hunclDown, title,  option,   r_ymin=0, r_ymax=2):
+   def saveRatio(self, legend, isData, log, lumi, hdata, hMC, hjecUp, hjecDown ,  hjerUp, hjerDown ,hunclUp, hunclDown, title,  option, run = '2016',  r_ymin=0, r_ymax=2):
       
       events = 5  
       setUpAxis = 0 
@@ -259,13 +273,27 @@ class Canvas:
       statOnly = 0
       tightRatio = 0
       isSig1jet = 0
+      lowAxis = 0
+      if option == "test": 
+          doAllErrors = 0
+          statOnly = 1
+          isNVert = 1
+          tightRatio = 1   
+      if option == "test2": 
+          doAllErrors = 0
+          statOnly = 1
+          isNVert = 1
+          tightRatio = 1   
+          lowAxis = 1
+          setLowAxis = 0
+          setUpAxis = 0        
       if option == 'nvert':
           log =0
           events = 0
           doAllErrors = 0
           statOnly = 1
           isNVert = 1
-          tightRatio = 1
+          tightRatio = 1    
       if option == 'sig0':
           log =1
           events = 2
@@ -295,8 +323,8 @@ class Canvas:
           statOnly = 1
           tightRatio = 1
       if option == 'puppi':
-          puppi = 1
-          doAllErrors = 0
+          puppi = 0
+          doAllErrors = 1
           setLowAxis = 1          
       
       self.myCanvas.cd()
@@ -314,6 +342,8 @@ class Canvas:
 
       for i in range(0, len(self.histos)):
           if(self.ToDraw[i] != 0):
+              if lowAxis: 
+                  self.histos[i].SetMinimum(0.00001)
               if setLowAxis:
                   self.histos[i].SetMinimum(10.)
               if setUpAxis:    
@@ -348,7 +378,10 @@ class Canvas:
           ratio.GetYaxis().SetRangeUser(0.5, 1.5);
       else:
           ratio.GetYaxis().SetRangeUser(r_ymin, r_ymax);
-      ratio.GetYaxis().SetTitle("Data / MC")
+      if option == "test":
+          ratio.GetYaxis().SetTitle("postfix/prefix")
+      else:
+          ratio.GetYaxis().SetTitle("Data / MC")
       ratio.GetYaxis().CenterTitle();
       ratio.GetYaxis().SetLabelSize(0.12);
       ratio.GetXaxis().SetLabelSize(0.12);
@@ -360,11 +393,66 @@ class Canvas:
       ratio.SetMarkerSize(0.6*ratio.GetMarkerSize());
       ratio.GetXaxis().SetTitle(title)
       
-      #make uncl+ jes+stat errors 
-      den1tot = copy.deepcopy(hMC.Clone("bkgden1"))
-      den2tot = copy.deepcopy(hMC.Clone("bkgden2"))
+      den1tottot = copy.deepcopy(hMC.Clone("bkgden1"))
+      den2tottot = copy.deepcopy(hMC.Clone("bkgden2"))
       	                                                                                                                                                                                 
       nvar = hMC.GetNbinsX()                                                                                                                                                           
+      x = array.array('f', range(0, hMC.GetNbinsX()))
+      y = array.array('f', range(0, hMC.GetNbinsX()))
+      exl = array.array('f', range(0, hMC.GetNbinsX()))
+      eyltottot = array.array('f', range(0, hMC.GetNbinsX()))
+      exh = array.array('f', range(0, hMC.GetNbinsX()))
+      eyhtottot = array.array('f', range(0, hMC.GetNbinsX()))
+      ratiouptottot = copy.deepcopy(hMC.Clone("ratiouptottot"))
+      ratiodowntottot = copy.deepcopy(hMC.Clone("ratiodowntottot"))      
+      ymax = 2.                                                                                                                                                              
+      #make tot tot errors 
+      for km in range(0, hMC.GetNbinsX()):
+          conte1tottot =  math.sqrt(hMC.GetBinError (km) * hMC.GetBinError (km) + (hjecUp.GetBinContent (km) - hMC.GetBinContent   (km))*(hjecUp.GetBinContent (km) -  hMC.GetBinContent (km)) + (hunclUp.GetBinContent (km) - hMC.GetBinContent   (km))*(hunclUp.GetBinContent (km) -  hMC.GetBinContent (km)) + (hjerUp.GetBinContent (km) - hMC.GetBinContent   (km))*(hjerUp.GetBinContent (km) -  hMC.GetBinContent (km))    );       
+          conte2tottot =  math.sqrt(hMC.GetBinError (km) * hMC.GetBinError (km) + (hMC.GetBinContent (km) - hjecDown.GetBinContent (km))*(hMC.GetBinContent (km) -  hjecDown.GetBinContent (km)) + (hunclDown.GetBinContent (km) - hMC.GetBinContent   (km))*(hunclDown.GetBinContent (km) -  hMC.GetBinContent (km))  + (hjerDown.GetBinContent (km) - hMC.GetBinContent   (km))*(hjerDown.GetBinContent (km) -  hMC.GetBinContent (km)));   
+          if conte1tottot > conte2tottot:
+              den1tottot.SetBinContent (km, hMC.GetBinContent (km) + conte1tottot);                                                                                                                           
+              den2tottot.SetBinContent (km, hMC.GetBinContent (km) - conte1tottot);                                                                                                                           
+          else:
+              den1tottot.SetBinContent (km, hMC.GetBinContent (km) + conte2tottot);  
+              den2tottot.SetBinContent (km, hMC.GetBinContent (km) - conte2tottot);
+          ymax = hMC.GetBinContent(km) + conte1tottot;           
+          exl[km] = hMC.GetBinWidth (km) / 2;                                                                                                                                 
+          exh[km] = hMC.GetBinWidth (km) / 2;                                                                                                                                 
+          eyltottot[km] = conte2tottot;                                                                                                                                                           
+          eyhtottot[km] = conte1tottot;                                                                                                                         
+      
+      ratiouptottot.Divide(den1tottot);                                                                                                                                                         
+      ratiodowntottot.Divide(den2tottot);                   
+      ratiodata = copy.deepcopy(hdata.Clone("ratiodata"))
+      ratiodata.Divide (hMC);                                                                                                                                                    
+                                                                                                                                                                                         
+      for km in range(0, ratiodata.GetNbinsX()):
+          if (ratiodata.GetBinContent (km) > ymax):
+              ymax = ratiodata.GetBinContent (km) + ratiodata.GetBinError (km);                                                                                                              
+          x[km] = ratiodata.GetBinCenter (km);                                                                                                                                          
+          y[km] = 1;	                                                                                                                                                             
+          exl[km] = ratiodata.GetBinWidth (km) / 2;                                                                                                                                     
+          exh[km] = ratiodata.GetBinWidth (km) / 2;                                                                                                                                     
+                                                                                                                                                                                         
+          if (ratiouptottot.GetBinContent (km) != 0):
+              eyhtottot[km] = (1. / ratiouptottot.GetBinContent (km) - 1)*ratiodata.GetBinContent (km);                                                                    
+          else:                                                                                                                                                                       
+              eyhtottot[km] = 0;                                                                                                                                                                 
+                                                                                                                                                                                         
+          if (ratiodowntottot.GetBinContent (km) != 0):
+              eyltottot[km] = (1 - 1. / ratiodowntottot.GetBinContent (km))*ratiodata.GetBinContent (km);                                                              
+          else:                                                                                                                                                                       
+              eyltottot[km] = 0.                                                                                                                        
+      errtottot = TGraphAsymmErrors(nvar, x, y, exl, exh, eyltottot, eyhtottot);                 
+
+
+
+      #make tot errors
+      den1tot = copy.deepcopy(hMC.Clone("bkgden1"))
+      den2tot = copy.deepcopy(hMC.Clone("bkgden2"))
+      	                                                           
+      nvar = hMC.GetNbinsX()                                       
       x = array.array('f', range(0, hMC.GetNbinsX()))
       y = array.array('f', range(0, hMC.GetNbinsX()))
       exl = array.array('f', range(0, hMC.GetNbinsX()))
@@ -372,15 +460,15 @@ class Canvas:
       exh = array.array('f', range(0, hMC.GetNbinsX()))
       eyhtot = array.array('f', range(0, hMC.GetNbinsX()))
       ratiouptot = copy.deepcopy(hMC.Clone("ratiouptot"))
-      ratiodowntot = copy.deepcopy(hMC.Clone("ratiodowntot"))
-      ymax = 2.                                                                                                                                                              
+      ratiodowntot = copy.deepcopy(hMC.Clone("ratiodowntot"))      
+      
       
       for km in range(0, hMC.GetNbinsX()):
-          conte1tot =  math.sqrt(hMC.GetBinError (km) * hMC.GetBinError (km) + (hjecUp.GetBinContent (km) - hMC.GetBinContent   (km))*(hjecUp.GetBinContent (km) -  hMC.GetBinContent (km)) + (hunclUp.GetBinContent (km) - hMC.GetBinContent   (km))*(hunclUp.GetBinContent (km) -  hMC.GetBinContent (km)));       
-          conte2tot =  math.sqrt(hMC.GetBinError (km) * hMC.GetBinError (km) + (hMC.GetBinContent (km) - hjecDown.GetBinContent (km))*(hMC.GetBinContent (km) -  hjecDown.GetBinContent (km)) + (hunclDown.GetBinContent (km) - hMC.GetBinContent   (km))*(hunclDown.GetBinContent (km) -  hMC.GetBinContent (km)));   
+          conte1tot =  math.sqrt(hMC.GetBinError (km) * hMC.GetBinError (km) + (hjecUp.GetBinContent (km) - hMC.GetBinContent   (km))*(hjecUp.GetBinContent (km) -  hMC.GetBinContent (km)) + (hjerUp.GetBinContent (km) - hMC.GetBinContent   (km))*(hjerUp.GetBinContent (km) -  hMC.GetBinContent (km)));       
+          conte2tot =  math.sqrt(hMC.GetBinError (km) * hMC.GetBinError (km) + (hMC.GetBinContent (km) - hjecDown.GetBinContent (km))*(hMC.GetBinContent (km) -  hjecDown.GetBinContent (km)) + (hjerDown.GetBinContent (km) - hMC.GetBinContent   (km))*(hjerDown.GetBinContent (km) -  hMC.GetBinContent (km)));   
           if conte1tot > conte2tot:
-              den1tot.SetBinContent (km, hMC.GetBinContent (km) + conte1tot);                                                                                                                           
-              den2tot.SetBinContent (km, hMC.GetBinContent (km) - conte1tot);                                                                                                                           
+              den1tot.SetBinContent (km, hMC.GetBinContent (km) + conte1tot);                                                                                           
+              den2tot.SetBinContent (km, hMC.GetBinContent (km) - conte1tot);                                                                                           
           else:
               den1tot.SetBinContent (km, hMC.GetBinContent (km) + conte2tot);  
               den2tot.SetBinContent (km, hMC.GetBinContent (km) - conte2tot);
@@ -388,7 +476,7 @@ class Canvas:
           exl[km] = hMC.GetBinWidth (km) / 2;                                                                                                                                 
           exh[km] = hMC.GetBinWidth (km) / 2;                                                                                                                                 
           eyltot[km] = conte2tot;                                                                                                                                                           
-          eyhtot[km] = conte1tot;                                                                                                                                                                        
+          eyhtot[km] = conte1tot;                                                                                   
       
       ratiouptot.Divide(den1tot);                                                                                                                                                         
       ratiodowntot.Divide(den2tot);                   
@@ -412,7 +500,8 @@ class Canvas:
               eyltot[km] = (1 - 1. / ratiodowntot.GetBinContent (km))*ratiodata.GetBinContent (km);                                                                                                   
           else:                                                                                                                                                                       
               eyltot[km] = 0.                                                                                                                        
-      errtot = TGraphAsymmErrors(nvar, x, y, exl, exh, eyltot, eyhtot);                                                                                                                                        
+      errtot = TGraphAsymmErrors(nvar, x, y, exl, exh, eyltot, eyhtot);                                                                                 
+      
       #make some jec + stat errors     
       den1 = copy.deepcopy(hMC.Clone("bkgden1"))
       den2 = copy.deepcopy(hMC.Clone("bkgden2"))
@@ -485,11 +574,13 @@ class Canvas:
      
       staterr = TGraphAsymmErrors(nvar, x, y, exl, exh, eyls, eyhs);
       
-      errtot.SetFillColor (r.kBlue);
+      errtottot.SetFillColor (r.kCyan+1);
+      errtottot.SetFillStyle (3002);   
+      errtot.SetFillColor (r.kBlue+2);
       errtot.SetFillStyle (3002);   
-      err.SetFillColor (r.kRed);
+      err.SetFillColor (r.kGreen);
       err.SetFillStyle (3002);   
-      staterr.SetFillColor (r.kGreen);
+      staterr.SetFillColor (r.kRed+1);
       staterr.SetFillStyle (3002);   
       pad2.cd()
 
@@ -497,13 +588,15 @@ class Canvas:
       line.SetLineColor(r.kRed)
       ratio.Draw()
       if doAllErrors:
-          legratio = TLegend(0.14,0.31,0.67,0.45);
+          legratio = TLegend(0.14,0.31,0.75,0.45);
           legratio.SetFillColor(0);
           legratio.SetBorderSize(0);
-          legratio.SetNColumns(3);
-          legratio.AddEntry(errtot, "Uncl E_{T}^{miss}+ JES + Stat","f");
+          legratio.SetNColumns(4);
+          legratio.AddEntry(errtottot, "Uncl + JER + JES +  Stat","f");
+          legratio.AddEntry(errtot, " JER + JES + Stat","f");
           legratio.AddEntry(err, "JES + Stat","f");
           legratio.AddEntry(staterr, "Stat","f");                                         
+          errtottot.Draw("2 same")
           errtot.Draw("2 same")
           err.Draw("2 same")
           staterr.Draw("2 same")
@@ -528,20 +621,19 @@ class Canvas:
           legratio.SetBorderSize(0);
           legratio.AddEntry(staterr, " ","f");                                  
           staterr.Draw("2 same")
-          legratio.Draw("same")
+         # legratio.Draw("same")
           line.Draw("same")
           ratio.Draw("same");                                                      
          
 
       pad1.cd()
-      self.banner(isData, lumi, log, events, isNVert, isSig1jet)
+      self.banner(isData, lumi, log, events, isNVert, isSig1jet, run)
       for plotName in self.plotNames:
           path = 'plots/'+plotName
           self.ensurePath(path)
           self.myCanvas.SaveAs(path)
 
-   def save(self, legend, isData, log,chisquare, value, title, option):
-
+   def save(self, legend, lumi, log,chisquare, value, title, option):
 
       events = 5  
       setUpAxis = 0 
@@ -550,6 +642,10 @@ class Canvas:
       isNVert = 0
       puppi = 0
       isSig1jet = 0
+      logx = 0
+      if option == '':  
+          events  = ''
+          lumi  = 36.2
       if option == 'nvert':
           log = 0
           events = 0
@@ -564,15 +660,24 @@ class Canvas:
       if option == 'qt':
           setLowAxis = 1
           setUpAxis = 1
-          log = 1
-  
+          log = 1           
+      if option == 'rereco':      
+          setLowAxis = 1
+          setUpAxis = 1
+          log = 1           
+          logx = 1           
       self.myCanvas.cd()
       if(log):
           self.myCanvas.GetPad(0).SetLogy(1)
-     
+      if(logx):
+          self.myCanvas.GetPad(0).SetLogx(1)
+
       for i in range(0, len(self.histos)):
           if setLowAxis:
-              self.histos[i].SetMinimum(10.)
+              self.histos[i].SetMinimum(0.000001)
+              self.histos[i].SetMaximum(1.)
+              if isNVert:
+                  self.histos[i].SetMaximum(10000000.)
           if(self.ToDraw[i] != 0):        
               self.histos[i].Draw(self.options[i])
 
@@ -596,11 +701,10 @@ class Canvas:
           self.makeLegend(log)
           self.myLegend.Draw()
 
-      self.banner2(isData, chisquare, value , title, events, isNVert, isSig1jet)
+      self.banner2(lumi, chisquare, value , title, events, isNVert, isSig1jet)
       for plotName in self.plotNames:
           path = 'plots/'+plotName
           self.ensurePath(path)
           self.myCanvas.SaveAs(path)
-
 
 

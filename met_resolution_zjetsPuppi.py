@@ -65,8 +65,7 @@ def constructModel(Hist, bkg_hist,  m, um,uM, BKGSubtraction, eemm, upd, cut, va
         if (upd ==""):
             plotmc.save(0, 1, 0, xFrame.chiSquare(),  "FWHM = %.1f " %(f), "x", "") 
     print 'fwhm', f
-    print 'binposition', v_m
-    return f, efwhm, v_m
+    return f, efwhm
 
 def FWHMError_fixed(sigma, gamma, esigma, egamma, Vss, Vsg, Vgs, Vgg):
     a = 0.5346
@@ -90,8 +89,8 @@ def FWHM(sigma, gamma):
 
 if __name__ == "__main__":
 
-    doBKGSubtraction = True
-    doee = False
+    doBKGSubtraction = False
+    doee = True
     parser = optparse.OptionParser(usage="usage: %prog [opts] FilenameWithSamples", version="%prog 1.0")
     parser.add_option("-t", "--test", action="store_true", dest="test", default=False, help="just do a testrun. takes one variable in one eta for one region")
     parser.add_option('-s', '--samples', action='store', type=str, dest='sampleFile', default='samples.dat', help='the samples file. default \'samples.dat\'')
@@ -102,16 +101,17 @@ if __name__ == "__main__":
     if doBKGSubtraction: 
         if doee:
             dy = ['DYJetsToLL_M50_ee', 'ZZTo4L_ee', 'ZZTo2L2Q_ee', 'WZTo2L2Q_ee']
-            tt = ['TTJets_DiLepton_ee' , 'WZTo3LNu_ee', 'ZZTo2L2Nu_ee', 'WWTo2L2Nu_ee', 'TBarToLep_tch_ee', 'TBar_tWch_ee', 'T_tWch_ee', 'TToLep_sch_ee','TToLep_tch_ee', 'WWW_ee', 'WWZ_ee', 'WZZ_ee', 'ZZZ_ee']
-            da = ['DoubleEG_Run2016B_PromptReco_v2', 'DoubleEG_Run2016C_PromptReco_v2', 'DoubleEG_Run2016D_PromptReco_v2']
+            tt = ['TTJets_DiLepton_total_ee' , 'WZTo3LNu_ee', 'ZZTo2L2Nu_ee', 'WWTo2L2Nu_ee', 'TBarToLep_tch_ee', 'TBar_tWch_ee', 'T_tWch_ee', 'TToLep_sch_ee','TToLep_tch_ee', 'WWW_ee', 'WWZ_ee', 'WZZ_ee', 'ZZZ_ee']
+            da = ['DoubleEG_Run2016B_ReReco', 'DoubleEG_Run2016C_ReReco', 'DoubleEG_Run2016D_ReReco', 'DoubleEG_Run2016E_ReReco', 'DoubleEG_Run2016F_ReReco', 'DoubleEG_Run2016G_ReReco', 'DoubleEG_Run2016H_PromptReco_v2', 'DoubleEG_Run2016H_PromptReco_v3']  
             channel = 'E'
-            lumi =  12.6
+            lumi =  36.4
         else:
             dy = ['DYJetsToLL_M50_mm', 'ZZTo4L_mm', 'ZZTo2L2Q_mm', 'WZTo2L2Q_mm']
-            tt = ['TTJets_DiLepton_mm', 'WWTo2L2Nu_mm', 'WZTo3LNu_mm',  'ZZTo2L2Nu_mm', 'TBarToLep_tch_mm', 'TBar_tWch_mm', 'T_tWch_mm', 'TToLep_sch_mm','TToLep_tch_mm','WWW_mm', 'WWZ_mm', 'WZZ_mm', 'ZZZ_mm']
-            da = ['DoubleMuon_Run2016B_PromptReco_v2', 'DoubleMuon_Run2016C_PromptReco_v2', 'DoubleMuon_Run2016D_PromptReco_v2']
+            tt = ['TTJets_DiLepton_total_mm', 'WWTo2L2Nu_mm', 'WZTo3LNu_mm',  'ZZTo2L2Nu_mm', 'TBarToLep_tch_mm', 'TBar_tWch_mm', 'T_tWch_mm', 'TToLep_sch_mm','TToLep_tch_mm','WWW_mm', 'WWZ_mm', 'WZZ_mm', 'ZZZ_mm']
+            #da = ['DoubleMuon_Run2016B_PromptReco_v2', 'DoubleMuon_Run2016C_PromptReco_v2', 'DoubleMuon_Run2016D_PromptReco_v2', 'DoubleMuon_Run2016E_PromptReco_v2', 'DoubleMuon_Run2016F_PromptReco_v2', 'DoubleMuon_Run2016G_PromptReco_v2', 'DoubleMuon_Run2016H_PromptReco_v2', 'DoubleMuon_Run2016H_PromptReco_v3']  
+            da = ['DoubleMuon_Run2016B_ReReco', 'DoubleMuon_Run2016C_ReReco', 'DoubleMuon_Run2016D_ReReco', 'DoubleMuon_Run2016E_ReReco', 'DoubleMuon_Run2016F_ReReco', 'DoubleMuon_Run2016G_ReReco' , 'DoubleMuon_Run2016H_PromptReco_v2', 'DoubleMuon_Run2016H_PromptReco_v3']  
             channel = 'M'           
-            lumi = 12.6
+            lumi = 36.4
         plot_name = 'Data'
         destination = 'Not_BKG_Subtraction'
         treeDY = Sample.Tree(helper.selectSamples(opts.sampleFile, dy, 'dy'), 'dy', 0)
@@ -121,16 +121,16 @@ if __name__ == "__main__":
         if doee:
             dy = ['DYJetsToLL_M50_ee', 'ZZTo4L_ee', 'ZZTo2L2Q_ee', 'WZTo2L2Q_ee']
             channel = 'E'
-            lumi =  12.6 
+            lumi =  36.4 
         else:
             dy = ['DYJetsToLL_M50_mm', 'ZZTo4L_mm', 'ZZTo2L2Q_mm', 'WZTo2L2Q_mm']
             channel = 'M'
-            lumi = 12.6
+            lumi = 36.4
         plot_name =  'DY'
         treeDY = Sample.Tree(helper.selectSamples(opts.sampleFile, dy, 'dy'), 'dy', 0)
 
     if doBKGSubtraction:
-        trees = [treeDY, treeTT, treeDA] 
+        trees = [treeTT, treeDA] 
         updown = [""]  
         direction = [plot_name] 
         uPerp = [makeUperp('met_pt', 'met_phi', 'zll_pt', 'zll_phi')] 
@@ -139,19 +139,30 @@ if __name__ == "__main__":
         mety = ['met_pt*cos(met_phi)']                                                                                                      
         uPerpPuppi = [makeUperp('metPuppi_pt', 'metPuppi_phi', 'zll_pt', 'zll_phi')] 
         uParaPuppi = [makeUpara('metPuppi_pt', 'metPuppi_phi', 'zll_pt', 'zll_phi')] 
+        uPerpPuppiRaw = [makeUperp('metPuppi_rawPt', 'metPuppi_rawPhi', 'zll_pt', 'zll_phi')] 
+        uParaPuppiRaw = [makeUpara('metPuppi_rawPt', 'metPuppi_rawPhi', 'zll_pt', 'zll_phi')] 
+        uPerpRaw = [makeUperp('met_rawPt', 'met_rawPhi', 'zll_pt', 'zll_phi')] 
+        uParaRaw = [makeUpara('met_rawPt', 'met_rawPhi', 'zll_pt', 'zll_phi')] 
     else:
         trees = [treeDY]
-        direction = [plot_name,plot_name+'_up_jes_DY', plot_name+'_down_jes_DY', plot_name+'_up_uncl_DY', plot_name+'_down_uncl_DY']  
-        updown = ["","_up", "_down", "_unclUp", "_unclDown"]  
-        uPerp = [makeUperp('met_pt', 'met_phi', 'zll_pt', 'zll_phi'), makeUperp('met_jecUp_pt', 'met_jecUp_phi', 'zll_pt', 'zll_phi'), makeUperp('met_jecDown_pt', 'met_jecDown_phi', 'zll_pt', 'zll_phi'), makeUperp('met_shifted_UnclusteredEnUp_pt', 'met_shifted_UnclusteredEnUp_phi', 'zll_pt', 'zll_phi'),  makeUperp('met_shifted_UnclusteredEnDown_pt', 'met_shifted_UnclusteredEnDown_phi', 'zll_pt', 'zll_phi')] 
-        uPara = [makeUpara('met_pt', 'met_phi', 'zll_pt', 'zll_phi'), makeUpara('met_jecUp_pt', 'met_jecUp_phi', 'zll_pt', 'zll_phi'), makeUpara('met_jecDown_pt', 'met_jecDown_phi', 'zll_pt', 'zll_phi'), makeUpara('met_shifted_UnclusteredEnUp_pt', 'met_shifted_UnclusteredEnUp_phi', 'zll_pt', 'zll_phi'),  makeUpara('met_shifted_UnclusteredEnDown_pt', 'met_shifted_UnclusteredEnDown_phi', 'zll_pt', 'zll_phi')] 
+        direction = [plot_name,plot_name+'_up_jes_DY', plot_name+'_down_jes_DY', plot_name+'_up_jer_DY', plot_name+'_down_jer_DY',plot_name+'_up_uncl_DY', plot_name+'_down_uncl_DY']  
+        updown = ["","_up", "_down",  "_jerUp", "_jerDown", "_unclUp", "_unclDown"]  
+        uParaPuppi = [makeUpara('metPuppi_pt', 'metPuppi_phi', 'zll_pt', 'zll_phi'), makeUpara('metPuppi_jecUp_pt', 'metPuppi_jecUp_phi', 'zll_pt', 'zll_phi'), makeUpara('metPuppi_jecDown_pt', 'metPuppi_jecDown_phi', 'zll_pt', 'zll_phi'), makeUpara('metPuppi_shifted_JetResUp_pt', 'metPuppi_shifted_JetResUp_phi', 'zll_pt', 'zll_phi'), makeUpara('metPuppi_shifted_JetResDown_pt', 'metPuppi_shifted_JetResDown_phi', 'zll_pt', 'zll_phi'), makeUpara('metPuppi_shifted_UnclusteredEnUp_pt', 'metPuppi_shifted_UnclusteredEnUp_phi', 'zll_pt', 'zll_phi'),  makeUpara('metPuppi_shifted_UnclusteredEnDown_pt', 'metPuppi_shifted_UnclusteredEnDown_phi', 'zll_pt', 'zll_phi')] 
+        uPerpPuppi = [makeUperp('metPuppi_pt', 'metPuppi_phi', 'zll_pt', 'zll_phi'), makeUperp('metPuppi_jecUp_pt', 'metPuppi_jecUp_phi', 'zll_pt', 'zll_phi'), makeUperp('metPuppi_jecDown_pt', 'metPuppi_jecDown_phi', 'zll_pt', 'zll_phi'), makeUperp('metPuppi_shifted_JetResUp_pt', 'metPuppi_shifted_JetResUp_phi', 'zll_pt', 'zll_phi'), makeUperp('metPuppi_shifted_JetResDown_pt', 'metPuppi_shifted_JetResDown_phi', 'zll_pt', 'zll_phi'), makeUperp('metPuppi_shifted_UnclusteredEnUp_pt', 'metPuppi_shifted_UnclusteredEnUp_phi', 'zll_pt', 'zll_phi'),  makeUperp('metPuppi_shifted_UnclusteredEnDown_pt', 'metPuppi_shifted_UnclusteredEnDown_phi', 'zll_pt', 'zll_phi')] 
         metx = ['met_pt*sin(met_phi)',  'met_jecUp_pt*sin(met_jecUp_phi)','met_jecDown_pt*sin(met_jecDown_phi)', 'met_shifted_UnclusteredEnUp_pt*sin(met_shifted_UnclusteredEnUp_phi)','met_shifted_UnclusteredEnDown_pt*sin(met_shifted_UnclusteredEnDown_phi)']
         mety = ['met_pt*cos(met_phi)',  'met_jecUp_pt*cos(met_jecUp_phi)','met_jecDown_pt*cos(met_jecDown_phi)', 'met_shifted_UnclusteredEnUp_pt*cos(met_shifted_UnclusteredEnUp_phi)','met_shifted_UnclusteredEnDown_pt*cos(met_shifted_UnclusteredEnDown_phi)']    
-        uPerpPuppi = [makeUperp('metPuppi_pt', 'metPuppi_phi', 'zll_pt', 'zll_phi'), makeUperp('metPuppi_jecUp_pt', 'metPuppi_jecUp_phi', 'zll_pt', 'zll_phi'), makeUperp('metPuppi_jecDown_pt', 'metPuppi_jecDown_phi', 'zll_pt', 'zll_phi'), makeUperp('metPuppi_shifted_UnclusteredEnUp_pt', 'metPuppi_shifted_UnclusteredEnUp_phi', 'zll_pt', 'zll_phi'),  makeUperp('metPuppi_shifted_UnclusteredEnDown_pt', 'met_shifted_UnclusteredEnDown_phi', 'zll_pt', 'zll_phi')] 
-        uParaPuppi = [makeUpara('metPuppi_pt', 'metPuppi_phi', 'zll_pt', 'zll_phi'), makeUpara('metPuppi_jecUp_pt', 'metPuppi_jecUp_phi', 'zll_pt', 'zll_phi'), makeUpara('metPuppi_jecDown_pt', 'metPuppi_jecDown_phi', 'zll_pt', 'zll_phi'), makeUpara('metPuppi_shifted_UnclusteredEnUp_pt', 'metPuppi_shifted_UnclusteredEnUp_phi', 'zll_pt', 'zll_phi'),  makeUpara('metPuppi_shifted_UnclusteredEnDown_pt', 'met_shifted_UnclusteredEnDown_phi', 'zll_pt', 'zll_phi')] 
 
-    variable = [uPerp, uPara, uPerpPuppi, uParaPuppi]
-    variablename = ['_uPerp', '_uPara', '_uPerpPuppi', '_uParaPuppi']
+    #variable = [metx, mety]
+    #variable = [uPerp, uPara ]
+    variable = [uPerpPuppi, uParaPuppi]
+    #variable = [uPerp, uPara, uPerpPuppiRaw, uParaPuppiRaw ]
+    #variable = [uPerpRaw, uParaRaw, uPerpPuppi,uParaPuppi]
+    #variablename = ['_metx_', '_mety_']
+    #variablename = ['_uPerp_', '_uPara_' ]
+    variablename = ['_uPerpPuppi_', '_uParaPuppi_']
+    #variablename = ['_uPerp', '_uPara', '_uPerpPuppiRaw_', '_uParaPuppiRaw_' ]
+    #variablename = ['_uPerpRaw', '_uParaRaw','_uPerpPuppi_', '_uParaPuppi_']
+    #dependences = ['nVert']
     dependences = ['nVert']
     print 'Trees successfully loaded...'
     gROOT.ProcessLine('.L include/tdrstyle.C')
@@ -169,18 +180,14 @@ if __name__ == "__main__":
             False)
     regions.append(region)                                 
     
-    vtxbins = [[1, 6],[6, 8],[8, 10], [10, 12],[12 ,14],[14, 16],[16, 20], [20,  27]]
+    vtxbins = [[0.5, 6],[6, 8],[8, 10], [10, 12],[12,14], [14 ,16],[16, 18], [18, 20], [20,  22], [22, 24], [24, 26], [26, 28], [28, 32], [32, 40]]
     qtbins = [[0, 15], [15, 30],[30, 51],  [51, 65],[65, 80],[80,110], [110, 140], [140, 170], [170, 200],[200, 250] ,[250, 330]]
     sumetbins = [ [400, 500],[500, 600], [600, 700], [700, 800],[800, 900],  [900, 1000],[1000, 1100], [1100, 1300],  [1300, 1600], [1600, 2500]]
 
-    scalebins = [ [18,26],[26, 34],[34, 42],[42, 50], [50, 58], [58, 66], [66, 74], [74, 82],[82,90],[90,100], [100, 120], [120, 150], [150, 175], [175, 200], [200, 225], [225, 250], [250, 275],[275, 305], [305, 335], [335, 365], [365, 395], [395, 430],  [430, 500]]
+    scalebins = [ [0,24],[24, 30],[30, 38],[38, 46], [46, 52], [52, 60], [60, 68], [68, 76], [76, 84],[84,92],[92,100], [100, 115], [115, 130],  [130, 150], [150, 175], [175, 200], [200, 225], [225, 250], [250, 275],[275, 305], [305, 335], [335, 365], [365, 400], [400, 440],  [440, 500]]
     cutsList = []
     binposition = []
     binerror = []
-    if doBKGSubtraction:
-        x = RooRealVar("x", "x", -90, 90)
-    else: 
-        x = RooRealVar("x", "x", -90, 90)
 
     g_w = RooRealVar("g_w", "width Gaus", 10.,0. , 100., "GeV") # sigma
     gamma_Z0 = RooRealVar("gamma_Z0_U", "Z0 width", 2.3, 0., 100., "GeV") # gamma
@@ -193,57 +200,31 @@ if __name__ == "__main__":
         if dependence == 'met_sumEt-zll_pt':
             bins = sumetbins           
         for dire in direction:
-            if (direction.index(dire) == 0):
-                if doBKGSubtraction:
-                    fileData =  TFile("DataMZllScaleTestwoOF.root");
-                else: 
-                    fileData =  TFile("DYMZllScaleTestwoOF.root");
-            if (direction.index(dire) == 1):
-                fileData =  TFile("DY_up_jes_DYMZllScaleTestwoOF.root");
-            if (direction.index(dire) == 2):
-                fileData =  TFile("DY_down_jes_DYMZllScaleTestwoOF.root");
-            if (direction.index(dire) == 3):
-                fileData =  TFile("DY_up_uncl_DYMZllScaleTestwoOF.root");
-            if (direction.index(dire) == 4):
-                fileData =  TFile("DY_down_uncl_DYMZllScaleTestwoOF.root");        
-            
-            if (variablename == '_uPerpPuppi' or variablename == '_uPerpPuppi'):
-                hScale = fileData.Get("M_met_uParaPuppi_over_zll_pt");
+            if doBKGSubtraction:
+                fileD =  TFile("DataEZllScaleJan10ReRecoPuppi.root");
             else: 
-                hScale = fileData.Get("M_met_uPara_over_zll_pt");
-            
-            a = "*("
+                fileD =  TFile("DYEZllScaleJan10ReRecoPuppi.root");
+            hScale = fileD.Get("E_met_uParaPuppi_over_zll_pt");
+            a = "*( "
             for q in scalebins:   
                 miniqt = float(min(scalebins[scalebins.index(q)]))
                 maxiqt = float(max(scalebins[scalebins.index(q)]))
                 midqt = float((miniqt+maxiqt)/2)
+                #x = 6 
                 x = hScale.GetY() 
                 if scalebins.index(q)== 0:
                     a = a + " ("+ str(miniqt) +" < zll_pt && zll_pt < "+ str(maxiqt) +")*(1/ " + str(x[scalebins.index(q)]) +")" 
                 else:
-                    a = a + " + ("+ str(miniqt) +" < zll_pt && zll_pt < "+ str(maxiqt) +")*(1/" + str(x[scalebins.index(q)])   +")"
-            a = a+ ")"                                                                                                                      
-            
-            fileData.Close()
-            f2 = TFile(dire+channel + "ZllResolutionPuppi.root", "UPDATE");   
+                    a = a + " + ("+ str(miniqt)+" < zll_pt && zll_pt <"+str(maxiqt)+")*(1/" + str(x[scalebins.index(q)]) +")"
+            a = a+ ")"       
+            print a
+            fileD.Close()                                                                                                                
+            f2 = TFile(dire+channel + "ZllResolutionJan10Puppi.root", "UPDATE");                                                           
             upd = updown[direction.index(dire)]
             for vari in variable:
                 var = vari[direction.index(dire)]
                 for reg in regions:
-                    cutsList = []
-                    binpositiondata = []
-                    binpositionmc = []
-                    binerror = []
-                    binmean = []
-                    ratio = []
-                    data_fwhms = []
-                    data_fwhm = []
-                    data_errors = []
-                    data_error = []
-                    mc_fwhm = []
-                    mc_fwhms = []
-                    mc_error = []
-                    mc_errors = []
+                    cutsList = [];binposition = [];binerror = [];ratio = [];data_fwhms = [];data_fwhm = [];data_errors = [];data_error = [];mc_fwhm = [];mc_fwhms = [];mc_error = [];mc_errors = []
                     print 'doing variable: ', dire , variablename[variable.index(vari)]
                     for i in bins:
                         mini = float(min(bins[bins.index(i)]))
@@ -257,24 +238,24 @@ if __name__ == "__main__":
                             cutsList.append(cuts.AddList(reg.cuts + [  dependence +  "<"+ str(maxi) + "&&" + dependence + " >" + str(mini)]))
                     for i in cutsList:
                         print i
-                        binLow = -90.; binHigh = 90.; nbins = 125;
+                        binLow = -70.; binHigh = 70.; nbins = 200;
                         x = RooRealVar("x", "x", binLow, binHigh)
                         for tree in trees:
                             if doBKGSubtraction:
                                 if tree.name == 'tt':
-                                    tt_hist = tree.getTH1F(lumi, variablename[variable.index(vari)]+i+'tt', var+a, nbins, binLow, binHigh,  i, 'noOF', variablename[variable.index(vari)]+i)    
+                                    tt_hist = tree.getTH1F(lumi, variablename[variable.index(vari)]+i+'tt', var+a,nbins, binLow, binHigh,  i, 'noOF', variablename[variable.index(vari)]+i)    
                                     tt_Hist = RooDataHist("tt","tt"+i,RooArgList(x),tt_hist)                 
                                     m_tt = tt_hist.GetMean()
                                     um_tt = tt_hist.GetMean()-tt_hist.GetRMS()
                                     uM_tt = tt_hist.GetMean()+tt_hist.GetRMS()
                                 if tree.name == 'da':
-                                    data_hist = tree.getTH1F(lumi, variablename[variable.index(vari)]+i+'da', var+a ,  nbins, binLow, binHigh,  i , 'noOF', variablename[variable.index(vari)]+i)
+                                    data_hist = tree.getTH1F(lumi, variablename[variable.index(vari)]+i+'da', var+a, nbins, binLow, binHigh,  i , 'noOF', variablename[variable.index(vari)]+i)
                                     data_Hist = RooDataHist("da","da"+i, RooArgList(x), data_hist)                  
                                     m_da = data_hist.GetMean()  
                                     um_da = data_hist.GetMean()-data_hist.GetRMS()
                                     uM_da = data_hist.GetMean()+data_hist.GetRMS()                                                   
-                            if tree.name == 'dy':
-                                dy_hist = tree.getTH1F(lumi, variablename[variable.index(vari)]+i+'dy', var+a,  nbins, binLow, binHigh,  i, 'noOF', variablename[variable.index(vari)]+i)
+                            else:
+                                dy_hist = tree.getTH1F(lumi, variablename[variable.index(vari)]+i+'dy', var+a, nbins, binLow, binHigh,  i, 'noOF', variablename[variable.index(vari)]+i)
                                 dy_Hist = RooDataHist("dy","dy"+i, RooArgList(x), dy_hist)
                                 dy_BkgHist = RooDataHist()                                                          
                                 m_dy = dy_hist.GetMean() 
@@ -282,21 +263,19 @@ if __name__ == "__main__":
                                 uM_dy = dy_hist.GetMean()+dy_hist.GetRMS()
                         
                         if doBKGSubtraction:
-                            data_fwhm, data_error, binmean = constructModel(data_Hist, tt_Hist, m_da, um_da, uM_da, True, channel+dependence, upd,  str(cutsList.index(i)), variablename[variable.index(vari)], plot_name)
+                            data_fwhm, data_error = constructModel(data_Hist, tt_Hist, m_da, um_da, uM_da, True, channel+dependence, upd,  str(cutsList.index(i)), variablename[variable.index(vari)], plot_name)
                             data_fwhms.append(data_fwhm) 
                             data_errors.append(data_error)
-                            binpositiondata.append(binmean)
                         else:
-                            mc_fwhm, mc_error, binmean = constructModel(dy_Hist, dy_BkgHist, m_dy, um_dy, uM_dy, False, channel+dependence, upd, str(cutsList.index(i)), variablename[variable.index(vari)], plot_name)
+                            mc_fwhm, mc_error = constructModel(dy_Hist, dy_BkgHist, m_dy, um_dy, uM_dy, False, channel+dependence, upd, str(cutsList.index(i)), variablename[variable.index(vari)], plot_name)
                             mc_fwhms.append(mc_fwhm)
                             mc_errors.append(mc_error)
-                            binpositionmc.append(binmean)
                     if doBKGSubtraction:
                         graph = TGraphErrors(len(binposition), array("f", binposition), array("f", data_fwhms), array("f", binerror), array("f", data_errors))
-                        graph.Write (channel+"_met" +variablename[variable.index(vari)]+ "vs_" + dependence);
+                        graph.Write (channel+"_met" +variablename[variable.index(vari)]+ "_vs_" + dependence);
                     else:
                         graph_mc = TGraphErrors(len(binposition), array("f", binposition), array("f", mc_fwhms), array("f", binerror), array("f", mc_errors))
-                        graph_mc.Write (channel+"_met"+variablename[variable.index(vari)] + "vs_" + dependence);
+                        graph_mc.Write (channel+"_met"+variablename[variable.index(vari)] + "_vs_" + dependence);
         f2.Close()
 
 

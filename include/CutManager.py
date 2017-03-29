@@ -5,17 +5,15 @@ class CutManager:
 
    def __init__(self):
 
-      #self.filters = "(  Flag_badMuonFilter == 1 && Flag_badChargedHadronFilter ==1 && Flag_HBHENoiseIsoFilter==1 && Flag_HBHENoiseFilter ==1 &&   Flag_goodVertices ==1 && Flag_eeBadScFilter ==1 && Flag_EcalDeadCellTriggerPrimitiveFilter ==1)"
-      self.filters = "(Flag_globalTightHalo2016Filter ==1 &&  Flag_badMuonFilter == 1 && Flag_badChargedHadronFilter ==1 && Flag_HBHENoiseIsoFilter==1 && Flag_HBHENoiseFilter ==1 &&   Flag_goodVertices ==1 && Flag_eeBadScFilter ==1 && Flag_EcalDeadCellTriggerPrimitiveFilter ==1)"
+      #self.filters = "(Flag_globalTightHalo2016Filter ==1&& Flag_badMuonMoriond2017 == 1 && Flag_badCloneMuonMoriond2017==1 && Flag_badChargedHadronFilter ==1 && Flag_HBHENoiseIsoFilter==1 && Flag_HBHENoiseFilter ==1 &&   Flag_goodVertices ==1 && Flag_EcalDeadCellTriggerPrimitiveFilter ==1)"
+      self.filters = "(Flag_globalTightHalo2016Filter ==1 &&Flag_badChargedHadronFilter ==1 && Flag_HBHENoiseIsoFilter==1 && Flag_HBHENoiseFilter ==1 &&   Flag_goodVertices ==1 && Flag_eeBadScFilter ==1 && Flag_EcalDeadCellTriggerPrimitiveFilter ==1)"
       self.trigMMc = "(HLT_mu17mu8_dz > 0 || HLT_mu27tkmu8 > 0 || HLT_mu17tkmu8_dz > 0)"
       self.twoLeptons = "nLeptons > 1"
-      #self.twoGoodLeptons = "(nLepGood20 ==2 )"
-      self.twoGoodLeptons = "((nLepGood20 ==2 ) && (abs(lep_eta < 2.4))  && abs(abs(lep_eta) - 1.5) > 0.1) "
+      self.twoGoodLeptons = "((nLepGood20 ==2 ) && (abs(lep_eta[0]) < 2.4)  && (abs(lep_eta[1]) < 2.4) )"
       self.noLeptons = "nLepGood10 ==0"
       self.bla = "met_pt >= 0"
-      self.trigEEc = "(HLT_el17el12_dz > 0 || HLT_ele33ele33 > 0)"
-      self.trigEMc = "(HLT_mu8el17 > 0 || HLT_mu17el12 > 0 || HLT_mu30ele30 > 0)"
-      self.leptonPt = "genLep_pt > 20. "
+      self.leptonPt = "nLepGood20 ==2"
+      #self.leptonPt = "((lep_pt[0] > 20.)) && ((lep_pt[1] > 20.)) "
       self.leptonDR = "t.lepsDR_Edge > 0.3"       
       self.leptonEta = "(abs(genLep_pdgId) == 11 ) && (abs(abs(genLep_eta) - 1.5) > 0.1 && abs(abs(genLep_eta) - 1.5) > 0.1)  || ((abs(genLep_pdgId) == 13 ) && (abs(genLep_eta < 2.1)))"
       self.leptonsMll = "t.lepsMll_Edge > 20"
@@ -25,8 +23,12 @@ class CutManager:
       self.jet2_pt = "(jet2_pt >= 0) && (jet1_pt>= 0)"
       self.InclusiveCR = "(t.nJetSel_Edge >= 1 && t.lepsMll_Edge > 60 && t.lepsMll_Edge < 120)"
       self.nj0 = "(t.nJetSel_Edge >= 0)"
+      self.nj1 = "(nJet40 > 0)"
       self.puWeight = "puWeight"
-      self.gamma =  "(gamma_pt > 50)" +  " && "  +  "(ngamma == 1)"+ "&&" +  "(gamma_r9 < 1.0)" + " && " + "(gamma_r9 > 0.9) " + " && "+ "gamma_hOverE < 0.05" + " && " + "gamma_sigmaIetaIeta < 0.01 "+ " && " + "gamma_sigmaIetaIeta <= 0.005 " 
+      self.gamma =  "(gamma_pt > 50)" +  " && "  +  "(ngamma == 1)"+ "&&" +  "(gamma_r9 < 1.0)" + " && " + "(gamma_r9 > 0.9) " + " && "+ "gamma_hOverE < 0.0269" + " && " + "gamma_sigmaIetaIeta < 0.00994  " +  " && " +  "(gamma_chHadIso < (0.202))" + " && "  + "(gamma_neuHadIso < (0.264 + 0.0148 * gamma_pt + 0.000017*gamma_pt*gamma_pt))"  +  " && "  +  "(gamma_phIso < (2.362 + 0.0047 * gamma_pt))"
+      self.gammaPhoton200 =  "(gamma_pt > 200)" +  " && "  +  "(ngamma == 1)"+ "&&" +  "(gamma_r9 < 1.0)" + " && " + "(gamma_r9 > 0.9) " + " && "+ "gamma_hOverE < 0.0269" + " && " + "gamma_sigmaIetaIeta < 0.00994  " +  " && " +  "(gamma_chHadIso < (0.202))" + " && "  + "(gamma_neuHadIso < (0.264 + 0.0148 * gamma_pt + 0.000017*gamma_pt*gamma_pt))"  +  " && "  +  "(gamma_phIso < (2.362 + 0.0047 * gamma_pt))"  
+      self.gammaPhoton200Upara =  "(gamma_pt > 200)" +  " && "  +  "(ngamma == 1)"+ "&&" +  "(gamma_r9 < 1.0)" + " && " + "(gamma_r9 > 0.9) " + " && "+ "gamma_hOverE < 0.0269" + " && " + "gamma_sigmaIetaIeta < 0.00994  " +  " && " +  "(gamma_chHadIso < (0.202))" + " && "  + "(gamma_neuHadIso < (0.264 + 0.0148 * gamma_pt + 0.000017*gamma_pt*gamma_pt))"  +  " && "  +  "(gamma_phIso < (2.362 + 0.0047 * gamma_pt))" + "&&" + "(((( -met_pt*cos(met_phi) - gamma_pt*cos(gamma_phi))* gamma_pt*cos(gamma_pt )+(- met_pt*sin( met_phi )- gamma_pt*sin(gamma_phi ))*gamma_pt*sin( gamma_phi))/gamma_pt + gamma_pt) < (-180))" 
+      #self.gamma =  "(gamma_pt > 50)" +  " && "  +  "(ngamma == 1)"+ "&&" +  "(gamma_r9 < 1.0)" + " && " + "(gamma_r9 > 0.9) " + " && "+ "gamma_hOverE < 0.05" + " && " + "gamma_sigmaIetaIeta < 0.01 "+ " && " + "gamma_sigmaIetaIeta > 0.005 " 
       self.noLeptons = "nLepGood10 ==0"
       self.Zmasswindow = "zll_mass > 81 && zll_mass < 101"
       self.Zpt = "zll_pt > 50 "
@@ -68,23 +70,22 @@ class CutManager:
   
    def gammas(self):
                                                                                                                                                      
-      return self.brackets(self.centralPhoton + " && " + self.gamma  +" && " + self.noLeptons  + "&&" + self.filters )
+      return self.brackets(self.nj1 + " && " + self.centralPhoton  + " && " + self.gamma  +" && " + self.noLeptons  + "&&" + self.filters )
+  
+   def gammasPhoton200(self):
+   
+      return self.brackets(self.nj1 + " && " + self.centralPhoton + " && " + self.gammaPhoton200  +" && " + self.noLeptons  + "&&" + self.filters )
+   
+  
   
    def gammasData(self):
 
-       return self.brackets(self.centralPhoton + " && " + self.gamma + " && " + self.triggerPhoton  +" && " + self.noLeptons+ "&&" + self.filters )
+       return self.brackets(self.nj1 + " && " + self.centralPhoton + " && " + self.gamma + " && " + self.triggerPhoton  +" && " + self.noLeptons+ "&&" + self.filters )
    
    def leps(self):
 
-          return self.brackets(self.filters + " && " +self.Zmasswindow  + " && "+ self.twoGoodLeptons ) 
+          return self.brackets( self.filters + "&& "  +self.Zmasswindow  + " && "+ self.twoGoodLeptons  + " && " + self.leptonPt) 
 
-   def MaxRun(self, run):
-       
-       return self.brackets("run <= %d"%(run))
-   
-   def MinRun(self, run):
-       
-       return self.brackets("run >  %d"%(run))
 
 
 
