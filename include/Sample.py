@@ -18,7 +18,7 @@ class Sample:
       self.tfile = TFile(self.location+self.name+'/jes_ALLMETtree.root')
       #self.tfile = TFile(self.location+self.name+'/jes_jes_BCDMETtree.root')
       self.ttree = self.tfile.Get('METtree')
-      
+      print self.name      
       self.puWeight  = "1.0"
       if not self.isData:
           gw = 0.
@@ -47,7 +47,7 @@ class Sample:
       print "#################################"
 
 
-   def getTH1F(self, lumi, name, var, nbin, xmin, xmax, cut, options, xlabel, doReReco):
+   def getTH1F(self, lumi, name, var, nbin, xmin, xmax, cut, options, xlabel, doNPV):
  
       if(xmin == xmax):
         h = TH1F(name, "", len(nbin)-1, array('d', nbin))
@@ -61,36 +61,47 @@ class Sample:
       h.GetYaxis().SetTitle(ylabel)
 
       addCut = "1."
-      
+      addPrescale = "1." 
       if self.isData:
           addDataFilters = "&&(  (Flag_eeBadScFilter == 1  ))"
           if self.isZjets:
-              addTriggers = "&&( ((HLT_DoubleMu == 1 || HLT_SingleMu == 1 || HLT_HighPTMuNonIso == 1) && (lep_tightId[0] == 1 && lep_tightId[1] == 1)) || ((HLT_DoubleEG  == 1  || HLT_SingleEle == 1 || HLT_HighPTEleNonIso ==1 ) && ( lep_tightId[0] == 3 && lep_tightId[1] == 3 )))"
+              #addTriggers = "&&( ((HLT_DoubleMu == 1 || HLT_SingleMu == 1 || HLT_HighPTMuNonIso == 1) && ((lep_tightId[0] ==1 && lep_mediumMuonId[0] ==1 && lep_dxy[0] < 0.05 && lep_dz[0]< 0.1 && lep_tightId[1] ==1 && lep_mediumMuonId[1] ==1 && lep_dxy[1] < 0.05 && lep_dz[1]< 0.1 )  )) || ((HLT_DoubleEG  == 1 || HLT_SingleEle == 1 || HLT_HighPTEleNonIso ==1 ) && ( (lep_tightId[0] ==2 && lep_dxy[0] < 0.05 && lep_dz[0]< 0.1 && lep_convVeto[0] ==1 && lep_lostHits[0] == 0 && lep_tightId[1] ==2 && lep_dxy[1] < 0.05 && lep_dz[1]< 0.1 && lep_convVeto[1] ==1 && lep_lostHits[1] == 0) )))"
+              addTriggers = "&&( ((HLT_DoubleMu == 1 || HLT_SingleMu == 1 || HLT_HighPTMuNonIso == 1) && ((lep_tightId[0] ==1 && lep_mediumMuonId[0] ==1 && lep_dxy[0] < 0.05 && lep_dz[0]< 0.1 && lep_tightId[1] ==1 && lep_mediumMuonId[1] ==1 && lep_dxy[1] < 0.05 && lep_dz[1]< 0.1 )  )) || ((HLT_DoubleEG  == 1 || HLT_SingleEle == 1 || HLT_HighPTEleNonIso ==1 ) && ( (lep_tightId[0] ==3 && lep_dxy[0] < 0.05 && lep_dz[0]< 0.1 && lep_convVeto[0] ==1 && lep_lostHits[0] == 0 && lep_tightId[1] ==3 && lep_dxy[1] < 0.05 && lep_dz[1]< 0.1 && lep_convVeto[1] ==1 && lep_lostHits[1] == 0) )))"
           else:   
-              #addTriggers = "&&( HLT_BIT_HLT_Photon120_R9Id90_HE10_IsoM_v ==1 || HLT_Photon165 == 1 || HLT_BIT_HLT_Photon90_R9Id90_HE10_IsoM_v == 1 || HLT_BIT_HLT_Photon75_R9Id90_HE10_IsoM_v == 1 || HLT_BIT_HLT_Photon50_R9Id90_HE10_IsoM_v == 1 ) " 
-              #addTriggers = "&&( tr120 ==1 || tr165 == 1 || tr90 == 1 || tr75 == 1 || tr50 == 1 || tr30 == 1   ) " 
               addTriggers = "&&( HLT_Photon120 ==1 || HLT_Photon165 == 1 || HLT_Photon90 == 1 || HLT_Photon75 == 1 || HLT_Photon50 == 1 || HLT_Photon30 == 1   ) " 
               
               #addPrescale = "(( tr165 == 1  && tr90 ==0 && tr75==0 && tr50==0 && tr30==0  ) + (ps120)*( tr120 == 1 &&  tr165 == 0 && tr75 == 0 && tr50==0 &&  tr30==0  ) + (ps90)*( tr90 == 1 && tr120 == 0 &&  tr75 == 1  &&tr50 == 1  && tr30==1  ) +   (ps75)*( tr75 == 1 && tr120 == 0  &&  tr50 == 0 && tr30 == 0 ) +   (ps50)*( tr50 == 1 && tr120 == 0 && tr90 == 0&& tr75 == 0 && tr30 == 0) ) " 
+              #addPrescale = "(( HLT_Photon165 == 1  && HLT_Photon90==0 && HLT_Photon50==0 && HLT_Photon30==0  ) + (HLT_BIT_HLT_Photon120_R9Id90_HE10_IsoM_v_Prescale)*( HLT_Photon120 == 1 &&  HLT_Photon165 == 0 && HLT_Photon50==0 &&  HLT_Photon30==0  ) + (HLT_BIT_HLT_Photon90_R9Id90_HE10_IsoM_v_Prescale)*( HLT_Photon90 == 1 && HLT_Photon120 == 0 &&  HLT_Photon50 == 1  && HLT_Photon30==1  ) +   (HLT_BIT_HLT_Photon50_R9Id90_HE10_IsoM_v_Prescale)*( HLT_Photon50 == 1 && HLT_Photon120 == 0 && HLT_Photon90 == 0&& HLT_Photon30 == 0) ) " 
+              #addPrescale = "(( HLT_Photon165 == 1  && HLT_Photon90==0 && HLT_Photon75==0 && HLT_Photon50==0 && HLT_Photon30==0  ) + (HLT_BIT_HLT_Photon120_R9Id90_HE10_IsoM_v_Prescale)*( HLT_Photon120 == 1 &&  HLT_Photon165 == 0 && HLT_Photon75 == 0 && HLT_Photon50==0 &&  HLT_Photon30==0  ) + (HLT_BIT_HLT_Photon90_R9Id90_HE10_IsoM_v_Prescale)*( HLT_Photon90 == 1 && HLT_Photon120 == 0 &&  HLT_Photon75 == 1  &&  HLT_Photon50 == 1  && HLT_Photon30==1  ) +   (HLT_BIT_HLT_Photon75_R9Id90_HE10_IsoM_v_Prescale)*(0.95)*( HLT_Photon75 == 1 && HLT_Photon120 == 0  &&  HLT_Photon50 == 0 && HLT_Photon30 == 0 ) +   (HLT_BIT_HLT_Photon50_R9Id90_HE10_IsoM_v_Prescale)*( HLT_Photon50 == 1 && HLT_Photon120 == 0 && HLT_Photon90 == 0&& HLT_Photon75 == 0 && HLT_Photon30 == 0) ) " 
               addPrescale = "(( HLT_Photon165 == 1  && HLT_Photon90==0 && HLT_Photon75==0 && HLT_Photon50==0 && HLT_Photon30==0  ) + (HLT_BIT_HLT_Photon120_R9Id90_HE10_IsoM_v_Prescale)*( HLT_Photon120 == 1 &&  HLT_Photon165 == 0 && HLT_Photon75 == 0 && HLT_Photon50==0 &&  HLT_Photon30==0  ) + (HLT_BIT_HLT_Photon90_R9Id90_HE10_IsoM_v_Prescale)*( HLT_Photon90 == 1 && HLT_Photon120 == 0 &&  HLT_Photon75 == 1  &&  HLT_Photon50 == 1  && HLT_Photon30==1  ) +   (HLT_BIT_HLT_Photon75_R9Id90_HE10_IsoM_v_Prescale)*( HLT_Photon75 == 1 && HLT_Photon120 == 0  &&  HLT_Photon50 == 0 && HLT_Photon30 == 0 ) +   (HLT_BIT_HLT_Photon50_R9Id90_HE10_IsoM_v_Prescale)*( HLT_Photon50 == 1 && HLT_Photon120 == 0 && HLT_Photon90 == 0&& HLT_Photon75 == 0 && HLT_Photon30 == 0) ) " 
               #addPrescale = "(( HLT_Photon165 == 1  && HLT_BIT_HLT_Photon90_R9Id90_HE10_IsoM_v==0 && HLT_BIT_HLT_Photon75_R9Id90_HE10_IsoM_v==0 && HLT_BIT_HLT_Photon50_R9Id90_HE10_IsoM_v==0 && HLT_BIT_HLT_Photon30_R9Id90_HE10_IsoM_v==0  ) + (HLT_BIT_HLT_Photon120_R9Id90_HE10_IsoM_v_Prescale)*( HLT_BIT_HLT_Photon120_R9Id90_HE10_IsoM_v == 1 &&  HLT_Photon165 == 0 && HLT_BIT_HLT_Photon75_R9Id90_HE10_IsoM_v == 0 && HLT_BIT_HLT_Photon50_R9Id90_HE10_IsoM_v==0 &&  HLT_BIT_HLT_Photon30_R9Id90_HE10_IsoM_v==0  ) + (HLT_BIT_HLT_Photon90_R9Id90_HE10_IsoM_v_Prescale)*( HLT_BIT_HLT_Photon90_R9Id90_HE10_IsoM_v == 1 && HLT_BIT_HLT_Photon120_R9Id90_HE10_IsoM_v == 0 &&  HLT_BIT_HLT_Photon75_R9Id90_HE10_IsoM_v == 1  &&  HLT_BIT_HLT_Photon50_R9Id90_HE10_IsoM_v == 1  && HLT_BIT_HLT_Photon30_R9Id90_HE10_IsoM_v==1  ) +   (HLT_BIT_HLT_Photon75_R9Id90_HE10_IsoM_v_Prescale)*( HLT_BIT_HLT_Photon75_R9Id90_HE10_IsoM_v == 1 && HLT_BIT_HLT_Photon120_R9Id90_HE10_IsoM_v == 0  &&  HLT_BIT_HLT_Photon50_R9Id90_HE10_IsoM_v == 0 && HLT_BIT_HLT_Photon30_R9Id90_HE10_IsoM_v == 0 ) +   (HLT_BIT_HLT_Photon50_R9Id90_HE10_IsoM_v_Prescale)*( HLT_BIT_HLT_Photon50_R9Id90_HE10_IsoM_v == 1 && HLT_BIT_HLT_Photon120_R9Id90_HE10_IsoM_v == 0 && HLT_BIT_HLT_Photon90_R9Id90_HE10_IsoM_v == 0&& HLT_BIT_HLT_Photon75_R9Id90_HE10_IsoM_v == 0 && HLT_BIT_HLT_Photon30_R9Id90_HE10_IsoM_v == 0) ) " 
           cut = "("+ cut + addTriggers + addDataFilters+ ")" + "* (" + addPrescale +")" 
 
       if(self.isData == 0):
           addCut = "1."
-          if doReReco: 
-              addCut = "puWeightGJets"
+          if doNPV: 
+              #addCut = "1"
+              addCut = "puWeightNPV"
           else:
-              addCut = "puWeightReReco"
+              addCut = "puWeightNTI"
           if self.dokfactorWeight:
-              cut =  cut  + "*( " + addCut + " )"+  "*( photonEff )"  +  "*( kfactorWeight )" + "* ( " + str(self.lumWeight*lumi)  +  " )" + "* ( " + "genWeight/abs(genWeight) " +  " )" 
+              #cut =  cut  + "* ( " + str(self.lumWeight*lumi)  +  " )" + "* ( " + "genWeight/abs(genWeight) " +  " )" 
+              cut =  cut  + "*( puWeightGJets )"+  "*( photonEff )"  +  "*( kfactorWeight )" + "* ( " + str(self.lumWeight*lumi)  +  " )" + "* ( " + "genWeight/abs(genWeight) " +  " )" 
           else:
               if self.isee:
-                  cut =  cut  + "* ( " + addCut + " )" + "*((lep_tightId[0]==3)*lep1eff )"+ "*((lep_tightId[1]==3) *lep2eff )" + "*( " + str(self.lumWeight*lumi)  +  " )" + "* ( " + "genWeight/abs(genWeight) " +  " )"
+                  #cut =  cut  + "* ( " + addCut + " )" + "*( " + str(self.lumWeight*lumi)  +  " )" + "* ( " + "genWeight/abs(genWeight) " +  " )"
+                  #cut =  cut  + "* ( " + addCut + " )" + "*((HLT_DoubleEG  == 1 || HLT_SingleEle == 1 || HLT_HighPTEleNonIso ==1 ) && (lep_tightId[0] ==1)*lep1eff )"+ "*((lep_tightId[1] ==1) *lep2eff )" + "*( " + str(self.lumWeight*lumi)  +  " )" + "* ( " + "genWeight/abs(genWeight) " +  " )"
+                  #cut =  cut  + "*((HLT_DoubleEG  == 1 || HLT_SingleEle == 1 || HLT_HighPTEleNonIso ==1 ) && (lep_tightId[0] ==3 && lep_dxy[0] < 0.05 && lep_dz[0]< 0.1 && lep_convVeto[0] ==1 && lep_lostHits[0] == 0))"+ "*((lep_tightId[1] ==3 && lep_dxy[1] < 0.05 && lep_dz[1]< 0.1 && lep_convVeto[1] ==1 && lep_lostHits[1] == 0))" + "*( " + str(self.lumWeight*lumi)  +  " )" + "* ( " + "genWeight/abs(genWeight) " +  " )"
+                  #cut =  cut  + "* ( " + addCut + " )" + "*((HLT_DoubleEG  == 1 || HLT_SingleEle == 1 || HLT_HighPTEleNonIso ==1 ) && (lep_tightId[0] ==3 && lep_dxy[0] < 0.05 && lep_dz[0]< 0.1 && lep_convVeto[0] ==1 && lep_lostHits[0] == 0) )"+ "*((lep_tightId[1] ==3 && lep_dxy[1] < 0.05 && lep_dz[1]< 0.1 && lep_convVeto[1] ==1 && lep_lostHits[1] == 0) )" + "*( " + str(self.lumWeight*lumi)  +  " )" + "* ( " + "genWeight/abs(genWeight) " +  " )"
+                  #cut =  cut  + "* ( " + addCut + " )" + "*((HLT_DoubleEG  == 1 || HLT_SingleEle == 1 || HLT_HighPTEleNonIso ==1 ) && (lep_tightId[0] ==3 && lep_dxy[0] < 0.05 && lep_dz[0]< 0.1 && lep_convVeto[0] ==1 && lep_lostHits[0] == 0))"+ "*((lep_tightId[1] ==3 && lep_dxy[1] < 0.05 && lep_dz[1]< 0.1 && lep_convVeto[1] ==1 && lep_lostHits[1] == 0) )" + "*( " + str(self.lumWeight*lumi)  +  " )" + "* ( " + "genWeight/abs(genWeight) " +  " )"
+                  cut =  cut  + "* ( " + addCut + " )" + "*((HLT_DoubleEG  == 1 || HLT_SingleEle == 1 || HLT_HighPTEleNonIso ==1 ) && (lep_tightId[0] ==3 && lep_dxy[0] < 0.05 && lep_dz[0]< 0.1 && lep_convVeto[0] ==1 && lep_lostHits[0] == 0)*lep1eff )"+ "*((lep_tightId[1] ==3 && lep_dxy[1] < 0.05 && lep_dz[1]< 0.1 && lep_convVeto[1] ==1 && lep_lostHits[1] == 0) *lep2eff )" + "*( " + str(self.lumWeight*lumi)  +  " )" + "* ( " + "genWeight/abs(genWeight) " +  " )"
               else:
-                  cut =  cut  + "* ( " + addCut + " )" + "*((lep_tightId[0]==1)*lep1eff )"+ "*((lep_tightId[1]==1) *lep2eff )" + "*( " + str(self.lumWeight*lumi)  +  " )" + "* ( " + "genWeight/abs(genWeight) " +  " )"
+                  #cut =  cut  + "*((HLT_DoubleMu == 1 || HLT_SingleMu == 1 || HLT_HighPTMuNonIso == 1) && (lep_tightId[0] ==1 && lep_mediumMuonId[0] ==1 && lep_dxy[0] < 0.05 && lep_dz[0]< 0.1 && lep_convVeto[0] ==1 && lep_lostHits[0] == 0 && (abs(lep_eta[0]) < 2.4)))"+ "*((lep_tightId[1] ==1 && lep_mediumMuonId[1] ==1 && lep_dxy[1] < 0.05 && lep_dz[1]< 0.1 && lep_convVeto[1] ==1 && lep_lostHits[1] == 0 && (abs(lep_eta[1]) < 2.4)) )" + "*( " + str(self.lumWeight*lumi)  +  " )" + "* ( " + "genWeight/abs(genWeight) " +  " )"
+                  #cut =  cut  + "* ( " + addCut + " )" + "*((HLT_DoubleMu == 1 || HLT_SingleMu == 1 || HLT_HighPTMuNonIso == 1) && (lep_tightId[0] ==1 && lep_mediumMuonId[0] ==1 && lep_dxy[0] < 0.05 && lep_dz[0]< 0.1 && lep_convVeto[0] ==1 && lep_lostHits[0] == 0 && (abs(lep_eta[0]) < 2.4)))"+ "*((lep_tightId[1] ==1 && lep_mediumMuonId[1] ==1 && lep_dxy[1] < 0.05 && lep_dz[1]< 0.1 && lep_convVeto[1] ==1 && lep_lostHits[1] == 0 && (abs(lep_eta[1]) < 2.4)) )" + "*( " + str(self.lumWeight*lumi)  +  " )" + "* ( " + "genWeight/abs(genWeight) " +  " )"
+                  #cut =  cut  + "* ( " + addCut + " )" + "*((HLT_DoubleMu == 1 || HLT_SingleMu == 1 || HLT_HighPTMuNonIso == 1) && (lep_tightId[0] ==1 && lep_mediumMuonId[0] ==1 && lep_dxy[0] < 0.05 && lep_dz[0]< 0.1 && lep_convVeto[0] ==1 && lep_lostHits[0] == 0 && (abs(lep_eta[0]) < 2.4)))"+ "*((lep_tightId[1] ==1 && lep_mediumMuonId[1] ==1 && lep_dxy[1] < 0.05 && lep_dz[1]< 0.1 && lep_convVeto[1] ==1 && lep_lostHits[1] == 0 && (abs(lep_eta[1]) < 2.4)) )" + "*( " + str(self.lumWeight*lumi)  +  " )" + "* ( " + "genWeight/abs(genWeight) " +  " )"
+                  cut =  cut  + "* ( " + addCut + " )" + "*((HLT_DoubleMu == 1 || HLT_SingleMu == 1 || HLT_HighPTMuNonIso == 1) && (lep_tightId[0] ==1 && lep_mediumMuonId[0] ==1 && lep_dxy[0] < 0.05 && lep_dz[0]< 0.1 && lep_convVeto[0] ==1 && lep_lostHits[0] == 0 && (abs(lep_eta[0]) < 2.4))*lep1eff )"+ "*((lep_tightId[1] ==1 && lep_mediumMuonId[1] ==1 && lep_dxy[1] < 0.05 && lep_dz[1]< 0.1 && lep_convVeto[1] ==1 && lep_lostHits[1] == 0 && (abs(lep_eta[1]) < 2.4)) *lep2eff )" + "*( " + str(self.lumWeight*lumi)  +  " )" + "* ( " + "genWeight/abs(genWeight) " +  " )"
       self.ttree.Project(name, var, cut, options)
-      print cut
+      #print cut
       return h
 
    def getTH2F(self, lumi, name, var, nbinx, xmin, xmax, nbiny, ymin, ymax, cut, options, xlabel, ylabel):
@@ -329,9 +340,6 @@ class Tree:
                  h_of.SetBinError(_bin, h.GetBinError(_bin))        
 
 
-
-
-
      return h_of
      del h_of
      del h
@@ -351,13 +359,4 @@ class Tree:
        del haux
 
      return h   
-
-
-
-
-
-
-
-
-
 
